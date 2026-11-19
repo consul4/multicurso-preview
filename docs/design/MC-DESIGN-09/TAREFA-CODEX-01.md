@@ -1,6 +1,6 @@
 # MC-CODEX-01 — Primeiro trabalho
 
-**Estado: aguardando imagem-mestre no GitHub.**
+**Estado: PRONTO PARA EXECUÇÃO PELO CODEX 01. Imagem-mestre confirmada no GitHub.**
 
 Após confirmação da imagem, auditar a estrutura do repositório `consul4/multicurso-preview`, identificar a infraestrutura de prévia HTML e os testes existentes, preservando a videoaula atual.
 
