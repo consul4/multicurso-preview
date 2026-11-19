@@ -38,3 +38,6 @@ O repositório `emilkowalski/skills` pode apoiar prototipação e revisão, apó
 
 ## Aceite
 Não aceitar ausência das abas laterais, duplicação de comandos, título genérico, dock cobrindo conteúdo, botão de conclusão antigo ou Shell divergente da imagem-mestre. Aprovação do usuário obrigatória para congelar.
+
+## Adendo mobile V01.2 (direção para prototipação)
+A especificação `MOBILE-V01.2-ESPECIFICACAO.md` complementa este contrato **apenas no mobile**. Quando houver conflito com regras de layout desktop (abas laterais, dock de Conversas, ações e rodapé fixo), aplicar as regras mobile V01.2 em telas estreitas, sem alterar o desktop. A referência PNG mobile ainda está pendente de upload; a versão desktop continua presente e válida. O Codex 01 é o responsável pela implementação, não a coordenação.
