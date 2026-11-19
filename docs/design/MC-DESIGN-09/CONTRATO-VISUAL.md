@@ -3,7 +3,7 @@
 Status: **REFERÊNCIA DE TRABALHO — NÃO HOMOLOGADO**. Data: 18/11/2026.
 
 ## Referência canônica
-Imagem enviada e aprovada para início de prototipação: `MC-DESIGN-09-SHELL-CLARO-REFERENCIA-V01.png` (ainda precisa ser anexada ao caminho `docs/design/MC-DESIGN-09/`; não substituir por screenshots antigos). Caso a imagem não esteja presente, o Codex deve PARAR a implementação visual e reportar a ausência. Não inventar outra referência.
+Imagem enviada e aprovada para início de prototipação: `MC-DESIGN-09-SHELL-CLARO-REFERENCIA-V01.png` (upload confirmado no caminho `docs/design/MC-DESIGN-09/`, blob `d5f57b98d7f1934b7f09697540f926a670ec73ca`). O Codex deve verificar sua presença antes de começar e nunca substituí-la por screenshots antigos.
 
 ## Regras invariantes
 - Manter logotipo Multicurso 2.0, cabeçalho, busca, notificações, ajuda, avatar e menu global estreito.
