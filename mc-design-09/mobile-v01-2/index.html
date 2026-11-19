@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f3f6fd">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="mobile.css">
+<title>Anatomia do prompt · Multicurso 2.0</title>
+<script src="mobile.js" defer></script>
+</head>
+<body>
+  <svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></symbol>
+    <symbol id="layers-icon" viewBox="0 0 24 24"><path d="m1.5 7 10.5-5 10.5 5L12 12.5 1.5 7Zm0 5.5L12 18l10.5-5.5m-21 5L12 23l10.5-5.5"/></symbol>
+
+
+    <symbol id="bell-icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 9h18c0-1-3-1-3-9m-8 12a2 2 0 0 0 4 0"/></symbol>
+
+    <symbol id="grid-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+
+
+
+    <symbol id="home-icon" viewBox="0 0 24 24"><path d="m2 11 10-9 10 9M5 9v12h5v-6h4v6h5V9"/></symbol>
+
+
+
+    <symbol id="folder-icon" viewBox="0 0 24 24"><path d="M3 4h6l3 3h9v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="tasks-icon" viewBox="0 0 24 24"><path d="M8 4H3v18h18V4h-5M8 2h8v5H8z"/><path d="m8 14 3 3 5-6"/></symbol>
+
+
+
+    <symbol id="spark-icon" viewBox="0 0 24 24"><path d="M10 3c1.2 6 2 6.8 8 8-6 1.2-6.8 2-8 8-1.2-6-2-6.8-8-8 6-1.2 6.8-2 8-8Zm9-2v5m-2.5-2.5h5M20 12v5m-2.5-2.5h5"/></symbol>
+    <symbol id="back-icon" viewBox="0 0 24 24"><path d="m10 5-7 7 7 7M3 12h18"/></symbol>
+    <symbol id="forward-icon" viewBox="0 0 24 24"><path d="m14 5 7 7-7 7M3 12h18"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="dots-icon" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="lesson-icon" viewBox="0 0 24 24"><path d="M12 5v16M2 4c4-2 7-1 10 1 3-2 6-3 10-1v15c-4-2-7-1-10 2-3-3-6-4-10-2z"/></symbol><symbol id="target-icon" viewBox="0 0 24 24"><path d="M19 13a8 8 0 1 1-8-8m4-2v6h6m-9 5 8-9"/><circle cx="11" cy="13" r="4"/></symbol><symbol id="box-icon" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7zm0 10 9-5M12 12 3 7m9 5v10"/></symbol></svg>
+<a class="skip" href="#aula">Pular para a aula</a>
+<header class="brandbar wrap">
+  <button type="button" class="icon-button" data-panel="menu" aria-label="Menu global"><svg class="icon" aria-hidden="true"><use href="#menu-icon"/></svg></button>
+  <span class="brand"><span class="mark"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span> Multicurso <b>2.0</b></span>
+  <button type="button" class="icon-button bell" data-panel="notificacoes" aria-label="Notificações"><svg class="icon" aria-hidden="true"><use href="#bell-icon"/></svg></button>
+  <button type="button" class="avatar" data-panel="perfil" aria-label="Perfil demonstrativo">C</button>
+</header>
+<div class="compact wrap" id="compact" hidden>
+  <button type="button" class="icon-button" data-panel="curso" aria-label="Voltar ao curso"><svg class="icon" aria-hidden="true"><use href="#back-icon"/></svg></button>
+  <div class="compact-course"><button type="button" data-panel="curso" title="Engenharia de Prompts">Engenharia de Prompts</button><progress max="100" value="33" aria-label="Progresso do curso"></progress></div>
+  <span id="compact-count">2/6</span>
+  <button type="button" class="icon-button" data-panel="menu" aria-label="Opções da aula"><svg class="icon" aria-hidden="true"><use href="#dots-icon"/></svg></button>
+</div>
+
+<main id="aula" class="wrap" tabindex="-1">
+  <section class="course-card" aria-label="Curso e progresso">
+    <img src="curso.webp" alt="" width="73" height="72">
+    <div class="course-info"><strong>Engenharia de Prompts</strong><span id="lesson-count">Aula 2 de 6</span></div>
+    <strong class="percent">33%</strong>
+    <progress max="100" value="33" aria-label="Progresso do curso"></progress>
+  </section>
+  <header class="intro">
+    <h1 id="lesson-title">Anatomia do prompt</h1>
+    <p id="lesson-description">Entenda os elementos de um prompt eficiente e como estruturá-lo para obter melhores resultados.</p>
+    <div class="actions">
+      <button type="button" data-panel="materiais"><svg class="icon" aria-hidden="true"><use href="#folder-icon"/></svg>Materiais</button>
+      <button type="button" data-panel="ferramentas"><svg class="icon" aria-hidden="true"><use href="#grid-icon"/></svg>Ferramentas <span aria-hidden="true">⌄</span></button>
+    </div>
+  </header>
+  <article id="lesson-body" aria-labelledby="lesson-title">
+    <figure class="hero"><img src="prompt.webp" alt="Diagrama que liga um prompt a objetivo, contexto, critérios e formato." width="542" height="253"></figure>
+    <section class="reading card" id="definition">
+      <h2>O que é um prompt?</h2>
+      <p>É uma instrução que você fornece a uma IA para obter uma resposta específica, útil e de qualidade.</p>
+      <aside class="example"><svg class="icon" aria-hidden="true"><use href="#spark-icon"/></svg><div><strong>Exemplo prático</strong><p>“Explique a inteligência artificial de forma simples e com três exemplos do dia a dia.”</p></div></aside>
+    </section>
+    <section class="elements card">
+      <div class="section-head"><span class="tile"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span><div><h2>Os 4 elementos do prompt</h2><p>Um prompt eficiente é construído a partir de quatro elementos principais:</p></div></div>
+      <dl>
+        <div><span class="tile"><svg class="icon" aria-hidden="true"><use href="#target-icon"/></svg></span><dt>Objetivo</dt><dd>Define com clareza o que você quer obter.</dd></div>
+        <div><span class="tile"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span><dt>Contexto</dt><dd>Fornece as informações necessárias.</dd></div>
+        <div><span class="tile"><svg class="icon" aria-hidden="true"><use href="#tasks-icon"/></svg></span><dt>Critérios</dt><dd>Estabelece regras e qualidade da resposta.</dd></div>
+        <div><span class="tile"><svg class="icon" aria-hidden="true"><use href="#box-icon"/></svg></span><dt>Formato</dt><dd>Indica como a resposta deve ser apresentada (ex.: lista, resumo, tabela).</dd></div>
+      </dl>
+    </section>
+    <section class="reading practice" id="practice">
+      <h2>Do pedido à instrução</h2>
+      <p>Compare “Ajude com a reunião” com esta versão: “Escreva um aviso para a equipe informando que a reunião de terça mudou das 14h para as 16h. Use até três frases e confirme que o local permanece o mesmo.”</p>
+      <p>O objetivo é avisar. O contexto é a reunião da equipe. O limite de três frases e a informação sobre o local são critérios. O formato é um aviso curto.</p>
+      <button type="button" class="primary" data-panel="atividades">Praticar com um exemplo</button>
+    </section>
+  </article>
+  <article class="reading card" id="other-lesson" hidden aria-labelledby="lesson-title"></article>
+  <footer class="lesson-footer" aria-label="Navegação entre aulas">
+    <button type="button" id="previous"><svg class="icon" aria-hidden="true"><use href="#back-icon"/></svg>Anterior</button>
+    <button type="button" id="next" class="primary">Próxima<svg class="icon" aria-hidden="true"><use href="#forward-icon"/></svg></button>
+  </footer>
+</main>
+
+<nav class="dock" aria-label="Navegação de estudo">
+  <button type="button" data-panel="curso" aria-label="Início"><svg class="icon" aria-hidden="true"><use href="#home-icon"/></svg></button>
+  <button type="button" data-panel="modulos" aria-label="Módulos"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></button>
+  <button type="button" id="resume" aria-label="Aula" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg></button>
+  <button type="button" data-panel="atividades" id="activity" aria-label="Atividades, uma pendente"><svg class="icon" aria-hidden="true"><use href="#tasks-icon"/></svg><span class="pending" aria-hidden="true"></span></button>
+  <button type="button" data-panel="assistente" aria-label="Assistente de Estudos"><svg class="icon" aria-hidden="true"><use href="#spark-icon"/></svg></button>
+</nav>
+
+<dialog aria-labelledby="panel-title" id="panel">
+  <div class="panel-head"><h2 id="panel-title"></h2><button type="button" class="icon-button" id="close-panel" aria-label="Fechar painel"><svg class="icon" aria-hidden="true"><use href="#close-icon"/></svg></button></div>
+  <div id="panel-content"></div>
+</dialog>
+</body>
+</html>
