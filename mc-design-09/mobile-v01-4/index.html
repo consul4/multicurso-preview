@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#f1f3fc">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="mobile.css">
+  <script src="mobile.js" defer></script>
+  <title>Navegação Universal · Multicurso 2.0</title>
+</head>
+<body>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></symbol>
+    <symbol id="layers-icon" viewBox="0 0 24 24"><path d="m1.5 7 10.5-5 10.5 5L12 12.5 1.5 7Zm0 5.5L12 18l10.5-5.5m-21 5L12 23l10.5-5.5"/></symbol>
+
+
+    <symbol id="bell-icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 9h18c0-1-3-1-3-9m-8 12a2 2 0 0 0 4 0"/></symbol>
+
+    <symbol id="grid-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+
+
+
+    <symbol id="home-icon" viewBox="0 0 24 24"><path d="m2 11 10-9 10 9M5 9v12h5v-6h4v6h5V9"/></symbol>
+
+
+
+    <symbol id="folder-icon" viewBox="0 0 24 24"><path d="M3 4h6l3 3h9v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="tasks-icon" viewBox="0 0 24 24"><path d="M8 4H3v18h18V4h-5M8 2h8v5H8z"/><path d="m8 14 3 3 5-6"/></symbol>
+
+
+
+    <symbol id="spark-icon" viewBox="0 0 24 24"><path d="M10 3c1.2 6 2 6.8 8 8-6 1.2-6.8 2-8 8-1.2-6-2-6.8-8-8 6-1.2 6.8-2 8-8Zm9-2v5m-2.5-2.5h5M20 12v5m-2.5-2.5h5"/></symbol>
+    <symbol id="back-icon" viewBox="0 0 24 24"><path d="m10 5-7 7 7 7M3 12h18"/></symbol>
+    <symbol id="forward-icon" viewBox="0 0 24 24"><path d="m14 5 7 7-7 7M3 12h18"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="dots-icon" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="lesson-icon" viewBox="0 0 24 24"><path d="M12 5v16M2 4c4-2 7-1 10 1 3-2 6-3 10-1v15c-4-2-7-1-10 2-3-3-6-4-10-2z"/></symbol><symbol id="target-icon" viewBox="0 0 24 24"><path d="M19 13a8 8 0 1 1-8-8m4-2v6h6m-9 5 8-9"/><circle cx="11" cy="13" r="4"/></symbol><symbol id="box-icon" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7zm0 10 9-5M12 12 3 7m9 5v10"/></symbol><symbol id="list-icon" viewBox="0 0 24 24"><path d="M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01"/></symbol><symbol id="lock-icon" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/></symbol><symbol id="lab-icon" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L4 20h16l-6-10V3M7 15h10"/></symbol><symbol id="award-icon" viewBox="0 0 24 24"><path d="M5 3h14v8a7 7 0 0 1-14 0zm7 15v4m-5 0h10M5 6H2v3a4 4 0 0 0 4 4m13-7h3v3a4 4 0 0 1-4 4"/></symbol><symbol id="play-icon" viewBox="0 0 24 24"><path d="M5 2v20l16-10z"/></symbol><symbol id="right-icon" viewBox="0 0 24 24"><path d="m9 4 7 8-7 8"/></symbol></svg>
+  <a class="skip" href="#lesson">Pular para a aula</a>
+  <header class="top">
+    <div class="header-wrap">
+      <button class="icon-button back" data-panel="course" aria-label="Voltar ao curso"><svg class="icon" aria-hidden="true"><use href="#back-icon"/></svg></button>
+      <div class="course-header">
+        <strong title="Engenharia de Prompts">Engenharia de Prompts</strong>
+        <div class="header-progress"><progress id="position-progress" value="2" max="6" aria-label="Posição na sequência do curso"></progress><span id="position-count" aria-label="Aula 2 de 6">2/6</span></div>
+      </div>
+      <button class="icon-button shortcut" data-panel="modules" aria-label="Aulas e Módulos" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#list-icon"/></svg></button>
+      <button class="icon-button shortcut" data-panel="options" aria-label="Mais opções" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#dots-icon"/></svg></button>
+    </div>
+  </header>
+  <main id="lesson" class="wrap" tabindex="-1">
+    <article id="lesson-content" aria-labelledby="lesson-title"></article>
+    <footer class="lesson-footer" aria-label="Navegação entre aulas">
+      <button id="previous" class="button"><svg class="icon" aria-hidden="true"><use href="#back-icon"/></svg>Aula anterior</button>
+      <button id="next" class="button primary">Próxima aula<svg class="icon" aria-hidden="true"><use href="#forward-icon"/></svg></button>
+      <p id="next-reason" class="notice" hidden></p>
+    </footer>
+  </main>
+
+  <nav class="dock" aria-label="Navegação de estudo" hidden>
+    <button data-panel="course"><svg class="icon" aria-hidden="true"><use href="#home-icon"/></svg>Início</button>
+    <button data-panel="modules"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg>Módulos</button>
+    <button id="resume" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg>Aula</button>
+    <button id="dock-activity" data-panel="activities"><svg class="icon" aria-hidden="true"><use href="#tasks-icon"/></svg><span class="pending" hidden aria-hidden="true"></span>Atividades</button>
+    <button data-panel="assistant"><svg class="icon" aria-hidden="true"><use href="#spark-icon"/></svg>Assistente</button>
+  </nav>
+
+  <dialog id="panel" aria-labelledby="panel-title">
+    <header class="panel-header">
+      <button class="icon-button" id="close-panel" aria-label="Fechar painel"><svg class="icon" aria-hidden="true"><use href="#close-icon"/></svg></button>
+      <h2 id="panel-title" tabindex="-1"></h2>
+      <svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg>
+    </header>
+    <div id="panel-content"></div>
+  </dialog>
+  <div class="sr-only" id="announcement" role="status"></div>
+</body>
+</html>
