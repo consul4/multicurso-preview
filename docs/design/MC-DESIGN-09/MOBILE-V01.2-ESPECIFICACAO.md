@@ -3,7 +3,7 @@
 **Status:** direção visual selecionada para protótipo, NÃO homologada tecnicamente. **Escopo:** somente mobile; Shell desktop V01 preservado.
 
 ## Referência visual
-Imagem de comparação com dois estados (topo e leitura): `MC-DESIGN-09-MOBILE-V01.2-DOIS-ESTADOS.png`. **Upload binário pendente** nesta pasta; não afirmar que está disponível. O Codex deve confirmar que consegue abri-la antes de executar fidelidade visual. A imagem é conceitual; o comportamento abaixo prevalece quando não puder ser representado estaticamente.
+Imagem de comparação com dois estados (topo e leitura): `MC-DESIGN-09-MOBILE-V01.2-DOIS-ESTADOS.png`. **Upload confirmado** nesta pasta (blob SHA `2f136d988d1988055859f7e01d17cd3a4dfc374e`). O Codex deve abrir a imagem e confirmar sua leitura antes de avaliar fidelidade visual. A imagem é conceitual; o comportamento abaixo prevalece quando não puder ser representado estaticamente.
 
 ## Estado A — início da aula
 - Cabeçalho completo com identidade Multicurso 2.0, notificações e perfil, somente no topo.
