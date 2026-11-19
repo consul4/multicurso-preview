@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Shell Claro V01 · Multicurso 2.0</title>
+  <style>
+    :root {
+      font-family: Inter, Arial, sans-serif;
+      color: #0b112c;
+      background: #f3f6fd;
+      --ink: #0b112c;
+      --muted: #394d79;
+      --blue: #0054f5;
+      --blue-ink: #0047cc;
+      --surface: #f8faff;
+      --wash: #ebf1fe;
+      --line: #d7e1fa;
+      --frame: #b9c9f1;
+      --rail: 112px;
+      --gutter: 16px;
+      --dock-size: 68px;
+      --ease-out: cubic-bezier(.23, 1, .32, 1);
+      --shadow-control: 0 2px 3px #1b3b8914, inset 0 1px #ffffffb3;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; min-width: 0; }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; }
+    button:focus-visible, a:focus-visible, input:focus-visible, h2:focus-visible, main:focus-visible, .crumb:focus-visible {
+      outline: 2px solid var(--blue-ink);
+      outline-offset: 3px;
+    }
+    [hidden] { display: none !important; }
+    .icons { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .icon { display: block; flex: none; width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .skip { position: absolute; z-index: 4; top: 8px; left: 8px; padding: 10px; background: white; transform: translateY(-150%); }
+    .skip:focus { transform: none; }
+
+    .shell {
+      display: grid;
+      grid-template: 75px 50px 1fr / var(--rail) minmax(0, 1fr);
+      min-height: 100dvh;
+      background: radial-gradient(ellipse at 41% 39%, #fbfcff, #f2f5fd 69%);
+    }
+    .shell:fullscreen { width: 100%; height: 100%; overflow: auto; }
+    .top {
+      grid-area: 1 / 1 / 2 / -1;
+      display: grid;
+      grid-template-columns: 1fr minmax(180px, 45.5%) 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 0 27px 0 13px;
+      border-bottom: 1px solid var(--line);
+      background: #f4f7fe;
+    }
+    .brand, .header-actions { display: flex; align-items: center; }
+    .brand { gap: 12px; color: var(--ink); font-size: 32px; font-weight: 750; letter-spacing: -.037em; white-space: nowrap; }
+    .brand strong { color: var(--blue); }
+    .brand-mark { display: grid; place-items: center; width: 45px; height: 50px; background: var(--ink); color: white; clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%); }
+    .brand-mark .icon { width: 28px; height: 28px; }
+    .bare { display: grid; place-items: center; width: 45px; height: 44px; padding: 0; color: var(--ink); border: 0; border-radius: 10px; background: transparent; }
+    .bare .icon { width: 27px; height: 27px; }
+    .header-actions { justify-content: end; gap: clamp(6px, 1.15vw, 18px); }
+    .header-actions .notification { position: relative; }
+    .notification::after { content: ''; position: absolute; width: 13px; height: 13px; top: 3px; right: 5px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 2px #f4f7fe; }
+    .avatar { display: grid; place-items: center; width: 45px; height: 45px; margin-left: 18px; border-radius: 50%; background: #8600e1; color: white; font-size: 23px; }
+    .avatar-wrap { border-left: 1px solid #aebddd; }
+    .search { display: flex; align-items: center; gap: 10px; min-width: 0; height: 46px; padding: 0 18px; border-radius: 40px; background: #dce6fc; color: #15233f; }
+    .search input { flex: 1; min-width: 0; width: 100%; padding: 0; opacity: 1; background: transparent; border: 0; font-size: 18px; }
+    .search input::placeholder { color: #15233f; opacity: 1; }
+    .search .icon { width: 23px; height: 23px; }
+
+    .global {
+      grid-area: 2 / 1 / -1 / 2;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 9px 13px;
+      border-right: 1px solid #e2eafa;
+      background: #eaf0fd;
+    }
+    .global-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 80px; padding: 6px 1px; border: 0; border-radius: 15px; text-align: center; background: transparent; color: var(--ink); font-size: 14px; line-height: 1.28; }
+    .global-item .icon { width: 27px; height: 27px; }
+    .global-item[aria-current] { min-height: 87px; background: #d9e6fe; color: var(--blue-ink); font-weight: 700; }
+    .crumb { grid-area: 2 / 2; display: flex; align-items: center; gap: 12px; min-width: 0; overflow-x: auto; scrollbar-width: thin; padding: 0 24px; border-bottom: 1px solid var(--line); background: linear-gradient(100deg, #eef3fd, #e7eefc); white-space: nowrap; font-size: 17px; }
+    .crumb .icon { width: 17px; height: 17px; color: #2d4168; }
+    .crumb .home { width: 19px; height: 19px; color: var(--ink); }
+
+    .page { grid-area: 3 / 2; display: grid; grid-template-rows: auto minmax(290px, 1fr) auto; gap: 20px; min-width: 0; padding-top: 21px; }
+    .lesson-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(174px, 18%) auto;
+      align-items: center;
+      gap: clamp(10px, 1.6vw, 27px);
+      min-height: 132px;
+      margin-inline: var(--gutter);
+      padding: 8px 16px;
+      border: 1px solid #dce6fc;
+      border-radius: 21px;
+      background: #f8faffbd;
+      box-shadow: 0 1px 2px #102f6710;
+    }
+    .lesson-title { min-width: 0; display: flex; align-items: center; gap: clamp(12px, 2vw, 34px); }
+    .lesson-type { display: grid; place-items: center; flex: none; width: 71px; height: 72px; border-radius: 15px; background: #e3ebfc; color: white; }
+    .lesson-type span { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 50%; background: var(--blue); }
+    .lesson-type .icon { width: 18px; height: 18px; fill: white; stroke-width: 0; margin-left: 2px; }
+    .lesson-index { display: inline-block; padding: 2px 9px; border-radius: 15px; background: #dce8fe; color: var(--blue-ink); font-weight: 700; font-size: 16px; }
+    h1 { margin: 4px 0 4px; font-size: clamp(22px, 1.95vw, 33px); letter-spacing: -.038em; line-height: 1.06; }
+    .lesson-title p { max-width: 540px; margin: 0; color: var(--muted); font-size: 16px; line-height: 1.35; }
+    .lesson-progress { display: grid; gap: 4px; min-width: 0; min-height: 60px; align-content: center; padding: 0 clamp(13px, 2vw, 35px); border-inline: 1px solid #b6c4e8; font-size: 16px; }
+    .meter { display: flex; align-items: center; gap: 10px; font-size: 25px; }
+    progress { flex: 1; min-width: 0; width: 100%; height: 12px; border: 0; border-radius: 12px; background: #d7e4fb; appearance: none; }
+    progress::-webkit-progress-bar { background: #d7e4fb; border-radius: 12px; }
+    progress::-webkit-progress-value { background: var(--blue); border-radius: 12px; }
+    progress::-moz-progress-bar { background: var(--blue); border-radius: 12px; }
+    .lesson-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 11px; }
+    .button, .edge-tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 650;
+      font-size: 15px;
+      white-space: nowrap;
+      box-shadow: var(--shadow-control);
+    }
+    .button .icon { width: 21px; height: 21px; }
+    .button[aria-expanded="true"], .button.focus, .edge-tab[aria-expanded="true"] { color: var(--blue-ink); background: #e0eaff; border-color: #c8d8fb; }
+    .button:disabled { color: #5d6b87; }
+    button { transition: transform 130ms var(--ease-out); }
+    button:not(:disabled):not(:focus-visible):active { transform: scale(.97); }
+    @media (hover: hover) and (pointer: fine) {
+      .button:not(:disabled):hover, .edge-tab:hover, .dock-button:hover, .bare:not(:disabled):hover { background: #e7efff; }
+    }
+    @media (prefers-reduced-motion: reduce) { button { transition: none; } button:not(:disabled):not(:focus-visible):active { transform: none; } }
+
+    .workspace { display: grid; grid-template-columns: 87px minmax(0, 1fr) 102px; grid-template-rows: minmax(0, 1fr) auto; gap: 0 14px; min-width: 0; margin-inline: var(--gutter); }
+    .edge-tab { grid-row: 1; align-self: start; flex-direction: column; gap: 12px; min-height: 92px; padding: 9px 6px; border-radius: 16px; }
+    .edge-tab .icon { width: 23px; height: 23px; }
+    .edge-tab.modules { grid-column: 1; }
+    .edge-tab.tools { grid-column: 3; }
+    .edge-tab[aria-expanded="true"] .icon { transform: rotate(180deg); }
+    .canvas {
+      grid-area: 1 / 2;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 325px;
+      padding: 25px 22px calc(var(--dock-size) + 34px);
+      border: 1px solid var(--frame);
+      border-radius: 21px;
+      background: linear-gradient(132deg, #f5f8fe, #f3f6fd);
+      text-align: center;
+    }
+    .placeholder { width: min(100%, 700px); }
+    .placeholder-icon { display: grid; place-items: center; width: 100px; height: 93px; margin: 0 auto 16px; border-radius: 19px; background: #e1eaff; color: var(--blue); }
+    .placeholder-icon .icon { width: 63px; height: 63px; stroke-width: 1.65; }
+    .placeholder h2 { margin: 0 0 12px; color: var(--ink); font-size: clamp(25px, 2.5vw, 42px); letter-spacing: -.035em; line-height: 1.12; }
+    .placeholder p { margin: 0; color: var(--muted); font-size: clamp(15px, 1.4vw, 23px); line-height: 1.42; }
+
+    .dock {
+      grid-area: 1 / 2 / 2 / 4;
+      align-self: end;
+      justify-self: end;
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      gap: 10px;
+      min-width: 0;
+      max-width: 100%;
+      margin-right: 12px;
+      z-index: 1;
+    }
+    .dock[data-open="true"] { grid-area: 2 / 1 / 3 / -1; justify-self: end; margin-top: 12px; }
+    .dock-buttons { display: flex; gap: 18px; }
+    .dock-button {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: var(--dock-size);
+      height: var(--dock-size);
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid #dce6fc;
+      background: #f9fbff;
+      box-shadow: 0 7px 13px #16377e22, inset 0 1px #fff;
+    }
+    .dock-button .icon { width: 30px; height: 30px; }
+    .dock-button.assistant { color: var(--blue); }
+    .dock-button[aria-expanded="true"] { background: #e0eaff; border-color: #a8c1f8; }
+    .badge { position: absolute; top: -4px; right: -4px; display: grid; place-items: center; min-width: 25px; height: 25px; padding: 0 4px; border: 1px solid white; border-radius: 18px; color: white; background: var(--blue-ink); font-size: 14px; }
+    .panel { width: min(360px, 100%); padding: 12px 16px 16px; border: 1px solid var(--frame); border-radius: 16px; background: #fff; color: var(--muted); box-shadow: var(--shadow-control); }
+    .panel header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .panel h2 { color: var(--ink); margin: 0; font-size: 18px; }
+    .panel p { margin: 5px 0 0; line-height: 1.45; }
+    .panel .bare { width: 39px; height: 39px; }
+    .panel .bare .icon { width: 20px; height: 20px; }
+    .support-panel { grid-area: 2 / 2; margin-top: 12px; width: 100%; }
+
+    .lesson-footer { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; min-height: 103px; padding: 17px 28px 17px 24px; border-top: 1px solid #dce5f8; }
+    .footer-button { min-width: 166px; min-height: 57px; padding: 0 24px; border-radius: 34px; font-size: 18px; gap: 14px; }
+    .footer-button .icon { width: 24px; height: 24px; }
+    .next { min-width: 183px; background: var(--blue); color: white; border-color: var(--blue); box-shadow: none; }
+    @media (hover: hover) and (pointer: fine) { .next:not(:disabled):hover { background: #0046d8; } }
+    .compare { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; justify-content: center; padding: 12px; border-bottom: 1px solid var(--line); color: var(--muted); background: white; font-size: 13px; }
+    .compare a { color: var(--blue-ink); padding: 8px; border-radius: 8px; text-underline-offset: 3px; }
+    .compare a[aria-current] { background: var(--wash); font-weight: 700; }
+    #announcement { grid-column: 2; margin-inline: var(--gutter); color: var(--muted); }
+
+    .shell[data-variant="compacta"] .lesson-head { min-height: 100px; gap: 12px; }
+    .shell[data-variant="compacta"] .lesson-type { width: 52px; height: 52px; }
+    .shell[data-variant="compacta"] .lesson-title { gap: 13px; }
+    .shell[data-variant="compacta"] .lesson-actions { gap: 6px; }
+    .shell[data-variant="compacta"] .dock { --dock-size: 56px; margin-right: 2px; }
+    .shell[data-variant="compacta"] .dock-buttons { gap: 10px; }
+    .shell[data-variant="faixa"] .lesson-head { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 18px; padding-block: 12px; }
+    .shell[data-variant="faixa"] .lesson-actions { grid-column: 1 / -1; justify-content: start; border-top: 1px solid var(--line); padding-top: 8px; }
+    .shell[data-variant="faixa"] .dock { grid-area: 2 / 1 / 3 / -1; margin-top: 10px; }
+    .shell[data-variant="faixa"] .dock-buttons { gap: 12px; }
+    .shell[data-variant="faixa"] .canvas { padding-bottom: 25px; }
+    .shell[data-variant="dedicado"] .lesson-head { grid-template-columns: minmax(0, 1fr) auto; }
+    .shell[data-variant="dedicado"] .lesson-progress { order: 3; min-height: 0; padding: 0; border: 0; display: flex; align-items: center; gap: 8px; }
+    .shell[data-variant="dedicado"] .meter { width: min(160px, 100%); font-size: 20px; }
+    .shell[data-variant="dedicado"] .dock-buttons { flex-direction: column; gap: 10px; }
+    .shell[data-variant="dedicado"] .dock { grid-area: 1 / 3; justify-self: center; margin-right: 0; --dock-size: 54px; }
+    .shell[data-variant="dedicado"] .dock[data-open="true"] { grid-area: 2 / 1 / 3 / -1; justify-self: end; }
+    .shell[data-variant="dedicado"] .dock[data-open="true"] .dock-buttons { flex-direction: row; }
+    .shell[data-variant="dedicado"] .canvas { padding-bottom: 25px; }
+
+    .shell[data-focus="true"] { grid-template: 1fr / 0 minmax(0, 1fr); }
+    .shell[data-focus="true"] .page { grid-row: 1; }
+    .shell[data-nav="off"] { --rail: 0px; }
+    @media (min-width: 1401px) {
+      .brand > .bare { margin-right: 5px; }
+      .top .search { transform: translateX(25px); }
+      .header-actions { gap: 21px; }
+      .avatar { margin-left: 30px; }
+      .shell[data-variant="referencia"] .lesson-type { translate: 0 -8px; }
+      .shell[data-variant="referencia"] .lesson-actions { gap: 14px; translate: 0 -5px; }
+      .shell[data-variant="referencia"] .lesson-progress { translate: 0 -3px; }
+    }
+    @media (max-width: 1400px) {
+      .lesson-head { gap: 13px; }
+      .lesson-title { gap: 15px; }
+      .lesson-actions { gap: 6px; }
+      .lesson-actions .button { padding-inline: 8px; font-size: 13px; gap: 6px; }
+      .lesson-type { width: 58px; height: 60px; }
+    }
+    @media (max-width: 1150px) {
+      :root { --rail: 86px; --dock-size: 56px; }
+      .brand { font-size: 25px; gap: 7px; }
+      .top { padding-inline: 10px 16px; grid-template-columns: 1fr minmax(160px, 38%) 1fr; }
+      .header-actions { gap: 4px; }
+      .global { padding-inline: 6px; }
+      .global-item { font-size: 12px; }
+      .lesson-head { grid-template-columns: minmax(0, 1fr) minmax(180px, auto); padding-block: 12px; }
+      .lesson-progress { border-right: 0; }
+      .lesson-actions { grid-column: 1 / -1; justify-content: start; }
+      .workspace { grid-template-columns: 74px minmax(0, 1fr) 88px; gap: 0 11px; }
+      .canvas { min-height: 310px; }
+      .edge-tab { font-size: 13px; min-height: 76px; }
+      .dock-button .icon { width: 25px; height: 25px; }
+      .lesson-footer { min-height: 82px; padding-block: 12px; }
+      .footer-button { min-height: 50px; font-size: 16px; }
+    }
+    @media (max-width: 850px) {
+      :root { --rail: 69px; --gutter: 12px; }
+      .shell { grid-template-rows: 61px 43px 1fr; }
+      .top { gap: 8px; }
+      .brand { font-size: 22px; }
+      .brand-mark { width: 34px; height: 39px; }
+      .brand-mark .icon { width: 22px; height: 22px; }
+      .bare { width: 39px; }
+      .bare .icon { width: 23px; height: 23px; }
+      .search { height: 38px; padding-inline: 10px; }
+      .search input { font-size: 13px; }
+      .search .icon { width: 17px; height: 17px; }
+      .avatar { width: 35px; height: 35px; margin-left: 8px; font-size: 17px; }
+      .header-actions .calendar { display: none; }
+      .global-item, .global-item[aria-current] { min-height: 61px; font-size: 10px; }
+      .global-item .icon { width: 21px; height: 21px; }
+      .crumb { padding-inline: var(--gutter); gap: 9px; font-size: 13px; }
+      .page { gap: 14px; padding-top: 13px; }
+      .workspace { grid-template-columns: 65px minmax(0, 1fr) 75px; gap: 0 8px; }
+      .edge-tab { min-height: 65px; gap: 6px; font-size: 11px; }
+      .placeholder-icon { width: 73px; height: 70px; }
+      .placeholder-icon .icon { width: 46px; height: 46px; }
+    }
+    @media (max-width: 620px) {
+      :root { --gutter: 8px; --dock-size: 47px; }
+      .shell { grid-template: auto 38px 1fr / 0 minmax(0, 1fr); position: relative; }
+      .top { grid-template-columns: 1fr auto; padding: 5px 9px 7px 3px; }
+      .search { grid-area: 2 / 1 / 3 / -1; margin-left: 6px; }
+      .brand { font-size: 20px; }
+      .header-actions { gap: 0; }
+      .header-actions .bare { width: 33px; }
+      .avatar-wrap { border: 0; }
+      .global { position: absolute; top: 100px; left: 0; width: 70px; z-index: 2; border-bottom-right-radius: 12px; box-shadow: var(--shadow-control); }
+      .page { grid-template-rows: auto minmax(0, 1fr) auto; gap: 11px; padding-top: 10px; }
+      .lesson-head, .shell[data-variant] .lesson-head { grid-template-columns: minmax(0, 1fr); gap: 8px; min-height: 0; padding: 9px; border-radius: 15px; }
+      .lesson-title { gap: 9px; }
+      .lesson-type, .shell[data-variant="compacta"] .lesson-type { width: 40px; height: 41px; border-radius: 9px; }
+      .lesson-type span { width: 25px; height: 25px; }
+      .lesson-type .icon { width: 13px; height: 13px; }
+      .lesson-index { font-size: 12px; }
+      .lesson-title h1 { font-size: 23px; }
+      .lesson-title p { font-size: 13px; }
+      .lesson-progress, .shell[data-variant="dedicado"] .lesson-progress { display: flex; order: 0; align-items: center; gap: 9px; min-height: 0; padding: 2px 2px 0; border: 0; font-size: 13px; }
+      .meter, .shell[data-variant="dedicado"] .meter { width: auto; flex: 1; font-size: 18px; }
+      progress { height: 8px; }
+      .lesson-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+      .lesson-actions .button { min-height: 43px; font-size: 12px; }
+      .lesson-actions .icon { width: 16px; height: 16px; }
+      .workspace { grid-template-columns: 51px minmax(0, 1fr) 62px; gap: 0 6px; }
+      .edge-tab { padding-inline: 2px; font-size: 10px; min-height: 57px; border-radius: 12px; }
+      .edge-tab .icon { width: 18px; height: 18px; }
+      .canvas, .shell[data-variant="faixa"] .canvas, .shell[data-variant="dedicado"] .canvas { min-height: 252px; padding: 15px 6px; border-radius: 14px; }
+      .placeholder-icon { width: 52px; height: 51px; margin-bottom: 12px; border-radius: 12px; }
+      .placeholder-icon .icon { width: 33px; height: 33px; }
+      .placeholder h2 { font-size: clamp(20px, 5vw, 25px); margin-bottom: 8px; }
+      .placeholder p { font-size: 13px; }
+      .dock, .shell[data-variant] .dock, .dock[data-open="true"] { grid-area: 3 / 1 / 4 / -1; margin: 8px 3px 0 0; justify-self: end; --dock-size: 47px; }
+      .dock-buttons, .shell[data-variant="dedicado"] .dock-buttons { flex-direction: row; gap: 13px; }
+      .dock-button .icon { width: 23px; height: 23px; }
+      .badge { min-width: 19px; height: 19px; font-size: 11px; }
+      .support-panel { grid-column: 1 / -1; }
+      .lesson-footer { min-height: 63px; padding: 8px 11px; }
+      .footer-button { min-width: 125px; min-height: 45px; font-size: 15px; padding-inline: 13px; }
+      .footer-button .icon { width: 19px; height: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></symbol>
+    <symbol id="layers-icon" viewBox="0 0 24 24"><path d="m1.5 7 10.5-5 10.5 5L12 12.5 1.5 7Zm0 5.5L12 18l10.5-5.5m-21 5L12 23l10.5-5.5"/></symbol>
+    <symbol id="search-icon" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="calendar-icon" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="17" rx="2"/><path d="M7 2v5m10-5v5M3 9h18"/></symbol>
+    <symbol id="bell-icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 9h18c0-1-3-1-3-9m-8 12a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="help-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 8.4a3 3 0 1 1 4.4 2.8c-1 .6-1.4 1.1-1.4 2m0 3.6v.2"/></symbol>
+    <symbol id="grid-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="cap-icon" viewBox="0 0 24 24"><path d="m1 9 11-5 11 5-11 5L1 9Zm4 2v6c4 3 10 3 14 0v-6m3-2v7"/></symbol>
+    <symbol id="book-icon" viewBox="0 0 24 24"><path d="M5 4H3v17h15v-2M7 2h13v16H7z"/></symbol>
+    <symbol id="award-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="m8 13-3 8 4-2 3 3 3-3 4 2-3-8"/></symbol>
+    <symbol id="home-icon" viewBox="0 0 24 24"><path d="m2 11 10-9 10 9M5 9v12h5v-6h4v6h5V9"/></symbol>
+    <symbol id="right-icon" viewBox="0 0 24 24"><path d="m9 4 7 8-7 8"/></symbol>
+    <symbol id="left-icon" viewBox="0 0 24 24"><path d="m15 4-7 8 7 8"/></symbol>
+    <symbol id="play-icon" viewBox="0 0 24 24"><path d="M5 2v20l16-10z"/></symbol>
+    <symbol id="folder-icon" viewBox="0 0 24 24"><path d="M3 4h6l3 3h9v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="tasks-icon" viewBox="0 0 24 24"><path d="M8 4H3v18h18V4h-5M8 2h8v5H8z"/><path d="m8 14 3 3 5-6"/></symbol>
+    <symbol id="focus-icon" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5m-4-12v6m-3-3h6"/></symbol>
+    <symbol id="screen-icon" viewBox="0 0 24 24"><path d="M8 2H2v6m14-6h6v6M2 16v6h6m14-6v6h-6"/></symbol>
+    <symbol id="chat-icon" viewBox="0 0 24 24"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H10l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="spark-icon" viewBox="0 0 24 24"><path d="M10 3c1.2 6 2 6.8 8 8-6 1.2-6.8 2-8 8-1.2-6-2-6.8-8-8 6-1.2 6.8-2 8-8Zm9-2v5m-2.5-2.5h5M20 12v5m-2.5-2.5h5"/></symbol>
+    <symbol id="back-icon" viewBox="0 0 24 24"><path d="m10 5-7 7 7 7M3 12h18"/></symbol>
+    <symbol id="forward-icon" viewBox="0 0 24 24"><path d="m14 5 7 7-7 7M3 12h18"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <nav class="compare" id="comparison" aria-label="Comparação da barra da aula e do dock" hidden>
+    <span>Comparar título e dock</span>
+    <a href="?comparar=1&amp;v=referencia" data-variant-option="referencia">Referência</a>
+    <a href="?comparar=1&amp;v=compacta" data-variant-option="compacta">Compacta</a>
+    <a href="?comparar=1&amp;v=faixa" data-variant-option="faixa">Faixa de ações</a>
+    <a href="?comparar=1&amp;v=dedicado" data-variant-option="dedicado">Dock lateral</a>
+  </nav>
+  <div class="shell" id="shell" data-variant="referencia" data-nav="on">
+    <a href="#conteudo" class="skip">Pular para o conteúdo</a>
+    <header class="top">
+      <div class="brand">
+        <button class="bare" id="menu" aria-label="Menu global" aria-controls="global-nav" aria-expanded="true"><svg class="icon" aria-hidden="true"><use href="#menu-icon"/></svg></button>
+        <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span>
+        <span>Multicurso <strong>2.0</strong></span>
+      </div>
+      <label class="search">
+        <span class="sr-only">Buscar cursos</span>
+        <input type="search" disabled placeholder="O que você quer aprender hoje?">
+        <svg class="icon" aria-hidden="true"><use href="#search-icon"/></svg>
+      </label>
+      <div class="header-actions">
+        <button class="bare calendar" disabled aria-label="Calendário"><svg class="icon" aria-hidden="true"><use href="#calendar-icon"/></svg></button>
+        <button class="bare notification" disabled aria-label="Notificações"><svg class="icon" aria-hidden="true"><use href="#bell-icon"/></svg></button>
+        <button class="bare" disabled aria-label="Ajuda"><svg class="icon" aria-hidden="true"><use href="#help-icon"/></svg></button>
+        <span class="avatar-wrap"><span class="avatar" role="img" aria-label="Perfil demonstrativo">C</span></span>
+      </div>
+    </header>
+    <nav class="global" id="global-nav" aria-label="Navegação global">
+      <button class="global-item" disabled><svg class="icon" aria-hidden="true"><use href="#grid-icon"/></svg>Painel</button>
+      <span class="global-item" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#cap-icon"/></svg>Meus<br>cursos</span>
+      <button class="global-item" disabled><svg class="icon" aria-hidden="true"><use href="#book-icon"/></svg>Catálogo</button>
+      <button class="global-item" disabled><svg class="icon" aria-hidden="true"><use href="#award-icon"/></svg>Certificados</button>
+    </nav>
+    <nav class="crumb" aria-label="Breadcrumb" tabindex="0">
+      <svg class="icon home" aria-label="Início" role="img"><use href="#home-icon"/></svg>
+      <svg class="icon" aria-hidden="true"><use href="#right-icon"/></svg><span>Meus cursos</span>
+      <svg class="icon" aria-hidden="true"><use href="#right-icon"/></svg><span>IA generativa na prática</span>
+      <svg class="icon" aria-hidden="true"><use href="#right-icon"/></svg><span>Engenharia de Prompts</span>
+      <svg class="icon" aria-hidden="true"><use href="#right-icon"/></svg><strong aria-current="page">Aula</strong>
+    </nav>
+
+    <div class="page">
+      <section class="lesson-head" aria-labelledby="lesson-title">
+        <div class="lesson-title">
+          <span class="lesson-type"><span><svg class="icon" aria-hidden="true"><use href="#play-icon"/></svg></span></span>
+          <div>
+            <span class="lesson-index">Aula 2 de 6</span>
+            <h1 id="lesson-title">Anatomia do prompt</h1>
+            <p>Entenda os elementos de um prompt eficiente e como estruturá-lo para obter melhores resultados.</p>
+          </div>
+        </div>
+        <div class="lesson-progress">
+          <span id="meter-label">Progresso da aula</span>
+          <div class="meter"><strong aria-hidden="true">33%</strong><progress value="33" max="100" aria-labelledby="meter-label">33%</progress></div>
+        </div>
+        <div class="lesson-actions" role="group" aria-label="Ações da aula">
+          <button class="button" data-panel="materiais" aria-controls="support-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#folder-icon"/></svg>Materiais</button>
+          <button class="button" data-panel="atividades" aria-controls="support-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#tasks-icon"/></svg>Atividades</button>
+          <button class="button focus" id="focus" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#focus-icon"/></svg><span>Modo Foco</span></button>
+          <button class="button" id="fullscreen" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#screen-icon"/></svg><span>Tela Cheia</span></button>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <button class="edge-tab modules" data-panel="modulos" aria-controls="support-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#right-icon"/></svg>Módulos</button>
+        <main class="canvas" id="conteudo" tabindex="-1" aria-labelledby="content-title">
+          <div class="placeholder">
+            <span class="placeholder-icon"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span>
+            <h2 id="content-title">Área de conteúdo da aula</h2>
+            <p>Aqui são exibidos os conteúdos da aula (texto, imagem, áudio,<wbr> vídeo, exemplos, atividades etc.).</p>
+          </div>
+        </main>
+        <button class="edge-tab tools" data-panel="ferramentas" aria-controls="support-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#left-icon"/></svg>Ferramentas</button>
+        <section class="panel support-panel" id="support-panel" aria-labelledby="support-title" hidden>
+          <header><h2 id="support-title" tabindex="-1"></h2><button class="bare" data-close="support" aria-label="Fechar painel da aula"><svg class="icon" aria-hidden="true"><use href="#close-icon"/></svg></button></header>
+          <p id="support-text"></p>
+        </section>
+        <div class="dock" id="dock" data-open="false">
+          <section class="panel" id="dock-panel" aria-labelledby="dock-title" hidden>
+            <header><h2 id="dock-title" tabindex="-1"></h2><button class="bare" data-close="dock" aria-label="Recolher painel de comunicação"><svg class="icon" aria-hidden="true"><use href="#close-icon"/></svg></button></header>
+            <p id="dock-text"></p>
+          </section>
+          <div class="dock-buttons" role="group" aria-label="Comunicação e apoio ao estudo">
+            <button class="dock-button" data-panel="conversas" aria-label="Conversas, 2 não lidas" title="Conversas" aria-controls="dock-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#chat-icon"/></svg><span class="badge" aria-hidden="true">2</span></button>
+            <button class="dock-button assistant" data-panel="assistente" aria-label="Assistente de Estudos" title="Assistente de Estudos" aria-controls="dock-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#spark-icon"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <footer class="lesson-footer">
+        <button class="button footer-button" data-panel="anterior" aria-controls="support-panel" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#back-icon"/></svg>Anterior</button>
+        <button class="button footer-button next" data-panel="proxima" aria-controls="support-panel" aria-expanded="false">Próxima<svg class="icon" aria-hidden="true"><use href="#forward-icon"/></svg></button>
+      </footer>
+    </div>
+    <p id="announcement" role="status" class="sr-only"></p>
+  </div>
+
+  <script>
+    const shell = document.querySelector('#shell');
+    const globalNav = document.querySelector('#global-nav');
+    const menu = document.querySelector('#menu');
+    const focus = document.querySelector('#focus');
+    const fullscreen = document.querySelector('#fullscreen');
+    const dock = document.querySelector('#dock');
+    const announcement = document.querySelector('#announcement');
+    const comparison = document.querySelector('#comparison');
+    const query = new URLSearchParams(location.search);
+    const variantOptions = [...document.querySelectorAll('[data-variant-option]')];
+    const requested = query.get('v');
+    const selected = variantOptions.find(option => option.dataset.variantOption === requested) || variantOptions[0];
+    selected.setAttribute('aria-current', 'page');
+    shell.dataset.variant = selected.dataset.variantOption;
+    comparison.hidden = query.get('comparar') !== '1';
+
+    const panels = {
+      modulos: ['Módulos', 'Engenharia de Prompts · Aula 2 de 6: Anatomia do prompt.'],
+      ferramentas: ['Ferramentas', 'As ferramentas da aula serão apresentadas aqui quando estiverem disponíveis.'],
+      materiais: ['Materiais', 'Os materiais desta aula serão disponibilizados na próxima etapa.'],
+      atividades: ['Atividades', 'As atividades desta aula serão disponibilizadas na próxima etapa.'],
+      anterior: ['Aula anterior', 'Introdução à engenharia de prompts · Aula 1 de 6.'],
+      proxima: ['Próxima aula', 'Conceitos fundamentais · Aula 3 de 6.'],
+      conversas: ['Conversas', 'Você tem 2 mensagens de demonstração. O envio de mensagens não está disponível nesta prévia.'],
+      assistente: ['Assistente de Estudos', 'O assistente aparece aqui quando for ativado para a aula.']
+    };
+
+    let expanded = null;
+    const mobile = matchMedia('(max-width: 620px)');
+    let navOpen = !mobile.matches;
+    let focusMode = false;
+
+    function syncNavigation() {
+      shell.dataset.nav = navOpen ? 'on' : 'off';
+      globalNav.hidden = !navOpen || focusMode;
+      menu.setAttribute('aria-expanded', String(navOpen));
+    }
+
+    function closePanel(restoreFocus) {
+      if (!expanded) return;
+      const { trigger, panel } = expanded;
+      trigger.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+      dock.dataset.open = 'false';
+      expanded = null;
+      if (restoreFocus) trigger.focus();
+    }
+
+    function togglePanel(trigger) {
+      if (expanded?.trigger === trigger) {
+        closePanel(true);
+        return;
+      }
+      closePanel(false);
+      const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+      const [title, text] = panels[trigger.dataset.panel];
+      const heading = panel.querySelector('h2');
+      heading.textContent = title;
+      panel.querySelector('p').textContent = text;
+      expanded = { trigger, panel };
+      if (panel.id === 'dock-panel') dock.dataset.open = 'true';
+      panel.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      heading.focus();
+    }
+
+    document.querySelectorAll('[data-panel]').forEach(button => {
+      button.addEventListener('click', () => togglePanel(button));
+    });
+    document.querySelectorAll('[data-close]').forEach(button => {
+      button.addEventListener('click', () => closePanel(true));
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.fullscreenElement === shell) {
+        fullscreen.click();
+      } else if (event.key === 'Escape' && expanded) {
+        event.preventDefault();
+        closePanel(true);
+      } else if (event.key === 'Escape' && mobile.matches && navOpen) {
+        navOpen = false;
+        syncNavigation();
+        menu.focus();
+      }
+    });
+    menu.addEventListener('click', () => {
+      navOpen = !navOpen;
+      syncNavigation();
+    });
+    mobile.addEventListener('change', () => {
+      navOpen = !mobile.matches;
+      syncNavigation();
+    });
+    syncNavigation();
+
+    focus.addEventListener('click', () => {
+      closePanel(false);
+      focusMode = !focusMode;
+      shell.dataset.focus = String(focusMode);
+      document.querySelector('.top').hidden = focusMode;
+      document.querySelector('.crumb').hidden = focusMode;
+      focus.setAttribute('aria-pressed', String(focusMode));
+      focus.querySelector('span').textContent = focusMode ? 'Sair do Foco' : 'Modo Foco';
+      syncNavigation();
+    });
+
+    if (!document.fullscreenEnabled || !shell.requestFullscreen || !document.exitFullscreen) {
+      fullscreen.disabled = true;
+      fullscreen.title = 'Tela cheia indisponível neste navegador';
+    }
+    fullscreen.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === shell) await document.exitFullscreen();
+        else await shell.requestFullscreen();
+      } catch {
+        announcement.textContent = 'O navegador não permitiu alterar a tela cheia.';
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      const active = document.fullscreenElement === shell;
+      fullscreen.setAttribute('aria-pressed', String(active));
+      fullscreen.querySelector('span').textContent = active ? 'Sair da Tela Cheia' : 'Tela Cheia';
+    });
+  </script>
+</body>
+</html>
