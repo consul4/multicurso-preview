@@ -1,5 +1,5 @@
 # MC-DESIGN-09 — Mobile V01.3
-Status: direção visual aprovada para prototipação, não homologação. Referência visual: `MC-DESIGN-09-MOBILE-V01.3-REFERENCIA.png` (upload pendente, confirmar antes da comparação). Preservar V01.2 publicada e desktop.
+Status: direção visual aprovada para prototipação, não homologação. Referência visual: `MC-DESIGN-09-MOBILE-V01.3-REFERENCIA.png` (upload confirmado no GitHub; blob SHA `e7751a55c299f29e017801a3958dafedbc6df3bb`). Preservar V01.2 publicada e desktop.
 
 ## Objetivo
 Uma interface responsiva com modos de exibição distintos: navegador móvel Safari/Chrome sem cápsula inferior fixa; PWA instalado em modo standalone com cápsula de cinco ícones (Início, Módulos, Aula, Atividades, Assistente). Não confundir atalho da tela inicial com PWA realmente standalone. Não implementar service worker/offline nem mudar infraestrutura sem autorização.
