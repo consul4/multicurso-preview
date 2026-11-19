@@ -34,3 +34,22 @@ Branch de implementação `codex/mc-codex-01-mobile-v01-4`, derivada de `b753754
 O teste reproduzível está em `qa-mobile.py`. A variável `MC_V014_URL` aceita a URL da prévia ou de um servidor estático local com HTTP Range. O teste usa o Chromium e o Playwright já disponíveis no Cloud.
 
 A publicação destina-se à rota isolada. A main do repositório público serve a prévia de design; o índice principal, o Shell desktop, a Videoaula e a rota V01.2 continuam em seus caminhos originais.
+
+## Correção da cápsula após o teste no iPhone
+
+O usuário confirmou em aparelho real que Safari abre sem cápsula, a versão da tela inicial mostra a cápsula e o cabeçalho está adequado. Na versão anterior, a cápsula cobria parte da área rolável no PWA e ficava próxima de Anterior/Próxima. A correção mantém o cabeçalho e a aparência da cápsula, que agora ocupa uma linha separada do conteúdo. A distância entre o limite da área rolável e a cápsula é de 12 CSS px. No fim da leitura há mais 16 px após o rodapé. A margem abaixo da cápsula soma 9 px à safe area do aparelho. O Safari em aba continua com a rolagem do documento e acesso pelos menus.
+
+### Capturas da correção
+
+- [Rodapé no PWA simulado · 390 × 844](capturas/pwa-rodape-390x844.png)
+- [Edição com área visível reduzida · 390 × 450](capturas/pwa-teclado-simulado-390x450.png)
+- [Próxima aula liberada e safe area inferior de 34 px injetada · 390 × 844](capturas/pwa-video-liberada-390x844.png)
+
+### Validação da correção
+
+- Chromium 156 com Playwright em 320, 360, 375, 390, 414 e 430 px. Cápsula ausente no navegador; no standalone simulado, a área rolável e a cápsula ficaram separadas no início, no meio e no fim da rolagem.
+- Teclado simulado com redução da viewport de layout e, separadamente, apenas da Visual Viewport. A cápsula saiu da grade durante a edição e voltou quando a área visível foi restaurada. O campo manteve o foco e Enviar resposta foi acessível por rolagem.
+- Paisagem com insets assimétricos injetados, painel Aulas e Módulos com abertura e retorno de foco, navegação Anterior/Próxima, restauração da posição e persistência de respostas.
+- O evento de fim da mídia habilitou Concluir videoaula. Próxima aula seguiu bloqueada até a conclusão explícita e foi habilitada logo depois.
+
+A confirmação em iPhone acima se refere à versão anterior, antes da correção. Safari e PWA no iPhone real devem ser reavaliados com a nova versão, especialmente o teclado do sistema, a barra inferior e a safe area. O Chromium do Cloud não substitui esse teste.

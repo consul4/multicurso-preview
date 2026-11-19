@@ -2,6 +2,7 @@ const byId = (id) => document.getElementById(id);
 const dialog = byId('panel');
 const panelContent = byId('panel-content');
 const stage = byId('lesson-content');
+const lessonRoot = byId('lesson');
 const dock = document.querySelector('.dock');
 const icons = { leitura: 'lesson', video: 'play', atividade: 'tasks', laboratorio: 'lab', avaliacao: 'award' };
 const labels = { leitura: 'Leitura', video: 'Videoaula', atividade: 'Atividade prática', laboratorio: 'Laboratório', avaliacao: 'Avaliação' };
@@ -47,10 +48,17 @@ function locked(index) {
 if (!Number.isInteger(state.index) || !lessons[state.index] || locked(state.index)) state.index = 1;
 
 const standaloneMode = matchMedia('(display-mode: standalone)');
+let isStandalone = false;
+function readingPosition() {
+  return isStandalone ? lessonRoot.scrollTop : window.scrollY;
+}
 function syncMode() {
-  const standalone = standaloneMode.matches || navigator.standalone === true;
-  document.body.toggleAttribute('data-standalone', standalone);
-  dock.hidden = !standalone;
+  const position = readingPosition();
+  isStandalone = standaloneMode.matches || navigator.standalone === true;
+  document.documentElement.toggleAttribute('data-standalone', isStandalone);
+  document.body.toggleAttribute('data-standalone', isStandalone);
+  dock.hidden = !isStandalone;
+  restore(position);
 }
 if (standaloneMode.addEventListener) standaloneMode.addEventListener('change', syncMode);
 else standaloneMode.addListener?.(syncMode);
@@ -58,22 +66,28 @@ syncMode();
 
 function persistReading() {
   if (dialog.open) return;
-  state.positions[state.index] = scrollY;
+  state.positions[state.index] = readingPosition();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 140);
 }
-addEventListener('scroll', () => {
+function scheduleReadingSave() {
   if (lastScrollFrame) return;
   lastScrollFrame = requestAnimationFrame(() => {
     lastScrollFrame = 0;
     persistReading();
   });
-}, { passive: true });
-addEventListener('pagehide', save);
+}
+addEventListener('scroll', scheduleReadingSave, { passive: true });
+lessonRoot.addEventListener('scroll', scheduleReadingSave, { passive: true });
+addEventListener('pagehide', () => {
+  if (!dialog.open) state.positions[state.index] = readingPosition();
+  save();
+});
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
 function restore(position = state.positions[state.index] || 0) {
-  scrollTo(0, position);
+  if (isStandalone) lessonRoot.scrollTop = position;
+  else window.scrollTo(0, position);
 }
 function requirement(index) {
   const first = lessons[index].requires?.find((required) => !state.complete.includes(required));
@@ -217,7 +231,7 @@ function changeLesson(target, confirmed = false) {
     openPanel('leave', document.activeElement);
     return;
   }
-  state.positions[state.index] = dialog.open ? panelPosition : scrollY;
+  state.positions[state.index] = dialog.open ? panelPosition : readingPosition();
   const video = byId('video');
   if (video) state.mediaTime = video.currentTime;
   state.index = target;
@@ -279,7 +293,7 @@ async function renderTranscript() {
 function openPanel(name, trigger) {
   if (!dialog.open) {
     opener = trigger;
-    panelPosition = scrollY;
+    panelPosition = readingPosition();
     byId('video')?.pause();
   }
   panelName = name;
@@ -374,7 +388,13 @@ function updateViewport() {
   if (!editing) viewportBaseline = visible;
   document.documentElement.style.setProperty('--vv-height', `${visible}px`);
   document.documentElement.style.setProperty('--vv-bottom', `${Math.max(0,innerHeight-visible-(viewport?.offsetTop||0))}px`);
-  document.body.toggleAttribute('data-keyboard', Boolean(editing && viewportBaseline - visible > 110));
+  const keyboardOpen = Boolean(editing && viewportBaseline - visible > 110);
+  const wasOpen = document.body.hasAttribute('data-keyboard');
+  document.body.toggleAttribute('data-keyboard', keyboardOpen);
+  if (isStandalone && keyboardOpen && !wasOpen && lessonRoot.contains(document.activeElement)) {
+    const field = document.activeElement;
+    requestAnimationFrame(() => field.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
+  }
 }
 window.visualViewport?.addEventListener('resize', updateViewport);
 window.visualViewport?.addEventListener('scroll', updateViewport);

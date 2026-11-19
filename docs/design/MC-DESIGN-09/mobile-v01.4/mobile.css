@@ -48,8 +48,26 @@ body[data-focus] .wrap { background: #fff; }
 body[data-focus] .actions { display: none; }
 
 .wrap { width: min(100%,600px); margin-inline: auto; padding: 12px max(12px,var(--right)) calc(18px + var(--bottom)) max(12px,var(--left)); }
-body[data-standalone] .wrap { padding-bottom: calc(91px + var(--bottom)); }
-:root:has(body[data-standalone]) { scroll-padding-bottom: calc(91px + var(--bottom)); }
+html[data-standalone] { overflow: hidden; }
+body[data-standalone] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+body[data-standalone][data-keyboard] {
+  height: var(--vv-height, 100vh);
+  height: min(100dvh, var(--vv-height, 100dvh));
+}
+body[data-standalone] .top { position: relative; }
+body[data-standalone] .wrap {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-bottom: 16px;
+  scroll-padding-block: 10px 16px;
+}
 h1, h2, h3, p, figure { margin: 0; }
 h1 { margin-bottom: 6px; font-size: clamp(23px,6.4vw,31px); line-height: 1.13; letter-spacing: -.045em; }
 h2 { font-size: 19px; letter-spacing: -.026em; }
@@ -89,12 +107,28 @@ fieldset input { flex: none; margin-top: 4px; }
 .lesson-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 13px; padding: 9px; border: 1px solid var(--line); border-radius: 17px; background: #f8f9ff; box-shadow: var(--shadow); }
 .lesson-footer .notice { grid-column: 1/-1; }
 
-.dock { position: fixed; z-index: 4; bottom: calc(9px + var(--bottom)); left: max(9px,var(--left)); right: max(9px,var(--right)); max-width: 580px; margin: auto; display: grid; grid-template-columns: repeat(5,minmax(44px,1fr)); align-items: center; gap: 1px; min-height: 67px; padding: 4px; border: 1px solid #fff; border-radius: 25px; background: #fafbfff2; box-shadow: 0 6px 14px #2339783b; }
+.dock {
+  width: min(calc(100% - max(9px, var(--left)) - max(9px, var(--right))), 580px);
+  justify-self: center;
+  margin-inline-start: max(0px, calc(var(--left) - max(9px, var(--right))));
+  margin-inline-end: max(0px, calc(var(--right) - max(9px, var(--left))));
+  margin-block: 12px calc(9px + var(--bottom));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(44px, 1fr));
+  align-items: center;
+  gap: 1px;
+  min-height: 67px;
+  padding: 4px;
+  border: 1px solid #fff;
+  border-radius: 25px;
+  background: #fafbfff2;
+  box-shadow: 0 6px 14px #2339783b;
+}
 .dock button { display: grid; place-items: center; gap: 2px; position: relative; min-width: 44px; min-height: 55px; padding: 4px 0; border: 0; border-radius: 16px; background: transparent; color: var(--ink); font-size: clamp(9px,2.8vw,12px); font-weight: 750; }
 .dock button[aria-current] { color: var(--deep); background: var(--wash); }
 .dock button[aria-current]::after { content: ''; width: 30%; height: 2px; background: var(--blue); border-radius: 10px; }
 .pending { position: absolute; top: 3px; right: calc(50% - 17px); width: 8px; height: 8px; border-radius: 50%; background: #d70025; box-shadow: 0 0 0 2px white; }
-body[data-keyboard] .dock, body[data-video-native] .dock { visibility: hidden; }
+body[data-keyboard] .dock, body[data-video-native] .dock { display: none; }
 html:has(dialog[open]) { overflow: hidden; }
 
 dialog { position: fixed; inset: auto max(8px,var(--right)) calc(var(--vv-bottom,0px) + var(--bottom)) max(8px,var(--left)); width: auto; max-width: 570px; max-height: calc(var(--vv-height,100dvh) - var(--top) - var(--bottom) - 12px); margin: 0 auto; padding: 0 10px 15px; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 25px 25px 15px 15px; background: #f3f5fd; color: var(--ink); box-shadow: 0 12px 34px #0a17414a; }
