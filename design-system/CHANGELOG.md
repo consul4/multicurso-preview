@@ -1,6 +1,21 @@
 # Histórico
 
-## 0.3.0 candidata à oficialização · MC-DESIGN-SYSTEM-03
+## 0.4.0-evo.1 em revisão · MC-DESIGN-EVOLUTION-01
+
+- Tipografia auto-hospedada em três vozes (Sora, Inter, Literata), escala de 12 a 40 px e pesos de 400 a 600.
+- Linha de estudo como assinatura. Início, visão geral, trilha e progresso sem o kit de cartões repetidos.
+- Sala de aula: sumário permanente no desktop, coluna de leitura centrada, conclusão única, cartões de navegação com
+  destino, prévia viva no laboratório e status de rascunho na atividade.
+- Black Full em preto real. Glass com vidro só no cromo e campo de luz.
+- Tokens em escalas nomeadas com linhagem do DS03, tokens de movimento e inventário histórico verificado por hash.
+- Busca com `Ctrl/⌘K` e `/`. View Transitions com fallback. Correções: ícones quebrados das aulas na busca, violação
+  axe na trilha e corrida no salvamento da posição de leitura.
+- QA: `qa_evo.py` (fontes, axe-core, contraste renderizado, alvos, teclado, movimento, custo do vidro, peso),
+  `comparar.py` e 14 pranchas. DS03 congelado em `mc-design-system-03/`. [Relatório](RELATORIO-EVO-01.md)
+
+## 0.3.0 · histórico substituído pela proposta 0.4
+
+[Relatório do DS03](RELATORIO.md) · commit `cd466f24c412d4fca17d8bcda5029630ff50cbb5`
 
 - Contornos e estados de campos com contraste mais alto no Claro e controles nativos coerentes no catálogo. O Glass mantém desfoque e halos com contornos reforçados para fundos extremos.
 - Manifestos alimentam CSS, seletor e matriz. Validação de translucidez parcial e empacotamento offline exercitados em cópias temporárias.

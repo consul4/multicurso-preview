@@ -1,48 +1,63 @@
 # Controle de qualidade
 
-## Executar localmente
+## Preparar
 
-1. Na raiz do clone, execute `python design-system/tools/check.py`. O verificador usa Python padrão e confere hashes históricos, aliases, contraste e correspondência do CSS e do seletor com os manifestos.
-2. Use `python -m pip install playwright Pillow` no ambiente de teste e tenha Chromium disponível. Sirva o clone com `npx vite@6.4.5 --host 127.0.0.1 --port 4232`. `MC_DS_URL` indica outra origem e `CHROMIUM` permite indicar outro executável.
-3. Execute `python design-system/tools/qa.py` para testar catálogo, navegação e estados representativos. Execute `python design-system/tools/qa_release.py` para testar campo, esquema nativo, transparência parcial, quarto tema temporário e exportação. Esse segundo comando usa `esbuild` no PATH ou indicado por `ESBUILD` e cria os ensaios em pasta temporária.
-4. Execute `python design-system/tools/qa_themes.py` para as 18 rotas, três temas e sete larguras, além de troca de tema, preservação de dados e vídeo, foco, catálogo e dois fallbacks do Glass.
+1. Python 3.11 ou mais recente com `pip install playwright Pillow`. Use o Chromium disponível (`CHROMIUM=/caminho/do/chrome`);
+   em ambientes com Playwright pré-instalado, não baixe outro navegador.
+2. `npm install` em `design-system/tools` (instala o axe-core fixado em `package.json`). `esbuild` no PATH, ou em
+   `ESBUILD`, para a exportação.
+3. Na raiz, sirva com `npx vite@6.4.5 --host 127.0.0.1 --port 4232`. O Vite atende requisições Range, necessárias para
+   buscar no vídeo; `python -m http.server` não atende, e os testes de vídeo falham. `MC_DS_URL` indica outra origem.
 
-### Comparar o Claro com a referência
+## Executar
 
-Extraia `mc-design-10/` de `ccb61b4ed8af7d12432404881dc3bf74fe8f8e7d` para uma pasta separada e sirva em outra porta com Vite. Use a mesma instalação de Chromium e as mesmas fontes para as duas versões. O commit `3600227ae1fcc6a77e73671173532221bcd30f40` pode ser servido separadamente para análise histórica. O relatório registra um delta de 8 × 3 px nesse teste e o resultado da contraprova dirigida.
+| Ordem | Comando | O que verifica |
+| --- | --- | --- |
+| 1 | `python design-system/tools/check.py` | Tokens, camadas, linhagem, contraste dos pares por tema (incluindo material translúcido), cor literal no CSS, CSS e seletor reproduzíveis, arquivo histórico por hash |
+| 2 | `python design-system/tools/qa.py` | 18 rotas × 7 larguras sem rolagem horizontal ou erro, composições representativas e catálogo interativo |
+| 3 | `python design-system/tools/qa_themes.py` | 378 combinações (rotas × temas × larguras), troca de tema preservando dados e vídeo, retomada em standalone, Glass com desfoque, transparência reduzida e fallback sem `@supports` |
+| 4 | `python design-system/tools/qa_release.py` | Estados de campo, esquema nativo no catálogo, vídeo em reprodução durante troca em outra aba, quarto tema temporário, exportação em HTML único |
+| 5 | `python design-system/tools/qa_evo.py [--quick] [--report arquivo.json]` | Fontes servidas, sprite íntegro, teclado e atalhos, movimento, fluxo de estudo, custo do vidro, peso, alvos de toque, contraste renderizado e axe-core WCAG 2.1 A/AA |
+| 6 | `python design-system/tools/comparar.py --saida PASTA_NOVA` | Pranchas DS03 congelado × versão atual (ver [referências](references/README.md#evidências-do-evo-01)) |
 
-```sh
-MC_DS_BASE_URL=http://127.0.0.1:4233 python design-system/tools/qa_themes.py --compare-controls --captures /tmp/multicurso-ds03
-```
+Resultados da entrega atual: [relatório EVO-01, seção 8](RELATORIO-EVO-01.md#8-testes-executados).
 
-`--compare-controls` confere a geometria dos controles entre as versões e aceita deltas de pixels apenas nas áreas de campo e botão secundário em estado normal. Use a comparação padrão sem essa opção quando esperar identidade de pixels com o DS03. A área do vídeo nativo é mascarada por variar com os controles e o buffer. A caixa de vídeo é verificada separadamente. `--captures PASTA` grava evidências novas e evita atualizar capturas históricas.
+### Comparação com versões anteriores
+
+O DS03 é servido em `/mc-design-system-03/` pela mesma origem; `qa_evo.py` e `comparar.py` usam essa rota. O modo
+`qa_themes.py --compare-controls` (identidade de pixels do Claro contra o DS02 e o MC-DESIGN-13) deixou de se aplicar
+porque o Claro mudou de propósito no EVO-01. O inventário histórico continua verificado por hash no `check.py`.
 
 ### Regenerar e exportar
 
-`python design-system/tools/check.py --write` regenera o CSS de execução e a linha de opções do seletor. Inventários e capturas arquivados são imutáveis. Execute o verificador sem `--write` para confirmar que as saídas são reproduzíveis.
-
-Para gerar o HTML único do protótipo atual, execute `python docs/design/MC-DESIGN-11/empacotar.py --saida /tmp/multicurso-ds03.html` com `esbuild` disponível. Use um caminho novo. O exportador incorpora bootstrap, temas, estilos, código, imagens, MP4 e VTT. A suíte confere o arquivo isolado por HTTP local, com listagem de requisições e a reprodução do MP4. O catálogo permanece uma entrada própria. A abertura via `file://` foi bloqueada neste Chromium gerenciado. Outros navegadores podem restringir armazenamento e reprodução ao abrir o arquivo diretamente. Os HTMLs arquivados preservam as versões que os produziram.
+`python design-system/tools/check.py --write` regenera `themes.css` e o registro do seletor. Inventários e capturas
+arquivados são imutáveis. Para o HTML único: `python docs/design/MC-DESIGN-11/empacotar.py --saida /caminho/novo.html`.
+O exportador embute fontes, temas, estilos, código, imagens, MP4 e VTT e recusa sobrescrever. Abrir via `file://` pode
+restringir armazenamento e mídia conforme o navegador.
 
 ## Roteiro para Safari e iPhone
 
-**Estado: pendente em dispositivo real.** Anote versão do sistema, versão do Safari, largura lógica, orientação, modo navegador ou standalone, tema, passos e captura de cada resultado. Os testes Chromium de preferência e standalone são simulados.
+**Estado: pendente em dispositivo real.** Para cada caso, anote a versão do sistema e do Safari, a largura lógica, a
+orientação, o modo (navegador ou standalone), o tema, os passos e uma captura. Os testes de preferência e standalone em
+Chromium são simulações. Como servir para o iPhone na rede local: [relatório, seção 12](RELATORIO-EVO-01.md#12-ver-no-safari-do-iphone).
 
 | Caso | Procedimento | Resultado esperado |
 | --- | --- | --- |
-| Safari macOS · controles nativos | Abra a composição de 1024 px em uma janela mais estreita. Ative a exibição das barras de rolagem no sistema. Alterne os três temas e navegue pelos selects, busca e textarea. | Moldura e conteúdo seguem o mesmo esquema. Rolagem horizontal, menus nativos, foco e texto continuam utilizáveis. |
-| Safari iPhone · Glass padrão | Com Reduzir Transparência desativado, abra Leitura, Videoaula e Ferramentas em claro natural e sobre a capa escura do vídeo. Role e abra/feche a gaveta. | Halos e desfoque aparecem quando suportados. Títulos, bordas e controles conservam legibilidade durante a rolagem. Registre qualquer cintilação ou queda de fluidez. |
-| Safari/iPhone · transparência reduzida | Ative Reduzir Transparência no sistema e reabra a prévia. No inspetor, quando disponível, confirme `matchMedia('(prefers-reduced-transparency: reduce)').matches`. | Quando a preferência é exposta, superfícies ficam opacas e halos e blur desaparecem. Registre a ausência da media query se o navegador não expuser a preferência. |
-| Safari/iPhone · desfoque indisponível | No inspetor, verifique suporte às duas propriedades. Se ambas forem suportadas, desative o bloco `@supports` apenas para ensaiar o fallback e marque o resultado como simulado. | Campos, cabeçalho e gavetas usam cores opacas e as mesmas dimensões. |
-| iPhone · navegador e standalone | Use Adicionar à Tela de Início e confirme se a abertura é standalone. Abra Atividade, digite com o teclado aberto, gire o telefone, feche o teclado e retome a aula. Alterne o tema em Ferramentas → Ajuda. | Cápsula ocupa a área segura apenas em standalone e reaparece após o teclado. Progresso, rascunho e posição ficam preservados. |
-| iPhone · VoiceOver e vídeo | Em Gestão, envie um nome repetido e corrija-o. Na Avaliação, percorra as opções. Em Videoaula, abra a transcrição, acione 00:14 e verifique os controles nativos, Foco e Tela Cheia conforme o suporte exposto. | Erro identifica o campo e recebe foco. Rótulos e seleção são anunciados. Gavetas devolvem foco. Tema preserva a posição do vídeo. |
+| Fontes | Abra Meus cursos e Leitura. No inspetor remoto, rode `[...document.fonts].map(f=>f.family+':'+f.status)`. | Sora e Inter carregadas em todas as telas; Literata na Leitura. Nenhum texto em Arial ou Times. |
+| Safari macOS · controles nativos | Janela estreita com barras de rolagem visíveis. Alterne os três temas e use selects, busca e textarea. | Moldura e conteúdo no mesmo esquema. Menus nativos, foco e texto utilizáveis. |
+| Safari iPhone · Glass | Com Reduzir Transparência desligado, abra Início, Leitura e Videoaula. Role e abra e feche Módulos. | Campo de luz fixo durante a rolagem. Cabeçalho fosco legível sobre a capa escura. Sem cintilação. Registre a fluidez. |
+| Safari iPhone · transparência reduzida | Ligue Reduzir Transparência e reabra. No inspetor, confira `matchMedia('(prefers-reduced-transparency: reduce)').matches`. | Se a preferência for exposta, cromo e conteúdo ficam opacos e o campo de luz some. Registre se não for exposta. |
+| Movimento | Com e sem Reduzir Movimento: troque de aula, abra gavetas e troque de tema. | Sem a preferência, transição curta (Safari 18+) e gavetas animadas. Com ela, tudo imediato. |
+| iPhone · navegador e standalone | Adicionar à Tela de Início e confirme se abre sem a barra do Safari. Abra Atividade, digite com o teclado aberto, gire o telefone, feche o teclado e retome a aula. Troque o tema em ⋯ → Ajuda. | A cápsula ocupa a área segura só em standalone e reaparece após o teclado. Progresso, rascunho e posição preservados. |
+| iPhone · VoiceOver e vídeo | Em Gestão, envie um nome repetido e corrija. Na Avaliação, percorra as opções. Em Videoaula, abra a transcrição, acione 00:14 e use Foco e Tela Cheia. Na trilha, percorra a linha de estudo. | Erro identifica o campo e recebe foco. Estados “Concluída/Bloqueada/Aula atual” anunciados. Gavetas devolvem o foco. O tema preserva a posição do vídeo. |
+| Zoom e texto grande | Zoom de 200% no macOS e Texto Maior no iOS, nas telas de aula. | Nada cortado ou sobreposto. Sem rolagem horizontal fora da moldura de vídeo. |
 
 ## Checklist de revisão
 
-- [ ] Identificar tela, estado, referência, condição de aprovação e resultado esperado.
-- [ ] Usar o papel semântico adequado e registrar a justificativa de valores novos.
-- [ ] Comparar a mesma rota, dados, viewport e estado em 320, 390, 768, 1024, 1100, 1101 e 1440 px.
-- [ ] Conferir contraste, foco de teclado, erro com texto, movimento reduzido, zoom e estados vazio e bloqueado.
-- [ ] Conferir áreas seguras, teclado e leitores de tela em dispositivo real quando aplicável.
-- [ ] Atualizar decisão, changelog e evidências quando a mudança os afetar.
-
-O [inventário histórico](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md) guarda repetições e contexto. Consolide valores somente quando compartilharem a mesma função. Para React, o catálogo atual atende à revisão do demonstrador. Um piloto de Storybook pode documentar componentes, providers e portais se a integração for aprovada separadamente. [Storybook para React e Vite](https://storybook.js.org/docs/get-started/frameworks/react-vite)
+- [ ] Tela, estado, referência, condição de aprovação e resultado esperado identificados.
+- [ ] Papel semântico adequado e linhagem registrada para valor novo ou alterado.
+- [ ] Mesma rota, dados, viewport e estado comparados em 320, 390, 768, 1024, 1100, 1101 e 1440 px.
+- [ ] Contraste, foco, erro com texto, movimento reduzido, alvos, zoom, estados vazio e bloqueado.
+- [ ] `qa_evo.py` sem violações e pranchas novas geradas em pasta nova.
+- [ ] Áreas seguras, teclado virtual e leitor de tela em dispositivo real quando aplicável.
+- [ ] Decisões, histórico e skill atualizados quando a mudança os afetar.

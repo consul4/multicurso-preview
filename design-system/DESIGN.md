@@ -1,30 +1,50 @@
 # Identidade visual Multicurso 2.0
 
-**Estado:** MC-DESIGN-SYSTEM-03, candidata à oficialização. Claro, Black Full e Glass estão ativos no protótipo. O MC-DESIGN-13 é a referência visual histórica do Claro. As mudanças intencionais de acessibilidade estão no [relatório do DS03](RELATORIO.md).
+**Estado:** MC-DESIGN-EVOLUTION-01, proposta implementada no protótipo e em revisão. Claro, Black Full e Glass estão
+ativos. O DS03 congelado em `mc-design-system-03/` e o MC-DESIGN-13 (inventário arquivado) são referências
+históricas. [Direção](EVOLUCAO-01.md) · [Relatório](RELATORIO-EVO-01.md)
 
 ## Princípios
 
-1. **O conteúdo conduz a composição.** O Shell identifica o curso e a aula, sustenta a retomada e dá acesso a ferramentas. As ações pedagógicas ficam no conteúdo.
-2. **A cor comunica papel.** Branco e cinza-azulado separam superfícies. Azul indica ação, seleção e foco. Use texto junto ao indicador de progresso ou bloqueio. Os valores medidos estão no [inventário histórico](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md).
-3. **Hierarquia editorial, navegação compacta.** Use títulos claros, descrição curta, ícones lineares e ação primária ligada ao objetivo da tela. Não acrescente cartões, ornamentos ou rótulos redundantes.
-4. **Modos de estudo são independentes.** Foco recolhe partes do Shell. Tela Cheia usa a capacidade do navegador. Os painéis e a retomada preservam o contexto da aula.
-5. **A identidade acompanha papéis e superfícies.** Admin usa as mesmas famílias de controles e estados, com fluxo editorial próprio. Um tema troca valores semânticos sem duplicar as telas.
+1. **O conteúdo conduz a composição.** Uma superfície protagonista por tela. O Shell identifica curso e aula,
+   sustenta a retomada e dá acesso a ferramentas. As ações pedagógicas ficam no conteúdo.
+2. **Uma ousadia só: a linha de estudo.** A sequência de aulas, com estados concluída, atual, disponível e bloqueada,
+   é o elemento memorável e aparece onde a sequência importa. O resto é silencioso.
+3. **A cor comunica papel.** Azul indica ação, seleção, foco e progresso. Verde confirma, vermelho alerta. A tinta
+   azul-noite sustenta o texto. Bloqueio e progresso sempre têm texto junto ao indicador.
+4. **Tipografia com três vozes.** Sora para títulos e numerais, Inter para interface e Literata para a prosa das
+   aulas. Pesos 400 a 600. Sem caixa alta em rótulos.
+5. **Uma ação principal por momento.** Concluir, enquanto a aula não foi concluída. Seguir para a próxima, depois.
+6. **Modos de estudo são independentes.** Foco recolhe o Shell. Tela Cheia usa o navegador. Painéis e retomada
+   preservam o contexto da aula.
+7. **Movimento responde à pessoa.** Transição de rota e tema, abertura de painel e conclusão de etapa. Nada se move
+   sozinho, e o movimento reduzido desliga tudo.
+8. **Um tema troca material e cor, nunca geometria.**
 
 ## Marca e recursos gráficos
 
-A marca do protótipo é o símbolo em camadas no hexágono (no Claro, `#101a37`), seguido de **Multicurso 2.0**. O sufixo 2.0 usa o papel semântico primário. O avatar violeta `#6724b4` é demonstrativo e decorativo. Nenhum desses elementos define sozinho um manual de marca corporativo.
+Hexágono com o símbolo de camadas (`mark-fill`) seguido de **Multicurso 2.0** em Sora 600. O sufixo 2.0 usa o acento.
+O avatar violeta é demonstrativo e decorativo (`aria-hidden`). Nenhum desses elementos define sozinho um manual de
+marca corporativo.
 
-Os símbolos do sprite têm `viewBox="0 0 24 24"`, traço de 1,85 e tamanho base de 21 px. Use os ícones em `mc-design-10/index.html` e preserve seus nomes e rótulos acessíveis. A arte azul da capa, o pôster e o vídeo pertencem ao conteúdo demonstrativo. [Inventário de recursos](references/README.md)
+Ícones: sprite inline em `mc-design-10/index.html`, `viewBox 0 0 24 24`, traço 1,75 e tamanho base de 20 px (17 em botões,
+18 no trilho). As fontes ficam em `mc-design-10/fonts/` (SIL OFL). A arte da capa, o pôster e o vídeo pertencem ao
+conteúdo demonstrativo. [Inventário de recursos](references/README.md)
 
 ## Contrato de interface
 
-- Cabeçalho, navegação global, caminho da aula, progresso, Módulos, Ferramentas e navegação entre aulas compõem o Shell.
-- Em tablet a 791–1100 px, Módulos e Ferramentas ficam no cabeçalho persistente. Em desktop amplo, são abas laterais. No celular, o cabeçalho da aula abre as gavetas e a cápsula só aparece em standalone. Preserve uma entrada contextual por função no tablet.
-- O rodapé da aula contém navegação. Uma ação contextual de conclusão dentro do conteúdo é uma decisão por tipo de aula.
-- O conteúdo usa o visual compartilhado para apresentar vídeo, leitura, atividade, avaliação ou feedback. Nota, permissões, desbloqueio e critérios acadêmicos são contratos próprios. Os valores que o protótipo armazena localmente são demonstrativos.
+- Cabeçalho, navegação, caminho, progresso, Módulos, Ferramentas e navegação entre aulas compõem o Shell.
+- Desktop (≥ 1101 px): trilho do aluno e da administração. Na sala, o trilho dá lugar ao sumário do módulo.
+- Tablet (791–1100 px): na sala, Módulos e Ferramentas ficam no cabeçalho persistente, uma entrada por função.
+- Celular (≤ 790 px): cabeçalho de estudo com voltar, progresso, módulos e opções. Gavetas inferiores. A cápsula
+  aparece só em standalone.
+- Fim da aula: linha de conclusão no conteúdo e cartões com o título da aula anterior e da próxima.
+- O conteúdo apresenta vídeo, leitura, laboratório, atividade, avaliação e feedback. Nota, permissões, desbloqueio e
+  critérios acadêmicos são contratos do produto real. Os valores armazenados localmente são demonstrativos.
 
 [MC-GLOBAL-WEB-00](https://docs.google.com/document/d/1f6HU7Np52uHerAWIGI6Kuo-MH2qAsr34agAPK8-qgnk/edit) · [MC-DESIGN-08](https://docs.google.com/document/d/1KRjSnzPJMHH15B7Lya5b-iwCcri970ggrqti_w_dOF0/edit) · [Fontes e estados de aprovação](references/README.md)
 
 ## Aparência
 
-Use os papéis compartilhados para superfície, texto, foco e estados. A troca de tema conserva a hierarquia e a geometria. Glass usa material translúcido sob suporte, com alternativa opaca. [Manual de temas](themes/README.md)
+Os papéis compartilhados de superfície, texto, foco e estado vêm dos tokens. A troca de tema conserva hierarquia e
+geometria. O Glass aplica vidro só no cromo, com alternativa opaca. [Manual de temas](themes/README.md)

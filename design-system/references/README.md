@@ -29,14 +29,28 @@ O [manifesto](baseline.json) fixa a lista de arquivos, hashes e dimensões. As c
 
 | Arquivo ou origem | Uso e dimensões |
 | --- | --- |
-| `prompt.webp` | Capa e leitura, 542 × 253 px. Recurso para download. |
+| `prompt.webp` | Capa e leitura, 542 × 253 px. Recurso para download. No EVO-01 aparece em proporção nativa na capa e ampliada 1,33× na leitura; uma versão maior está pendente. |
 | `anatomia.webp` | Pôster da videoaula, 960 × 540 px. |
 | `anatomia.mp4` | Vídeo H.264 demonstrativo de 42 s, sem áudio. |
 | `anatomia.vtt` | Legenda em português e fonte para a transcrição acionável. |
 | `curso.webp` | Arquivo de 73 × 72 px presente no snapshot, sem uso nos renderizadores atuais. |
 | `index.html` | Sprite inline SVG com 30 símbolos. O catálogo consulta o sprite original. |
+| `fonts/` | Sora, Inter e Literata variáveis, subconjunto latino, SIL OFL 1.1 (ver `mc-design-10/fonts/README.md`). |
 
 Veja [Identidade](../DESIGN.md) para marca e linguagem de ícones.
+
+## Evidências do EVO-01
+
+Pranchas [`capturas-evo-01/`](capturas-evo-01/) geradas por `tools/comparar.py`: DS03 congelado à esquerda (ou acima) e
+EVO-01 à direita (ou abaixo), com o mesmo estado (duas aulas concluídas), rota, tema e largura, em Chromium com movimento
+reduzido. O lado DS03 mostra Inter porque o ambiente de captura tem a fonte instalada; num iPhone, o DS03 apareceria em
+Arial.
+
+| Tema | Pranchas |
+| --- | --- |
+| Claro | [Início](capturas-evo-01/inicio-claro-1440.webp) · [Visão geral](capturas-evo-01/visao-geral-claro-1440.webp) · [Trilha](capturas-evo-01/trilha-claro-1440.webp) · [Videoaula 1440](capturas-evo-01/videoaula-claro-1440.webp) · [Videoaula 1024](capturas-evo-01/videoaula-claro-1024.webp) · [Leitura](capturas-evo-01/leitura-claro-1440.webp) · [Gestão](capturas-evo-01/gestao-claro-1440.webp) · [Celular](capturas-evo-01/celular-claro-390.webp) |
+| Black Full | [Início](capturas-evo-01/inicio-black-1440.webp) · [Videoaula](capturas-evo-01/videoaula-black-1440.webp) · [Celular](capturas-evo-01/celular-black-390.webp) |
+| Glass | [Início](capturas-evo-01/inicio-glass-1440.webp) · [Leitura](capturas-evo-01/leitura-glass-1440.webp) · [Celular](capturas-evo-01/celular-glass-390.webp) |
 
 ## Evidências do DS03
 

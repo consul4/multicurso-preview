@@ -1,21 +1,52 @@
 # Tokens vigentes
 
-[Multicurso.tokens.json](tokens/multicurso.tokens.json) contém os valores Claro e os aliases compartilhados. Os três [manifestos de tema](themes/README.md) declaram esquema nativo e substituições semânticas. Os dados adotam a estrutura tipada DTCG usada neste repositório, com cores sRGB, dimensões e referências. A extensão `com.multicurso.source` aponta para a extração histórica do MC-DESIGN-13.
+[multicurso.tokens.json](tokens/multicurso.tokens.json) contém os valores Claro e os aliases compartilhados no formato
+DTCG (cores sRGB, dimensões, famílias, pesos, números, sombras, durações e curvas). Os três
+[manifestos de tema](themes/README.md) declaram esquema nativo, substituições semânticas de cor e material.
+`check.py --write` gera `mc-design-10/themes.css` e o registro do seletor em `theme.js`.
 
-| Camada | Uso | Exemplo |
+| Camada | Uso | Exemplos |
 | --- | --- | --- |
-| Primitiva | Guarda valores e medidas reutilizáveis. | `primitive.color.blue` |
-| Semântica | Nomeia o papel, de modo que o tema possa trocar o valor na raiz. | `semantic.color.primary` |
-| Componente | Liga o papel ao elemento onde a intenção precisa ser explícita. | `component.button.primary-fill` |
+| Primitiva | Escalas nomeadas e medidas. Não é consumida pelo CSS de tela, exceto nas prévias de tema. | `primitive.color.blue.700`, `primitive.color.graphite.50`, `primitive.dimension.space-16`, `primitive.font.display` |
+| Semântica | Papel que o tema pode trocar. | `semantic.color.ink`, `semantic.color.chrome`, `semantic.type.size-reading`, `semantic.radius.l`, `semantic.motion.enter`, `semantic.measure.reading` |
+| Componente | Liga o papel ao elemento onde a intenção precisa ser explícita. | `component.button.primary-fill`, `component.field.border`, `component.shell.outline`, `component.drawer.shadow` |
 
-Para consumo web, use `var(--mc-component-button-primary-fill)` ou o papel semântico correspondente. O gerador emite `mc-design-10/themes.css` e sincroniza a linha marcada de registro em `mc-design-10/theme.js` usando os próprios manifestos. Protótipo, catálogo e matriz de QA consomem o mesmo cadastro. Altere os manifestos e regenere os derivados.
+No CSS: `var(--mc-semantic-color-accent)` ou `var(--mc-component-button-primary-fill)`. `style.css` declara aliases
+locais curtos (`--ink`, `--line`, `--r-l`) só para legibilidade. Cor literal (`#hex`, `rgb()`, `white`, `black`) no
+CSS de tela ou do catálogo faz o `check.py` falhar.
 
-## Migração do protótipo
+## Papéis de cor
 
-- O componente Campo deriva borda, placeholder, borda ativa, erro, texto e fundo desabilitados dos papéis semânticos. O ring de foco continua separado do contorno do campo.
-- `field-border` e `control-border` usam `#7384a0` no Claro e `#5a719c` no Glass. O CSS mantém contornos decorativos de cartões e divisórias em `outline`. As relações de contraste ficam no [contrato de acessibilidade](accessibility/README.md).
-- Botões, campos, cartões, diálogo, progresso, foco, ícones e dimensões do Shell consomem tokens de componente. O número efetivo usado no botão é 44 px.
-- A geometria responsiva e as fórmulas CSS de layout, como `clamp()`, `env()`, unidades de viewport e limites de media query, continuam em `style.css`. Elas são compartilhadas pelos três temas.
-- Repetições comprovadamente sobrescritas foram consolidadas em botão, trilho, grade inicial e navegação de aula. A verificação por pixels do Claro controla essa migração.
+| Papel | Uso |
+| --- | --- |
+| `canvas`, `surface`, `subtle`, `chrome` | Fundo da página, superfície de conteúdo, hover e poços, cabeçalho/trilho/painéis |
+| `ink`, `muted` | Texto principal e de apoio (também placeholder) |
+| `line`, `line-strong`, `field-border`, `control-border` | Divisória decorativa e contornos com 3:1 |
+| `primary`, `on-primary`, `accent`, `on-accent` | Ação principal e acento (links, foco, seleção, progresso) |
+| `selection`, `tint` | Item atual de navegação e realce suave |
+| `success-*`, `error-*`, `disabled-*` | Estados com texto, fundo e contorno |
+| `media-stage`, `media-text`, `mark-fill`, `avatar-fill` | Palco do vídeo, texto sobre mídia, marca e avatar |
+| `scrim`, `shadow-float`, `progress-track` | Fundo de diálogo, sombra flutuante e trilho do progresso |
+| `glass-chrome`, `glass-surface`, `glow-sky`, `glow-lilac`, `glow-mint` | Materiais e campo de luz do Glass |
 
-O [inventário do MC-DESIGN-13](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md) preserva os valores e as repetições da origem para auditoria. Para mudar aparência, edite os tokens vigentes e confira a saída com [QA.md](QA.md).
+## Tipo, espaço e movimento
+
+- Famílias: `type.display` (Sora), `type.family` (Inter), `type.reading` (Literata), com `"Multicurso …"` à frente
+  da pilha. Pesos `weight-regular`, `weight-medium` e `weight-strong` (400/500/600).
+- Tamanhos: `size-caption` 12, `label` 13, `ui` 14, `body` 15, `lead` 17, `reading` 19, `title-s` 20, `title-m` 24,
+  `title-l` 30 e `display` 40. Entrelinhas `leading-tight` 1,12, `body-leading` 1,55 e `reading-leading` 1,7.
+  Tracking `tracking-title` −0,015em e `tracking-display` −0,025em.
+- Espaço em `semantic.space.*` (2–72 px). Raios `s` 8, `m` 10, `l` 16, `xl` 20 e `pill`. Medidas `measure.reading`
+  720, `measure.media` 1040 e `measure.content` 1180.
+- Movimento: `motion.feedback` 120 ms, `motion.enter` 200 ms, `motion.emphasis` 320 ms; curvas `motion.ease` e
+  `motion.ease-out`.
+
+## Linhagem e arquivo histórico
+
+Papéis alterados em relação ao DS03 registram `$extensions["com.multicurso.lineage"] = {ds03, decision, reason}`. O
+[inventário do MC-DESIGN-13](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md) e o JSON de declarações continuam
+arquivados e imutáveis. O `check.py` confere o hash dos dois, e não mais a igualdade de valores. A geometria responsiva
+(`clamp()`, `env()`, unidades de viewport e limites de media query) continua em `style.css`, compartilhada pelos três temas.
+
+Para mudar aparência, edite os manifestos, rode `python design-system/tools/check.py --write`, confirme sem `--write` e
+siga [QA.md](QA.md).
