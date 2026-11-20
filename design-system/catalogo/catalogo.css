@@ -45,3 +45,5 @@
   .palette { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .specimens { grid-template-columns: 1fr; }
 }
+#theme-catalog .theme-picker .choice { display: inline-flex; margin-inline-end: 8px; }
+.catalog-page .composition-window { color-scheme: light; }

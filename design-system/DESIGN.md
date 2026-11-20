@@ -1,18 +1,18 @@
 # Identidade visual Multicurso 2.0
 
-**Estado:** base candidata à homologação. O MC-DESIGN-13 mantém o tema claro como referência atual.
+**Estado:** base candidata à homologação. Claro, Black Full e Glass estão ativos no protótipo. O MC-DESIGN-13 é a referência visual do Claro.
 
 ## Princípios
 
 1. **O conteúdo conduz a composição.** O Shell identifica o curso e a aula, sustenta a retomada e dá acesso a ferramentas. As ações pedagógicas ficam no conteúdo.
-2. **A cor comunica papel.** Branco e cinza-azulado separam superfícies. Azul indica ação, seleção e foco. Use texto junto ao indicador de progresso ou bloqueio. Os valores medidos estão no [inventário](tokens/INVENTARIO-CSS.md).
+2. **A cor comunica papel.** Branco e cinza-azulado separam superfícies. Azul indica ação, seleção e foco. Use texto junto ao indicador de progresso ou bloqueio. Os valores medidos estão no [inventário histórico](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md).
 3. **Hierarquia editorial, navegação compacta.** Use títulos claros, descrição curta, ícones lineares e ação primária ligada ao objetivo da tela. Não acrescente cartões, ornamentos ou rótulos redundantes.
 4. **Modos de estudo são independentes.** Foco recolhe partes do Shell. Tela Cheia usa a capacidade do navegador. Os painéis e a retomada preservam o contexto da aula.
 5. **A identidade acompanha papéis e superfícies.** Admin usa as mesmas famílias de controles e estados, com fluxo editorial próprio. Um tema troca valores semânticos sem duplicar as telas.
 
 ## Marca e recursos gráficos
 
-A marca do protótipo é o símbolo em camadas no hexágono `#101a37`, seguido de **Multicurso 2.0**. O sufixo 2.0 usa `--blue`. O avatar violeta `#6724b4` é demonstrativo. Nenhum desses elementos define sozinho um manual de marca corporativo.
+A marca do protótipo é o símbolo em camadas no hexágono (no Claro, `#101a37`), seguido de **Multicurso 2.0**. O sufixo 2.0 usa o papel semântico primário. O avatar violeta `#6724b4` é demonstrativo. Nenhum desses elementos define sozinho um manual de marca corporativo.
 
 Os símbolos do sprite têm `viewBox="0 0 24 24"`, traço de 1,85 e tamanho base de 21 px. Use os ícones em `mc-design-10/index.html` e preserve seus nomes e rótulos acessíveis. A arte azul da capa, o pôster e o vídeo pertencem ao conteúdo demonstrativo. [Inventário de recursos](references/README.md)
 
@@ -24,3 +24,7 @@ Os símbolos do sprite têm `viewBox="0 0 24 24"`, traço de 1,85 e tamanho base
 - O conteúdo usa o visual compartilhado para apresentar vídeo, leitura, atividade, avaliação ou feedback. Nota, permissões, desbloqueio e critérios acadêmicos são contratos próprios. Os valores que o protótipo armazena localmente são demonstrativos.
 
 [MC-GLOBAL-WEB-00](https://docs.google.com/document/d/1f6HU7Np52uHerAWIGI6Kuo-MH2qAsr34agAPK8-qgnk/edit) · [MC-DESIGN-08](https://docs.google.com/document/d/1KRjSnzPJMHH15B7Lya5b-iwCcri970ggrqti_w_dOF0/edit) · [Fontes e estados de aprovação](references/README.md)
+
+## Aparência
+
+Use os papéis compartilhados para superfície, texto, foco e estados. A troca de tema conserva a hierarquia e a geometria. Glass usa material translúcido sob suporte, com alternativa opaca. [Manual de temas](themes/README.md)

@@ -1,5 +1,5 @@
 {
-  "$description": "Quaisquer valores deste arquivo vêm do commit-base MC-DESIGN-13. Aliases são nomes candidatos.",
+  "$description": "Fonte operacional do Design System MC-DESIGN-SYSTEM-02. Claro derivado de MC-DESIGN-13.",
   "primitive": {
     "color": {
       "blue": {
@@ -623,6 +623,54 @@
           ],
           "alpha": 0
         }
+      },
+      "glass-glow": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8392156862745098,
+            0.9098039215686274,
+            1.0
+          ],
+          "alpha": 1
+        }
+      },
+      "glass-glow-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9019607843137255,
+            0.8666666666666667,
+            0.9725490196078431
+          ],
+          "alpha": 1
+        }
+      },
+      "glass-surface": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.8549019607843137
+        }
+      },
+      "glass-chrome": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.8196078431372549
+        }
       }
     },
     "dimension": {
@@ -975,6 +1023,13 @@
           "value": 1320,
           "unit": "px"
         }
+      },
+      "px-0": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        }
       }
     },
     "font": {
@@ -1020,68 +1075,6 @@
       "icon-stroke": {
         "$type": "number",
         "$value": 1.85
-      }
-    },
-    "shadow": {
-      "card": {
-        "$type": "shadow",
-        "$value": {
-          "color": {
-            "colorSpace": "srgb",
-            "components": [
-              0.09803922,
-              0.21568627,
-              0.46666667
-            ],
-            "alpha": 0.03529412
-          },
-          "offsetX": {
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "value": 4,
-            "unit": "px"
-          },
-          "blur": {
-            "value": 14,
-            "unit": "px"
-          },
-          "spread": {
-            "value": 0,
-            "unit": "px"
-          }
-        }
-      },
-      "dock": {
-        "$type": "shadow",
-        "$value": {
-          "color": {
-            "colorSpace": "srgb",
-            "components": [
-              0.13333333,
-              0.23529412,
-              0.4627451
-            ],
-            "alpha": 0.1254902
-          },
-          "offsetX": {
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "value": 5,
-            "unit": "px"
-          },
-          "blur": {
-            "value": 14,
-            "unit": "px"
-          },
-          "spread": {
-            "value": 0,
-            "unit": "px"
-          }
-        }
       }
     }
   },
@@ -1252,6 +1245,162 @@
       "disabled-text": {
         "$type": "color",
         "$value": "{primitive.color.disabled-text}"
+      },
+      "media-stage": {
+        "$type": "color",
+        "$value": "{primitive.color.player}"
+      },
+      "mark-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.logo}"
+      },
+      "hover-outline": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-1049d94b}"
+      },
+      "badge-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-164395}"
+      },
+      "art-shadow": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-172d7133}"
+      },
+      "card-shadow": {
+        "$type": "color",
+        "$value": "{primitive.color.card-shadow}"
+      },
+      "complete-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-216341}"
+      },
+      "dock-shadow": {
+        "$type": "color",
+        "$value": "{primitive.color.dock-shadow}"
+      },
+      "navigation-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-263956}"
+      },
+      "demo-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-344c6c}"
+      },
+      "workflow-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-385074}"
+      },
+      "search-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-3a4e76}"
+      },
+      "eyebrow-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-46618a}"
+      },
+      "locked-text": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-56688a}"
+      },
+      "avatar-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.profile}"
+      },
+      "pressed-border": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-a8c3f9}"
+      },
+      "field-border": {
+        "$type": "color",
+        "$value": "{primitive.color.field-border}"
+      },
+      "workflow-active-border": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-bcd1f6}"
+      },
+      "media-border": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-cbd8ef}"
+      },
+      "hero-border": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-d0def7}"
+      },
+      "badge-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-d9e7ff}"
+      },
+      "complete-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e2f5eb}"
+      },
+      "workflow-active": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e3eeff}"
+      },
+      "tile-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e7efff}"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e8edf5}"
+      },
+      "demo-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e8eef9}"
+      },
+      "quiet-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.quiet-fill}"
+      },
+      "choice-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-eef4fe}"
+      },
+      "mobile-control-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-f1f5ff}"
+      },
+      "hero-end": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-f7f9ff}"
+      },
+      "field-fill": {
+        "$type": "color",
+        "$value": "{primitive.color.field-fill}"
+      },
+      "button-secondary-text": {
+        "$type": "color",
+        "$value": "{primitive.color.button-secondary-text}"
+      },
+      "media-text": {
+        "$type": "color",
+        "$value": "{primitive.color.white}"
+      },
+      "on-accent": {
+        "$type": "color",
+        "$value": "{primitive.color.white}"
+      },
+      "hero-start": {
+        "$type": "color",
+        "$value": "{primitive.color.hex-e7efff}"
+      },
+      "glass-glow": {
+        "$type": "color",
+        "$value": "{primitive.color.glass-glow}"
+      },
+      "glass-glow-secondary": {
+        "$type": "color",
+        "$value": "{primitive.color.glass-glow-secondary}"
+      },
+      "glass-surface": {
+        "$type": "color",
+        "$value": "{primitive.color.glass-surface}"
+      },
+      "glass-chrome": {
+        "$type": "color",
+        "$value": "{primitive.color.glass-chrome}"
       }
     },
     "type": {
@@ -1285,11 +1434,23 @@
     "shadow": {
       "card": {
         "$type": "shadow",
-        "$value": "{primitive.shadow.card}"
+        "$value": {
+          "offsetX": "{primitive.dimension.px-0}",
+          "offsetY": "{primitive.dimension.px-4}",
+          "blur": "{primitive.dimension.px-14}",
+          "spread": "{primitive.dimension.px-0}",
+          "color": "{semantic.color.card-shadow}"
+        }
       },
       "dock": {
         "$type": "shadow",
-        "$value": "{primitive.shadow.dock}"
+        "$value": {
+          "offsetX": "{primitive.dimension.px-0}",
+          "offsetY": "{primitive.dimension.px-5}",
+          "blur": "{primitive.dimension.px-14}",
+          "spread": "{primitive.dimension.px-0}",
+          "color": "{semantic.color.dock-shadow}"
+        }
       }
     }
   },
@@ -1347,6 +1508,22 @@
       "disabled-text": {
         "$type": "color",
         "$value": "{semantic.color.disabled-text}"
+      },
+      "secondary-text": {
+        "$type": "color",
+        "$value": "{semantic.color.button-secondary-text}"
+      },
+      "secondary-border": {
+        "$type": "color",
+        "$value": "{semantic.color.control-border}"
+      },
+      "quiet-fill": {
+        "$type": "color",
+        "$value": "{semantic.color.quiet-fill}"
+      },
+      "quiet-text": {
+        "$type": "color",
+        "$value": "{semantic.color.accent}"
       }
     },
     "icon": {
@@ -1409,11 +1586,11 @@
       },
       "fill": {
         "$type": "color",
-        "$value": "{primitive.color.field-fill}"
+        "$value": "{semantic.color.field-fill}"
       },
       "border": {
         "$type": "color",
-        "$value": "{primitive.color.field-border}"
+        "$value": "{semantic.color.field-border}"
       }
     },
     "card": {

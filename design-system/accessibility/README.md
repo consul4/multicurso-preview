@@ -3,7 +3,7 @@
 ## O que o protótipo expõe
 
 - Atalho de pular para o conteúdo, títulos e navegação por marcos. Contexto atual por `aria-current`. Controles de ícone nomeados.
-- Contorno de foco de 2 px com `--deep` e afastamento de 3 px. Desabilitado, selecionado, erro, sucesso e bloqueio têm informação textual.
+- Contorno de foco de 2 px com o token de foco de componente e afastamento de 3 px. Desabilitado, selecionado, erro, sucesso e bloqueio têm informação textual.
 - O diálogo nativo recebe foco na abertura. Tab circula no diálogo. Escape e fechar devolvem foco. Após redimensionar, Módulos e Ferramentas procuram seu acionador visível.
 - Campos usam rótulos visíveis. O player traz legenda VTT e transcrição com tempos acionáveis. O indicador de progresso usa elemento nativo com nome acessível.
 - Transição de sombra fica condicionada à preferência de movimento. A cápsula preserva espaço próprio no standalone.
@@ -22,3 +22,7 @@ A checagem dos tokens valida os pares de texto selecionados. Controle desabilita
 ## Verificação além da amostra
 
 Testar leitor de tela, zoom de 200%, foco sem obstrução, contraste de elementos não textuais, movimento reduzido, iPhone com Safari e PWA instalado. Repetir em temas novos. [Checklist](../QA.md)
+
+## Black Full e Glass
+
+A checagem mede pares de texto em todos os temas, com limiar de 4,5:1, e bordas de campos e botões secundários nos dois temas novos, com 3:1. O Claro preserva bordas da referência. O contraste dessas bordas, conteúdo sobre imagens, leitor de tela e validação nativa em Safari seguem em revisão. Glass preserva superfícies opacas quando o desfoque é indisponível ou a transparência é reduzida. Os controles nativos do Black Full usam esquema escuro. [Manual de temas](../themes/README.md)

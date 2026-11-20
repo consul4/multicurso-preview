@@ -2,6 +2,7 @@ import {learner, lessons, management} from '../../mc-design-10/model.js';
 
 const prototype = new URL('../../mc-design-10/', location.href);
 const byId = id => document.getElementById(id);
+byId('theme-catalog').innerHTML = window.multicursoTheme.choices();
 const sampleRoutes = [...learner,...lessons,...management];
 const selector = byId('route');
 const frame = byId('spec-frame');
@@ -63,22 +64,32 @@ const swatches = {
   outline:'Borda', surface:'Superfície', canvas:'Fundo', rail:'Trilho', tint:'Realce',
 };
 async function loadFoundation() {
-  const responses = await Promise.all([fetch(new URL('../tokens/multicurso.tokens.json', location.href)), fetch(prototype)]);
-  if (responses.some(response => !response.ok)) throw new Error('Falha ao carregar as referências.');
-  const [tokens, original] = await Promise.all([responses[0].json(),responses[1].text()]);
+  const response = await fetch(prototype);
+  if (!response.ok) throw new Error('Falha ao carregar a referência do sprite.');
+  const original = await response.text();
   const sprite = new DOMParser().parseFromString(original,'text/html').querySelector('svg.icons');
   if (sprite) document.body.prepend(document.importNode(sprite,true));
   for (const [role,name] of Object.entries(swatches)) {
-    const path = tokens.semantic.color[role].$value.slice(1,-1).split('.');
-    const value = path.reduce((group,key) => group[key],tokens).$value;
-    const hex = '#' + value.components.map(channel => Math.round(channel * 255).toString(16).padStart(2,'0')).join('').toUpperCase();
     const item = document.createElement('div');
     item.className = 'swatch';
     item.style.setProperty('--swatch',`var(--mc-semantic-color-${role})`);
-    item.innerHTML = `<div class="sample" aria-hidden="true"></div><div><strong>${name}</strong><code>${hex}</code></div>`;
+    item.innerHTML = `<div class="sample" aria-hidden="true"></div><div><strong>${name}</strong><code></code></div>`;
     byId('palette').append(item);
   }
+  showSwatchValues();
 }
+
+function showSwatchValues() {
+  for (const item of byId('palette').children) {
+    const channels = getComputedStyle(item.firstElementChild).backgroundColor
+      .match(/\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    const values = channels.length === 4
+      ? [...channels.slice(0,3), Math.round(channels[3] * 255)]
+      : channels;
+    item.querySelector('code').textContent = '#' + values.map(value => value.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+}
+document.addEventListener('mc-theme-change', showSwatchValues);
 loadFoundation().catch(() => {
   const error = byId('catalog-error');
   error.hidden = false;

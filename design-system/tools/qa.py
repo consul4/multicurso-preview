@@ -9,7 +9,7 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 CAPTURES = ROOT / 'references/capturas'
-ENTRY = os.getenv('MC_DS_URL', 'http://127.0.0.1:4222')
+ENTRY = os.getenv('MC_DS_URL', 'http://127.0.0.1:4232')
 BASE = os.getenv('MC_DS_BASE_URL')
 BROWSER = os.getenv('CHROMIUM', '/usr/bin/chromium')
 SIZES = [(320, 680), (390, 844), (768, 900), (1024, 768), (1100, 768), (1101, 768), (1440, 900)]

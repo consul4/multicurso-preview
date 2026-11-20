@@ -17,3 +17,5 @@ A largura da videoaula testada a 1024 px é 804,5 px. Há uma mudança perceptí
 **Standalone.** A cápsula ocupa sua faixa própria, com insets do dispositivo. Ela fica oculta ao teclado detectado. Na sala tablet, a cápsula visível oferece o único atalho para Módulos. No navegador convencional a cápsula fica oculta. O protótipo detecta o modo e preserva o estado de leitura, sem configurar instalação ou offline da aplicação.
 
 Amostras mínimas deste repositório: 320, 390, 768, 1024, 1100, 1101 e 1440 px. Na próxima homologação mobile, inclua Safari real, rotação e teclado real.
+
+Os três temas usam as mesmas media queries. A aparência Glass pode mudar de translúcida para opaca sem alterar medidas ou posição dos controles. [Manual de temas](../themes/README.md)

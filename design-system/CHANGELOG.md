@@ -1,6 +1,12 @@
 # Histórico
 
-## 0.1.0 candidata
+## 0.2.0 candidata · MC-DESIGN-SYSTEM-02
+
+- Claro, Black Full e Glass aplicados à mesma árvore de interface, com seleção persistente e inicialização antes do CSS.
+- Tokens em uso no CSS do protótipo e no catálogo. Fallback opaco no Glass.
+- Matriz dos três temas, evidências visuais e documentação de uso. Auditorias anteriores permanecem no histórico.
+
+## 0.1.0 · histórico substituído pela candidata 0.2
 
 - Base visual fixada em MC-DESIGN-13, commit `3600227ae1fcc6a77e73671173532221bcd30f40`. A referência incorpora as correções de tablet e de retorno de foco.
 - Inventário CSS com contexto responsivo, catálogo de 18 rotas, tokens em três camadas e exportação do tema Claro.

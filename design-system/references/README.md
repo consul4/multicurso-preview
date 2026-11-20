@@ -11,7 +11,7 @@
 | [MC-DESIGN-13](https://github.com/consul4/multicurso-preview/tree/3600227ae1fcc6a77e73671173532221bcd30f40/mc-design-10) e [relatório](https://github.com/consul4/multicurso-preview/blob/3600227ae1fcc6a77e73671173532221bcd30f40/docs/design/MC-DESIGN-13/RELATORIO.md) | Referência executável fixada. A correção do Shell tablet foi testada. |
 | MC-VISUAL-VALIDAÇÃO-04 | Auditoria independente da V12, recebida no workspace. Recomendou dez telas demonstrativas. O [manual](../MANUAL-VISUAL.md) e as [decisões](../DECISOES.md) registram o parecer e distinguem o que ainda está pendente. |
 
-## Capturas desta candidata
+## Capturas históricas da candidata 0.1
 
 | Captura | Ambiente e estado | Parecer aplicável |
 | --- | --- | --- |
@@ -21,7 +21,7 @@
 | [Leitura](capturas/leitura-390x844.png) | Celular, conteúdo editorial | Conteúdo recomendado na V04 |
 | [Avaliação bloqueada](capturas/avaliacao-bloqueada-320x680.png) | Celular estreito, pré-requisito ausente | Estado demonstrativo, regra acadêmica pendente |
 | [Atividade em standalone](capturas/atividade-standalone-390x844.png) | Celular e cápsula simulada | Tela recomendada como demonstração, validação real pendente |
-| [Catálogo](capturas/catalogo-1440x1000.png) | Desktop, início do catálogo | Interface de documentação candidata |
+| [Catálogo](capturas/catalogo-1440x1000.png) | Desktop, início do catálogo | Interface de documentação da versão 0.1, substituída pela 0.2 |
 
 O [manifesto](baseline.json) fixa a lista de arquivos, hashes e dimensões. As capturas acima foram geradas a partir de CSS e dados demonstrativos deste repositório. A movimentação de foco e a comparação com o commit base também foram testadas. [QA](../QA.md)
 
@@ -37,3 +37,18 @@ O [manifesto](baseline.json) fixa a lista de arquivos, hashes e dimensões. As c
 | `index.html` | Sprite inline SVG com 30 símbolos. O catálogo consulta o sprite original. |
 
 Veja [Identidade](../DESIGN.md) para marca e linguagem de ícones.
+
+## Evidências dos temas
+
+Cada captura usa a mesma rota, estado demonstrativo e largura em Black Full e Glass. Os arquivos abaixo retratam a candidata operacional, com homologação em aberto.
+
+| Estado | Black Full | Glass |
+| --- | --- | --- |
+| Leitura · 390 px | [PNG](capturas-temas/black-leitura-390.png) | [PNG](capturas-temas/glass-leitura-390.png) |
+| Videoaula · 1024 px | [PNG](capturas-temas/black-video-1024.png) | [PNG](capturas-temas/glass-video-1024.png) |
+| Atividade prática · 390 px | [PNG](capturas-temas/black-atividade-390.png) | [PNG](capturas-temas/glass-atividade-390.png) |
+| Avaliação · 768 px | [PNG](capturas-temas/black-avaliacao-768.png) | [PNG](capturas-temas/glass-avaliacao-768.png) |
+| Gestão de cursos · 1440 px | [PNG](capturas-temas/black-gestao-1440.png) | [PNG](capturas-temas/glass-gestao-1440.png) |
+| Editor · 1440 px | [PNG](capturas-temas/black-editor-1440.png) | [PNG](capturas-temas/glass-editor-1440.png) |
+
+[Catálogo vigente em Black Full](capturas-temas/catalogo-black-1440.png) · [Videoaula Glass após troca de tema](capturas-temas/glass-video-controles-1024.png) · [Arquivo documental](arquivo/README.md) · [Relatório](../RELATORIO.md)

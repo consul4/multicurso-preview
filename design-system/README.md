@@ -1,24 +1,16 @@
 # Design System Multicurso 2.0
 
-Versão candidata 0.1.0. A referência de implementação é o MC-DESIGN-13 no commit `3600227ae1fcc6a77e73671173532221bcd30f40`. A aprovação das telas e a adoção na aplicação real são decisões separadas.
+**MC-DESIGN-SYSTEM-02 · candidata à homologação.** Claro, Black Full e Glass usam o mesmo Shell e as mesmas 18 rotas do protótipo. O Claro conserva como referência o MC-DESIGN-13 no commit `3600227ae1fcc6a77e73671173532221bcd30f40`.
 
-| Documento | Conteúdo |
+| Documento vigente | Conteúdo |
 | --- | --- |
-| [DESIGN.md](DESIGN.md) | Identidade, princípios e regras do Shell |
-| [MANUAL-VISUAL.md](MANUAL-VISUAL.md) | Mapa das 18 telas e estados |
-| [TOKENS.md](TOKENS.md) | Camadas de tokens, consumo e extração |
-| [Inventário CSS](tokens/INVENTARIO-CSS.md) | Valores existentes, repetições e dados por seletor |
-| [Temas](themes/README.md) | Tema claro exportado e preparação de novos temas |
-| [Componentes](components/README.md) | Anatomia, variantes e interação |
-| [Padrões](patterns/README.md) | Navegação, sala e administração |
-| [Responsividade](responsive/README.md) | Breakpoints, composição e standalone |
-| [Acessibilidade](accessibility/README.md) | Teclado, foco, contraste e pontos de auditoria |
-| [Referências e capturas](references/README.md) | Fontes e estados de aprovação |
-| [Decisões](DECISOES.md) | Direções aceitas, propostas e pendências |
-| [QA](QA.md) · [Histórico](CHANGELOG.md) | Verificações, checklist e rastreabilidade |
+| [Identidade](DESIGN.md) · [Manual visual](MANUAL-VISUAL.md) | Regras visuais, regiões e pareceres das 18 telas |
+| [Tokens](TOKENS.md) · [Manual de temas](themes/README.md) | Fonte de verdade, fallback e extensão |
+| [Componentes](components/README.md) · [Padrões](patterns/README.md) | Interações e reutilização |
+| [Responsividade](responsive/README.md) · [Acessibilidade](accessibility/README.md) | Comportamento em diferentes modos e critérios técnicos |
+| [Referências](references/README.md) · [Decisões](DECISOES.md) | Evidências, arquivos históricos e homologação pendente |
+| [QA](QA.md) · [Relatório técnico](RELATORIO.md) · [Histórico](CHANGELOG.md) | Validação, diferenças e rastreabilidade |
 
-## Abrir o catálogo
+## Abrir localmente
 
-Na raiz do repositório, execute `python -m http.server 4222 --bind 127.0.0.1` e abra [localhost:4222/design-system/catalogo/](http://127.0.0.1:4222/design-system/catalogo/). O catálogo usa HTML, JavaScript de navegador e o CSS original. Para as suítes de mídia com busca por posição no vídeo, use a versão com Vite conforme [QA.md](QA.md).
-
-O seletor de composições carrega as 18 rotas do protótipo em larguras controladas. Etapas bloqueadas exigem os pré-requisitos da demonstração. O original continua disponível em `/mc-design-10/`.
+Na raiz, execute `python -m http.server 4232 --bind 127.0.0.1` e abra [protótipo](http://127.0.0.1:4232/mc-design-10/) ou [catálogo](http://127.0.0.1:4232/design-system/catalogo/). Para testes de busca em vídeo, sirva a raiz com Vite conforme [QA.md](QA.md).

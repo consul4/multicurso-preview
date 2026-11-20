@@ -1,0 +1,11 @@
+{
+  "$description": "Claro",
+  "$extensions": {
+    "com.multicurso.theme": {
+      "colorScheme": "light"
+    }
+  },
+  "semantic": {
+    "color": {}
+  }
+}

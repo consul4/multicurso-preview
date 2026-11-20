@@ -1,6 +1,6 @@
-# Inventário de declarações e repetições
+# Arquivo · inventário do MC-DESIGN-13
 
-Gerado do CSS real do MC-DESIGN-13. Inclui todas as 777 declarações em [inventario.css.json](inventario.css.json). Os blocos responsivos mantêm seu contexto de origem.
+Gerado do CSS real do MC-DESIGN-13. Inclui todas as 777 declarações em [inventario.css.json](inventario-mc-design-13.css.json). Os blocos responsivos mantêm seu contexto de origem.
 
 As 56 cores literais normalizam abreviações e `white`. Uma referência pelo mesmo valor em seletores ou propriedades diferentes conta como um novo local. Os pares de propriedade e valor abaixo incluem repetições legítimas de layout ou estados. Investigue o contexto antes de consolidar um valor.
 

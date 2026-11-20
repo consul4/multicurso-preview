@@ -1,6 +1,6 @@
 # Manual visual das 18 telas
 
-Os caminhos abaixo são fragmentos da entrada `mc-design-10/`. A interface do catálogo usa essas mesmas rotas. A descrição retrata o commit-base. “Recomendada” remete ao parecer da auditoria V04, ainda sujeito à aprovação final.
+Os caminhos abaixo são fragmentos da entrada `mc-design-10/`. A interface do catálogo usa essas mesmas rotas. As composições abaixo se aplicam aos três temas. O parecer visual histórico foi emitido sobre o Claro do commit-base. “Recomendada” remete ao parecer da auditoria V04, ainda sujeito à aprovação final.
 
 | Ambiente e rota | Composição e estados observados | Parecer |
 | --- | --- | --- |
@@ -30,3 +30,7 @@ Os caminhos abaixo são fragmentos da entrada `mc-design-10/`. A interface do ca
 - **Administração:** destinos editoriais no trilho largo ou no fluxo horizontal em telas estreitas. Campos e listas usam a mesma linguagem, com informação de rascunho e feedback local.
 
 [Layout responsivo](responsive/README.md) · [Referências visuais](references/README.md) · [Decisões](DECISOES.md)
+
+## Aparência nas 18 rotas
+
+O seletor fica em Ajuda ou no menu. Campos, indicadores, modais e ações exercitam o mesmo conjunto de papéis em cada tema. Consulte as [evidências da matriz](references/README.md#evidências-dos-temas) e os limites de homologação no [manual de temas](themes/README.md).

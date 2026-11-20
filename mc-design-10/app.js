@@ -194,9 +194,9 @@ document.addEventListener('click',event=>{
   if(!button)return;
   if(button.hasAttribute('data-close')){dialog.close();return;}
   const a=button.dataset.action,v=button.dataset.value,key=configKey();
-  if(a==='menu')panel('Navegação',`<nav class="modal-nav">${navigation()}</nav>`);
+  if(a==='menu')panel('Navegação',`<nav class="modal-nav">${navigation()}</nav>${window.multicursoTheme.choices()}`,'center',button);
   if(a==='search')panel('Buscar na prévia',`<label>Nome da tela<input type="search" data-filter placeholder="Buscar…"></label><nav class="modal-nav">${routes.map(row=>`<div data-filter-item="${esc(row[1].toLowerCase())}">${routeList([row])}</div>`).join('')}</nav><div id="filter-empty" hidden>${empty('Nenhum resultado','Tente outro nome.')}</div>`);
-  if(a==='help')panel('Sobre esta prévia','<p>Ambiente de estudo e administração com dados simulados. Mudanças ficam neste navegador.</p>');
+  if(a==='help')panel('Sobre esta prévia',`<p>Ambiente de estudo e administração com dados simulados. Mudanças ficam neste navegador.</p>${window.multicursoTheme.choices()}`,'center',button);
   if(a==='notifications')panel('Notificações',empty('Nenhuma notificação','Os avisos apareceriam aqui em uma experiência integrada.'));
   if(a==='modules')panel('Aulas e módulos',modulesPanel(),'start',button);
   if(a==='options'){panel('Ferramentas da aula',panelOptions(),'end',button);updateModes();}

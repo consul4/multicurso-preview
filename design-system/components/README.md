@@ -15,3 +15,7 @@
 | Cápsula / rodapé | Cápsula standalone com cinco destinos, indicação do ativo e safe area. Rodapé sequencial independente da cápsula. | `#dock`, `.lesson-next` |
 
 O [catálogo](../catalogo/index.html) mostra os exemplos com o CSS original e permite abrir o protótipo em larguras controladas.
+
+## Seletor de tema
+
+O grupo de rádio usa uma legenda comum e apresenta as três opções. A seleção atualiza o atributo raiz e preserva foco, diálogos e conteúdo. No catálogo, a composição carregada acompanha a escolha via armazenamento local. As variantes de superfície, borda, progresso e estados são consumidas da mesma saída de tokens. [Manual de temas](../themes/README.md)
