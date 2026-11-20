@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR" data-mc-theme="claro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../mc-design-10/style.css">
+  <link rel="stylesheet" href="../themes/claro.css">
+  <link rel="stylesheet" href="catalogo.css">
+  <script type="module" src="catalogo.js"></script>
+  <title>Catálogo · Multicurso 2.0</title>
+</head>
+<body class="catalog-page">
+  <a class="skip" href="#catalogo">Pular para o catálogo</a>
+  <header class="catalog-top">
+    <a class="brand" href="#catalogo"><span class="logo"><svg class="icon" aria-hidden="true"><use href="#layers-icon"/></svg></span><span>Multicurso <b>2.0</b></span></a>
+    <nav aria-label="Seções do catálogo">
+      <a href="#fundamentos">Fundamentos</a><a href="#componentes">Componentes</a><a href="#composicoes">Composições</a>
+    </nav>
+  </header>
+  <main id="catalogo" tabindex="-1">
+    <header class="heading introduction">
+      <h1>Catálogo do Design System</h1>
+      <p>Tema claro do MC-DESIGN-13. Referência candidata para os ambientes do aluno, sala de aula e administração.</p>
+    </header>
+    <section id="fundamentos" class="catalog-section">
+      <h2>Fundamentos</h2>
+      <div class="palette" id="palette"></div>
+      <p id="catalog-error" role="status" hidden></p>
+      <article class="card type-example">
+        <div class="heading"><span class="kicker">Videoaula · Aula 1 de 5</span><h3 class="type-heading">Anatomia do prompt</h3><p>Engenharia de Prompts</p></div>
+        <h4>O que observar</h4>
+        <p>Identifique objetivo, contexto, critérios e formato.</p>
+        <small>Inter, Arial, sans-serif. A fonte disponível varia conforme o dispositivo.</small>
+      </article>
+    </section>
+    <section id="componentes" class="catalog-section">
+      <h2>Componentes</h2>
+      <div class="specimens">
+        <article class="card">
+          <h3>Botões e estados</h3>
+          <div class="actions">
+            <button type="button" class="btn primary" data-advance>Avançar progresso</button>
+            <button type="button" class="btn secondary" data-panel="tools" aria-haspopup="dialog">Ferramentas</button>
+            <button type="button" class="btn quiet" data-panel="modules" aria-haspopup="dialog">Módulos</button>
+            <button type="button" class="btn" disabled>Próxima · bloqueada</button>
+          </div>
+          <label for="spec-progress">Progresso demonstrativo <output id="progress-text">60%</output></label>
+          <progress id="spec-progress" max="100" value="60">60%</progress>
+        </article>
+        <article class="card">
+          <h3>Campos e retorno</h3>
+          <form id="spec-form">
+            <label>Seu prompt <textarea name="sample" required placeholder="Exemplo de resposta curta"></textarea></label>
+            <button class="btn primary" type="submit">Validar exemplo</button>
+            <p class="feedback" role="status" hidden></p>
+          </form>
+        </article>
+        <article class="card">
+          <h3>Navegação e disponibilidade</h3>
+          <div class="modal-nav"><a href="#composicoes" aria-current="location"><svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg>Aula atual</a></div>
+          <div class="row"><span class="tile green"><svg class="icon" aria-hidden="true"><use href="#check-icon"/></svg></span><div class="row-text"><strong>Introdução</strong><small>Concluída</small></div></div>
+          <div class="row"><span class="tile"><svg class="icon" aria-hidden="true"><use href="#lock-icon"/></svg></span><div class="row-text"><strong>Avaliação final</strong><small>Bloqueada por pré-requisito</small></div></div>
+        </article>
+        <article class="card">
+          <h3>Exercício e estado vazio</h3>
+          <fieldset>
+            <legend>Escolha a instrução mais específica</legend>
+            <label class="choice"><input type="radio" name="choice" checked>Informe o horário da reunião.</label>
+            <label class="choice"><input type="radio" name="choice">Envie uma mensagem.</label>
+          </fieldset>
+          <div class="empty"><strong>Nenhum material encontrado</strong><p>Tente outro título.</p></div>
+        </article>
+      </div>
+    </section>
+    <section id="composicoes" class="catalog-section">
+      <h2>Composições responsivas</h2>
+      <p>Explore as telas originais do protótipo. As interações usam dados demonstrativos neste navegador.</p>
+      <form id="frame-form" class="frame-settings">
+        <label>Tela <select id="route"></select></label>
+        <label>Largura <select id="width"><option value="320">320 px</option><option selected value="390">390 px</option><option value="768">768 px</option><option value="1024">1024 px</option><option value="1100">1100 px</option><option value="1101">1101 px</option><option value="1440">1440 px</option></select></label>
+        <div class="actions"><button class="btn primary" type="submit">Carregar composição</button><a class="btn secondary" id="open-prototype" href="../../mc-design-10/#video">Abrir tela em tamanho real</a></div>
+      </form>
+      <div class="composition-window" aria-label="Quadro do protótipo" role="region" tabindex="0" hidden>
+        <iframe title="Composição original do protótipo" id="spec-frame"></iframe>
+      </div>
+      <noscript>Ative o JavaScript para explorar o catálogo. <a href="../../mc-design-10/">Abrir o protótipo</a>.</noscript>
+    </section>
+  </main>
+  <dialog id="catalog-panel" aria-labelledby="catalog-panel-title">
+    <header><h2 id="catalog-panel-title" tabindex="-1"></h2><form method="dialog"><button class="icon-btn" aria-label="Fechar painel">×</button></form></header>
+    <div id="catalog-panel-body"></div>
+  </dialog>
+</body>
+</html>

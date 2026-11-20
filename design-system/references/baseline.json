@@ -1,0 +1,85 @@
+{
+  "commit": "3600227ae1fcc6a77e73671173532221bcd30f40",
+  "prototype": {
+    "admin.js": "122c80952cf6d8c5250d6be24c09709cb0751ad6cdc81e7705429dbfc560b797",
+    "anatomia.mp4": "c8c6153c21ad4544be2bc4d7e03af3a6cee107651096b0763cef1a142f91228b",
+    "anatomia.vtt": "dabb60fde163bf35a4ef25628bbecc77d2d0414eee32ccd79a9201a2612514d2",
+    "anatomia.webp": "f49d669cb1ae30b969b6d0d1f150443f697a5ecd7ade4c4e1780fed7cd791cc1",
+    "app.js": "f17cf717049053307bb9edd100b9f074febc828e283d4b6b2c29b99a55268850",
+    "curso.webp": "87ebf38e35b4d630626364e1a621883c0fcc7eaf521896f067e2f4063c3d90ce",
+    "index.html": "82243f2f815e926b081fd9aac15691f853f13a467dc229ddd1708fbcb5dae195",
+    "model.js": "8002af3dbe9481b3ba633b54d9f164d54e86e9614c4ed0fa0b95fea4f1575486",
+    "prompt.webp": "0fa09171c72cfb20c0427cda34e493ed51a8e4943414843f646ea9a17c28a48e",
+    "student.js": "14ebe14c232bc23bbb1d62bc6da09a4bbc070efbd342b43a72a45aae4584aec4",
+    "style.css": "49d41306478b3d0cc45ed9c3158ebe6104b0e8a1e5f17279c851eabf036b5eb1"
+  },
+  "captures": {
+    "atividade-standalone-390x844.png": {
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "c598906d74477c3782fb7fba7f482bd71605a382f46facf89bf5f54f627e4fb7"
+    },
+    "avaliacao-bloqueada-320x680.png": {
+      "dimensions": [
+        320,
+        680
+      ],
+      "sha256": "0e47273fbc0a5a4542387e840e5a53d89880a97512054aade5fd6112e701a9f9"
+    },
+    "catalogo-1440x1000.png": {
+      "dimensions": [
+        1440,
+        1000
+      ],
+      "sha256": "9397af84b5c6119dce4a48d8b5e57f837bef95d8378a4375b38d5a2f4757c6e8"
+    },
+    "cursos-1440x900.png": {
+      "dimensions": [
+        1440,
+        900
+      ],
+      "sha256": "2391465fad4b5e32150ef212249b3e887f8577a2e77a4eab0d06f3f57b8021e7"
+    },
+    "leitura-390x844.png": {
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "1a8e4ad866fe723e4b3036fea1e4bb3667b7975a35b3dd89d5ad74ce41f1f532"
+    },
+    "video-1024x768.png": {
+      "dimensions": [
+        1024,
+        768
+      ],
+      "sha256": "2dce970de83fa057987fa2c896223d7bc703ae78027775c71c6b7c0281b83eb9"
+    },
+    "video-ferramentas-1024x768.png": {
+      "dimensions": [
+        1024,
+        768
+      ],
+      "sha256": "0f4528d83d8aab04a82a284a348da48dceb3907d0b0573f7f97f9d2cad30d190"
+    }
+  },
+  "links": [
+    "../AGENTS.md",
+    "README.md",
+    "DESIGN.md",
+    "MANUAL-VISUAL.md",
+    "TOKENS.md",
+    "CHANGELOG.md",
+    "DECISOES.md",
+    "QA.md",
+    "themes/README.md",
+    "components/README.md",
+    "patterns/README.md",
+    "responsive/README.md",
+    "accessibility/README.md",
+    "references/README.md",
+    "catalogo/index.html",
+    "tokens/multicurso.tokens.json"
+  ]
+}
