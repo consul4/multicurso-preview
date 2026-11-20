@@ -6,7 +6,13 @@
       "translucent": {
         "surface": "{semantic.color.glass-surface}",
         "rail": "{semantic.color.glass-chrome}"
-      }
+      },
+      "backdropBlur": "{primitive.dimension.px-14}",
+      "canvasGlow": [
+        "{semantic.color.glass-glow}",
+        "{semantic.color.glass-glow-secondary}"
+      ],
+      "radioAccent": "{semantic.color.primary}"
     }
   },
   "semantic": {
@@ -136,9 +142,9 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.4235294117647059,
-            0.5215686274509804,
-            0.6862745098039216
+            0.35294117647058826,
+            0.44313725490196076,
+            0.611764705882353
           ],
           "alpha": 1
         }
@@ -244,9 +250,9 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.39215686274509803,
-            0.49019607843137253,
-            0.6627450980392157
+            0.35294117647058826,
+            0.44313725490196076,
+            0.611764705882353
           ],
           "alpha": 1
         }

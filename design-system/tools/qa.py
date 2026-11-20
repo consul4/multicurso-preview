@@ -1,16 +1,12 @@
-"""Testa as 18 rotas, o catálogo e a composição com a referência congelada."""
+"""Testa as 18 rotas, o catálogo e os estados representativos da composição."""
 import argparse
-import io
 import json
 import os
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
 
-ROOT = Path(__file__).resolve().parents[1]
-CAPTURES = ROOT / 'references/capturas'
 ENTRY = os.getenv('MC_DS_URL', 'http://127.0.0.1:4232')
-BASE = os.getenv('MC_DS_BASE_URL')
 BROWSER = os.getenv('CHROMIUM', '/usr/bin/chromium')
 SIZES = [(320, 680), (390, 844), (768, 900), (1024, 768), (1100, 768), (1101, 768), (1440, 900)]
 ROUTES = {
@@ -25,7 +21,7 @@ COMPLETED = ['video', 'leitura', 'laboratorio', 'atividade', 'avaliacao']
 FIXTURE = {'done': COMPLETED, 'grade': 100, 'videoEnded': True}
 REVIEW = {'done': COMPLETED[:3], 'videoEnded': True}
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--captures', action='store_true', help='Grava evidências locais para revisão manual.')
+parser.add_argument('--captures', type=Path, help='Pasta para novas evidências locais.')
 args = parser.parse_args()
 
 
@@ -39,14 +35,14 @@ def new_page(browser, width, height, state=None, standalone=False):
     return page
 
 
-def visit(page, route, origin=ENTRY):
-    page.goto(f'{origin}/mc-design-10/?catalogue-qa={route}#{route}')
+def visit(page, route):
+    page.goto(f'{ENTRY}/mc-design-10/?catalogue-qa={route}#{route}')
     expect(page.locator('main h1')).to_have_text(ROUTES[route])
 
 
 def snapshot(page, name):
     if args.captures:
-        page.screenshot(path=CAPTURES / (name + '.png'), animations='disabled')
+        page.screenshot(path=args.captures / (name + '.png'), animations='disabled')
 
 
 def examine_routes(browser):
@@ -62,7 +58,7 @@ def examine_routes(browser):
         print(f'{width} px · 18 rotas verificadas.', flush=True)
 
 
-def capture_reference(browser):
+def exercise_composition(browser):
     for width, height, route, name, state, standalone in (
         (1440, 900, 'cursos', 'cursos-1440x900', REVIEW, False),
         (1024, 768, 'video', 'video-1024x768', REVIEW, False),
@@ -106,8 +102,18 @@ def catalog(browser):
         expect(page.get_by_role('dialog',name='Aulas e módulos')).to_be_visible()
         page.keyboard.press('Escape')
         expect(trigger).to_be_focused()
-        page.get_by_role('textbox',name='Seu prompt').fill('Exemplo curto.')
-        page.get_by_role('button',name='Validar exemplo').click()
+        field = page.get_by_role('textbox',name='Seu prompt')
+        validate = page.get_by_role('button',name='Validar exemplo')
+        field.fill('')
+        validate.click()
+        assert field.evaluate('el=>el.validity.valueMissing')
+        field.fill(' ')
+        validate.click()
+        expect(field).to_be_focused()
+        expect(field).to_have_accessible_description('Escreva um texto para validar.')
+        field.fill('Exemplo curto.')
+        expect(field).not_to_have_attribute('aria-invalid','true')
+        validate.click()
         expect(page.get_by_role('status').filter(has_text='Exemplo válido.')).to_be_visible()
         page.locator('#route').select_option('video')
         page.locator('#width').select_option('1024')
@@ -125,25 +131,7 @@ def catalog(browser):
         print(f'{width} px · catálogo interativo e composição real verificados.',flush=True)
 
 
-def compare_with_baseline(browser):
-    if not BASE:
-        print('Comparação de pixels opcional. Defina MC_DS_BASE_URL para servir o commit fixado.', flush=True)
-        return
-    from PIL import Image, ImageChops
-
-    for width,height,route in [(1440,900,'cursos'),(1024,768,'leitura'),(390,844,'leitura'),(320,680,'trilha')]:
-        images = []
-        for origin in (BASE, ENTRY):
-            page = new_page(browser,width,height,REVIEW)
-            visit(page,route,origin)
-            images.append(Image.open(io.BytesIO(page.screenshot(animations='disabled'))).convert('RGB'))
-            page.close()
-        assert ImageChops.difference(*images).getbbox() is None, (width,route)
-        print(f'{width} px · {route}: pixels idênticos ao MC-DESIGN-13.',flush=True)
-
-
 with sync_playwright() as playwright, playwright.chromium.launch(executable_path=BROWSER) as browser:
     examine_routes(browser)
-    capture_reference(browser)
+    exercise_composition(browser)
     catalog(browser)
-    compare_with_baseline(browser)

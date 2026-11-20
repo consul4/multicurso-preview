@@ -207,6 +207,11 @@
   --mc-component-field-radius: var(--mc-primitive-dimension-px-9);
   --mc-component-field-fill: var(--mc-semantic-color-field-fill);
   --mc-component-field-border: var(--mc-semantic-color-field-border);
+  --mc-component-field-placeholder: var(--mc-semantic-color-muted);
+  --mc-component-field-active-border: var(--mc-semantic-color-accent);
+  --mc-component-field-error-border: var(--mc-semantic-color-error-text);
+  --mc-component-field-disabled-fill: var(--mc-semantic-color-disabled-fill);
+  --mc-component-field-disabled-text: var(--mc-semantic-color-disabled-text);
   --mc-component-card-radius: var(--mc-primitive-dimension-px-17);
   --mc-component-card-fill: var(--mc-semantic-color-surface);
   --mc-component-card-shadow: var(--mc-semantic-shadow-card);
@@ -232,10 +237,13 @@
 
 :root, :root[data-mc-theme="claro"] {
   color-scheme: light;
+  --mc-semantic-color-field-border: rgb(115 132 160 / 1.000000);
+  --mc-semantic-color-control-border: rgb(115 132 160 / 1.000000);
 }
 
 :root[data-mc-theme="black"] {
   color-scheme: dark;
+  --mc-theme-radio-accent: var(--mc-semantic-color-primary);
   --mc-semantic-color-ink: rgb(238 243 252 / 1.000000);
   --mc-semantic-color-muted: rgb(177 190 210 / 1.000000);
   --mc-semantic-color-primary: rgb(164 186 255 / 1.000000);
@@ -298,6 +306,7 @@
 
 :root[data-mc-theme="glass"] {
   color-scheme: light;
+  --mc-theme-radio-accent: var(--mc-semantic-color-primary);
   --mc-semantic-color-ink: rgb(17 28 54 / 1.000000);
   --mc-semantic-color-muted: rgb(67 85 116 / 1.000000);
   --mc-semantic-color-primary: rgb(36 75 211 / 1.000000);
@@ -308,7 +317,7 @@
   --mc-semantic-color-tint: rgb(220 233 255 / 1.000000);
   --mc-semantic-color-rail: rgb(233 240 252 / 1.000000);
   --mc-semantic-color-selection: rgb(216 230 255 / 1.000000);
-  --mc-semantic-color-control-border: rgb(108 133 175 / 1.000000);
+  --mc-semantic-color-control-border: rgb(90 113 156 / 1.000000);
   --mc-semantic-color-progress-track: rgb(215 227 246 / 1.000000);
   --mc-semantic-color-mark-fill: rgb(33 55 89 / 1.000000);
   --mc-semantic-color-avatar-fill: rgb(98 57 166 / 1.000000);
@@ -317,7 +326,7 @@
   --mc-semantic-color-card-shadow: rgb(48 70 107 / 0.160784);
   --mc-semantic-color-dock-shadow: rgb(52 74 119 / 0.219608);
   --mc-semantic-color-search-text: rgb(53 75 115 / 1.000000);
-  --mc-semantic-color-field-border: rgb(100 125 169 / 1.000000);
+  --mc-semantic-color-field-border: rgb(90 113 156 / 1.000000);
   --mc-semantic-color-field-fill: rgb(245 248 255 / 1.000000);
   --mc-semantic-color-button-secondary-text: rgb(32 59 108 / 1.000000);
   --mc-semantic-color-hero-start: rgb(226 235 255 / 1.000000);
@@ -339,6 +348,8 @@
     :root[data-mc-theme="glass"] {
       --mc-semantic-color-surface: var(--mc-semantic-color-glass-surface);
       --mc-semantic-color-rail: var(--mc-semantic-color-glass-chrome);
+      --mc-theme-backdrop: blur(var(--mc-primitive-dimension-px-14));
+      --mc-theme-glow: radial-gradient(ellipse at 12% 5%, var(--mc-semantic-color-glass-glow), transparent 58%), radial-gradient(ellipse at 88% 28%, var(--mc-semantic-color-glass-glow-secondary), transparent 54%);
     }
   }
 }

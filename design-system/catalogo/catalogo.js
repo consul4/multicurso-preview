@@ -50,13 +50,25 @@ document.querySelector('[data-advance]').addEventListener('click', () => {
   progress.value = progress.value === 100 ? 0 : Math.min(progress.value + 20, 100);
   byId('progress-text').value = progress.value + '%';
 });
+const sample = byId('spec-form').elements.sample;
+sample.addEventListener('input', () => {
+  if (!sample.hasAttribute('aria-invalid')) return;
+  sample.removeAttribute('aria-invalid');
+  sample.removeAttribute('aria-describedby');
+  byId('spec-feedback').hidden = true;
+});
 byId('spec-form').addEventListener('submit', event => {
   event.preventDefault();
   const feedback = event.target.querySelector('[role="status"]');
-  const valid = Boolean(event.target.elements.sample.value.trim());
+  const valid = Boolean(sample.value.trim());
   feedback.hidden = false;
   feedback.classList.toggle('error', !valid);
   feedback.textContent = valid ? 'Exemplo válido.' : 'Escreva um texto para validar.';
+  if (!valid) {
+    sample.setAttribute('aria-invalid','true');
+    sample.setAttribute('aria-describedby',feedback.id);
+    sample.focus();
+  }
 });
 
 const swatches = {

@@ -5,14 +5,15 @@ import json
 import os
 from pathlib import Path
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageDraw
 from playwright.sync_api import expect, sync_playwright
 
-HERE = Path(__file__).resolve().parents[1]
+from check import THEME_EXTENSION, read_themes
+
 URL = os.getenv('MC_DS_URL', 'http://127.0.0.1:4232').rstrip('/')
 BASE = os.getenv('MC_DS_BASE_URL', '').rstrip('/')
 BROWSER = os.getenv('CHROMIUM', '/usr/bin/chromium')
-THEMES = {'claro':'light', 'black':'dark', 'glass':'light'}
+THEMES = {id: theme['$extensions'][THEME_EXTENSION]['colorScheme'] for id, theme in read_themes().items()}
 SIZES = [(320,680),(390,844),(768,900),(1024,768),(1100,768),(1101,768),(1440,900)]
 ROUTES = '''
 cursos curso trilha progresso materiais notas video leitura laboratorio
@@ -22,8 +23,12 @@ SEED = {'done':['video','leitura','laboratorio','atividade','avaliacao'], 'grade
 THEME_KEY = 'multicurso-design-theme'
 STUDY_KEY = 'multicurso-design10-v1'
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--captures', action='store_true')
+parser.add_argument('--captures', type=Path, help='Pasta para evidências locais novas')
+parser.add_argument('--compare-controls', action='store_true',
+                    help='Aceita deltas de cor na área dos controles corrigidos no DS03')
 args = parser.parse_args()
+if args.compare_controls and not BASE:
+    parser.error('--compare-controls requer MC_DS_BASE_URL')
 
 
 def make_page(browser, width, height, *, theme='claro', state=SEED, standalone=False):
@@ -46,7 +51,18 @@ def open_route(page, route, origin=URL):
 
 def screenshot(page, name):
     if args.captures:
-        page.screenshot(path=HERE / 'references/capturas-temas' / f'{name}.png', animations='disabled')
+        page.screenshot(path=args.captures / f'{name}.png', animations='disabled')
+
+
+UPDATED_CONTROLS = 'input:not([type="radio"]), textarea, select, .btn.secondary:not(:disabled)'
+
+
+def control_boxes(page):
+    return page.locator(UPDATED_CONTROLS).evaluate_all("""controls => controls.flatMap(control => {
+        if (!control.checkVisibility()) return [];
+        const {x,y,width,height} = control.getBoundingClientRect();
+        return [[x,y,width,height]];
+    })""")
 
 
 def compare_image(before, candidate, route):
@@ -59,13 +75,22 @@ def compare_image(before, candidate, route):
         masks = [page.locator('.video-wrap')] if route=='video' else []
         image = Image.open(io.BytesIO(page.screenshot(animations='disabled', mask=masks))).convert('RGB')
         images.append(image)
-    return ImageChops.difference(*images).getbbox()
+    difference = ImageChops.difference(*images)
+    changed = bool(difference.getbbox())
+    if args.compare_controls:
+        boxes = control_boxes(before)
+        assert boxes == control_boxes(candidate), f'Geometria de controles alterada: {route}'
+        draw = ImageDraw.Draw(difference)
+        for x,y,width,height in boxes:
+            draw.rectangle((int(x)-1,int(y)-1,int(x+width)+1,int(y+height)+1), fill=(0,0,0))
+    return changed, difference.getbbox()
 
 
 def matrix(browser):
     combinations=0
     diffs=[]
     compared=0
+    changed_pairs=0
     for theme, scheme in THEMES.items():
         for width,height in SIZES:
             page=make_page(browser,width,height,theme=theme)
@@ -79,8 +104,13 @@ def matrix(browser):
                 assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(theme,width,route)
                 if before:
                     open_route(before,route,BASE)
-                    found=compare_image(before,page,route)
-                    if found: diffs.append((width,route,found))
+                    changed, outside=compare_image(before,page,route)
+                    if changed:
+                        changed_pairs+=1
+                    if outside: diffs.append((width,route,outside))
+                    if args.captures and width in (390,1024) and route in ('gestao','editor','cursos','laboratorio','leitura','video'):
+                        screenshot(before,f'antes-claro-{route}-{width}')
+                        screenshot(page,f'depois-claro-{route}-{width}')
                     compared+=1
                 if theme != 'claro' and (width,route) in {(390,'leitura'),(1024,'video'),(390,'atividade'),
                                                           (768,'avaliacao'),(1440,'gestao'),(1440,'editor')}:
@@ -92,8 +122,11 @@ def matrix(browser):
             if before: before.close()
             page.close()
             print(f'{theme} · {width}px · 18 telas',flush=True)
-    print(f'{combinations} combinações · {compared} pares do Claro · diferenças: {diffs}',flush=True)
+    print(f'{combinations} combinações · {compared} pares do Claro · {changed_pairs} pares com deltas '
+          f'· diferenças fora do escopo: {diffs}',flush=True)
     assert not diffs, diffs
+    if args.compare_controls:
+        assert changed_pairs, 'Nenhuma atualização visual de controle foi observada.'
 
 
 def choose(page, label):

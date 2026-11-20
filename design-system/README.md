@@ -1,6 +1,6 @@
 # Design System Multicurso 2.0
 
-**MC-DESIGN-SYSTEM-02 · candidata à homologação.** Claro, Black Full e Glass usam o mesmo Shell e as mesmas 18 rotas do protótipo. O Claro conserva como referência o MC-DESIGN-13 no commit `3600227ae1fcc6a77e73671173532221bcd30f40`.
+**MC-DESIGN-SYSTEM-03 · candidata à oficialização.** Claro, Black Full e Glass usam o mesmo Shell e as mesmas 18 rotas do protótipo. O Claro mantém a identidade do MC-DESIGN-13, com ajustes pontuais de acessibilidade documentados no relatório. A homologação visual e a validação em dispositivos reais seguem pendentes.
 
 | Documento vigente | Conteúdo |
 | --- | --- |

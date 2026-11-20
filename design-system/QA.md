@@ -1,35 +1,48 @@
 # Controle de qualidade
 
-## Testes
+## Executar localmente
 
-1. Na raiz, execute `python design-system/tools/check.py`. O teste usa Python padrão, confere hashes da mídia do protótipo e das capturas históricas, dimensões dos PNGs, caminhos da documentação, aliases e seus tipos, cobertura de cores, contraste por tema, referências CSS e igualdade da saída gerada.
-2. Sirva a raiz do repositório com Vite em `127.0.0.1:4232`. Rode `python design-system/tools/qa.py` com Playwright Python e Chromium. O teste cobre as 18 rotas nas sete larguras, o Shell, o painel, bloqueio, standalone simulado e as interações do catálogo. A abertura simples do catálogo também funciona sob servidor estático.
-3. Para comparação de pixels, extraia somente `mc-design-10/` do commit `3600227ae1fcc6a77e73671173532221bcd30f40` em outra pasta e sirva-a em outra porta. Defina `MC_DS_BASE_URL` para a origem desse servidor e rode a suíte no mesmo Chromium. A opção requer Pillow e compara exemplos estáveis com os mesmos dados, dimensões e fonte disponível.
-4. Capture diferenças para revisão com `--captures`. Atualize o manifesto apenas após inspecionar as novas imagens e registrar sua relação com a referência. Para nova geração de tokens, revise primeiro o JSON e rode `python design-system/tools/check.py --write`. Essa opção atualiza o inventário e o tema, preservando os hashes protegidos da referência.
+1. Na raiz do clone, execute `python design-system/tools/check.py`. O verificador usa Python padrão e confere hashes históricos, aliases, contraste e correspondência do CSS e do seletor com os manifestos.
+2. Use `python -m pip install playwright Pillow` no ambiente de teste e tenha Chromium disponível. Sirva o clone com `npx vite@6.4.5 --host 127.0.0.1 --port 4232`. `MC_DS_URL` indica outra origem e `CHROMIUM` permite indicar outro executável.
+3. Execute `python design-system/tools/qa.py` para testar catálogo, navegação e estados representativos. Execute `python design-system/tools/qa_release.py` para testar campo, esquema nativo, transparência parcial, quarto tema temporário e exportação. Esse segundo comando usa `esbuild` no PATH ou indicado por `ESBUILD` e cria os ensaios em pasta temporária.
+4. Execute `python design-system/tools/qa_themes.py` para as 18 rotas, três temas e sete larguras, além de troca de tema, preservação de dados e vídeo, foco, catálogo e dois fallbacks do Glass.
 
-`MC_DS_URL` permite informar outra origem do catálogo. `CHROMIUM` permite informar outro executável. O player requer resposta com suporte a busca por posição para testes de mídia mais completos. As suítes MC-DESIGN-10, 11, 12 e 13 complementam a cobertura de mídia, retomada e teclado.
+### Comparar o Claro com a referência
 
-## Repetições e divergências
+Extraia `mc-design-10/` de `ccb61b4ed8af7d12432404881dc3bf74fe8f8e7d` para uma pasta separada e sirva em outra porta com Vite. Use a mesma instalação de Chromium e as mesmas fontes para as duas versões. O commit `3600227ae1fcc6a77e73671173532221bcd30f40` pode ser servido separadamente para análise histórica. O relatório registra um delta de 8 × 3 px nesse teste e o resultado da contraprova dirigida.
 
-O [inventário histórico](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md) lista pares de propriedade/valor repetidos e as cores usadas em mais de um local. A [extração histórica por seletor](references/arquivo/inventario-mc-design-13.css.json) fornece o contexto para decidir se a repetição é de intenção, variante, fallback ou sobrescrita. A checagem impede primitivos de cor duplicados e verifica que o CSS operacional consome papéis existentes. Os tokens semânticos podem reutilizar o mesmo primitivo. Não consolide valores legados pela mera coincidência numérica.
+```sh
+MC_DS_BASE_URL=http://127.0.0.1:4233 python design-system/tools/qa_themes.py --compare-controls --captures /tmp/multicurso-ds03
+```
+
+`--compare-controls` confere a geometria dos controles entre as versões e aceita deltas de pixels apenas nas áreas de campo e botão secundário em estado normal. Use a comparação padrão sem essa opção quando esperar identidade de pixels com o DS03. A área do vídeo nativo é mascarada por variar com os controles e o buffer. A caixa de vídeo é verificada separadamente. `--captures PASTA` grava evidências novas e evita atualizar capturas históricas.
+
+### Regenerar e exportar
+
+`python design-system/tools/check.py --write` regenera o CSS de execução e a linha de opções do seletor. Inventários e capturas arquivados são imutáveis. Execute o verificador sem `--write` para confirmar que as saídas são reproduzíveis.
+
+Para gerar o HTML único do protótipo atual, execute `python docs/design/MC-DESIGN-11/empacotar.py --saida /tmp/multicurso-ds03.html` com `esbuild` disponível. Use um caminho novo. O exportador incorpora bootstrap, temas, estilos, código, imagens, MP4 e VTT. A suíte confere o arquivo isolado por HTTP local, com listagem de requisições e a reprodução do MP4. O catálogo permanece uma entrada própria. A abertura via `file://` foi bloqueada neste Chromium gerenciado. Outros navegadores podem restringir armazenamento e reprodução ao abrir o arquivo diretamente. Os HTMLs arquivados preservam as versões que os produziram.
+
+## Roteiro para Safari e iPhone
+
+**Estado: pendente em dispositivo real.** Anote versão do sistema, versão do Safari, largura lógica, orientação, modo navegador ou standalone, tema, passos e captura de cada resultado. Os testes Chromium de preferência e standalone são simulados.
+
+| Caso | Procedimento | Resultado esperado |
+| --- | --- | --- |
+| Safari macOS · controles nativos | Abra a composição de 1024 px em uma janela mais estreita. Ative a exibição das barras de rolagem no sistema. Alterne os três temas e navegue pelos selects, busca e textarea. | Moldura e conteúdo seguem o mesmo esquema. Rolagem horizontal, menus nativos, foco e texto continuam utilizáveis. |
+| Safari iPhone · Glass padrão | Com Reduzir Transparência desativado, abra Leitura, Videoaula e Ferramentas em claro natural e sobre a capa escura do vídeo. Role e abra/feche a gaveta. | Halos e desfoque aparecem quando suportados. Títulos, bordas e controles conservam legibilidade durante a rolagem. Registre qualquer cintilação ou queda de fluidez. |
+| Safari/iPhone · transparência reduzida | Ative Reduzir Transparência no sistema e reabra a prévia. No inspetor, quando disponível, confirme `matchMedia('(prefers-reduced-transparency: reduce)').matches`. | Quando a preferência é exposta, superfícies ficam opacas e halos e blur desaparecem. Registre a ausência da media query se o navegador não expuser a preferência. |
+| Safari/iPhone · desfoque indisponível | No inspetor, verifique suporte às duas propriedades. Se ambas forem suportadas, desative o bloco `@supports` apenas para ensaiar o fallback e marque o resultado como simulado. | Campos, cabeçalho e gavetas usam cores opacas e as mesmas dimensões. |
+| iPhone · navegador e standalone | Use Adicionar à Tela de Início e confirme se a abertura é standalone. Abra Atividade, digite com o teclado aberto, gire o telefone, feche o teclado e retome a aula. Alterne o tema em Ferramentas → Ajuda. | Cápsula ocupa a área segura apenas em standalone e reaparece após o teclado. Progresso, rascunho e posição ficam preservados. |
+| iPhone · VoiceOver e vídeo | Em Gestão, envie um nome repetido e corrija-o. Na Avaliação, percorra as opções. Em Videoaula, abra a transcrição, acione 00:14 e verifique os controles nativos, Foco e Tela Cheia conforme o suporte exposto. | Erro identifica o campo e recebe foco. Rótulos e seleção são anunciados. Gavetas devolvem foco. Tema preserva a posição do vídeo. |
 
 ## Checklist de revisão
 
-- [ ] Identificar a tela, o estado e a referência. Anotar a condição de aprovação.
-- [ ] Usar token adequado à função. Explicar valores novos e comparar com o inventário.
-- [ ] Comparar antes/depois com os mesmos dados, viewport e estado.
-- [ ] Testar navegação, cursos bloqueados, estados vazios, feedback, foco e teclado.
-- [ ] Verificar 320/390, 768/1024, 1100/1101 e 1440 px conforme a superfície.
-- [ ] Conferir contraste, ações por teclado, nome acessível, zoom e movimento reduzido.
-- [ ] Testar cápsula e safe area quando a mudança for de Shell. Distinguir simulação do teste em iPhone real.
-- [ ] Atualizar decisões, fontes, capturas e histórico quando afetados.
+- [ ] Identificar tela, estado, referência, condição de aprovação e resultado esperado.
+- [ ] Usar o papel semântico adequado e registrar a justificativa de valores novos.
+- [ ] Comparar a mesma rota, dados, viewport e estado em 320, 390, 768, 1024, 1100, 1101 e 1440 px.
+- [ ] Conferir contraste, foco de teclado, erro com texto, movimento reduzido, zoom e estados vazio e bloqueado.
+- [ ] Conferir áreas seguras, teclado e leitores de tela em dispositivo real quando aplicável.
+- [ ] Atualizar decisão, changelog e evidências quando a mudança os afetar.
 
-## Storybook na aplicação React
-
-O frontend React e Vite é um candidato a Storybook para documentar componentes puros, parâmetros, interações e providers de tema. Antes de adotar, escolha uma versão compatível com a stack da aplicação e faça um piloto isolado com botão, campo, gaveta e um Shell com dependências simuladas. Verifique o custo de build e manutenção comparado ao catálogo estático. Nenhuma instalação ou alteração à aplicação real foi feita nesta etapa. [Storybook para React e Vite](https://storybook.js.org/docs/get-started/frameworks/react-vite)
-
-## Matriz operacional dos temas
-
-O teste principal desta versão é `python design-system/tools/qa_themes.py`, com Vite servindo a raiz em 4232. Ele abre cada uma das 18 rotas em Claro, Black Full e Glass nas sete larguras e testa a troca real, persistência, vídeo, diálogo, redução de transparência, fallback e catálogo.
-
-Para exercer a comparação de pixels, sirva separadamente o commit `3600227ae1fcc6a77e73671173532221bcd30f40` e defina `MC_DS_BASE_URL`. O player nativo varia conforme o buffer, por isso o retângulo do vídeo é mascarado nos pares automatizados. Seu tamanho, cabeçalho e posição são verificados em testes de composição. Use `--captures` para guardar as evidências dos temas novos.
+O [inventário histórico](references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md) guarda repetições e contexto. Consolide valores somente quando compartilharem a mesma função. Para React, o catálogo atual atende à revisão do demonstrador. Um piloto de Storybook pode documentar componentes, providers e portais se a integração for aprovada separadamente. [Storybook para React e Vite](https://storybook.js.org/docs/get-started/frameworks/react-vite)

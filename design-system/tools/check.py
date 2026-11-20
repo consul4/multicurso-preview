@@ -11,8 +11,31 @@ REPO = SYSTEM.parent
 PROTOTYPE = REPO / 'mc-design-10'
 ALIAS = re.compile(r'^\{([\w.-]+)\}$')
 EXTENSION = 'com.multicurso.source'
-THEMES = ('claro', 'black', 'glass')
 THEME_EXTENSION = 'com.multicurso.theme'
+TRANSLUCENT_ROLES = ('surface', 'rail')
+MATERIAL_PROPERTIES = {'--mc-theme-glow', '--mc-theme-backdrop', '--mc-theme-radio-accent'}
+
+if not __debug__:
+    raise RuntimeError('Execute o validador sem -O para manter as verificações ativas.')
+
+
+def read_themes():
+    paths = sorted((SYSTEM / 'themes').glob('*.tokens.json'), key=lambda p: (p.name != 'claro.tokens.json', p.name))
+    themes = {path.name.removesuffix('.tokens.json'): json.loads(path.read_text()) for path in paths}
+    assert 'claro' in themes, 'O tema padrão Claro é obrigatório'
+    return themes
+
+
+def validate_color(value, path):
+    def valid_channel(channel):
+        return type(channel) in (int, float) and 0 <= channel <= 1
+
+    assert isinstance(value, dict) and value.get('colorSpace') == 'srgb', f'Cor sRGB inválida: {path}'
+    channels = value.get('components')
+    assert isinstance(channels, list) and len(channels) == 3 and all(map(valid_channel, channels)), (
+        f'Canais sRGB inválidos: {path}'
+    )
+    assert valid_channel(value.get('alpha', 1)), f'Alfa inválido: {path}'
 
 
 def css_inventory(css):
@@ -132,6 +155,8 @@ def validate_token_types(tokens, rules):
             aliases[path] = target
         else:
             assert path.startswith('primitive.') or (kind == 'shadow' and path.startswith('semantic.')), f'Use alias em {path}'
+            if kind == 'color':
+                validate_color(value, path)
             if kind == 'shadow':
                 for term, expected_type in (('offsetX','dimension'),('offsetY','dimension'),('blur','dimension'),
                                             ('spread','dimension'),('color','color')):
@@ -155,40 +180,99 @@ def validate_token_types(tokens, rules):
     return aliases
 
 
+def theme_token(path, tokens, aliases, overrides):
+    # Um override do tema tem precedência em qualquer papel da cadeia de aliases.
+    while path not in overrides and path in aliases:
+        path = aliases[path]
+    return overrides.get(path, tokens[path])
+
+
+def theme_alias(value, tokens, kind):
+    match = ALIAS.fullmatch(value) if isinstance(value, str) else None
+    assert match and match[1] in tokens and tokens[match[1]]['$type'] == kind, f'Alias {kind} inválido: {value}'
+    return match[1]
+
+
+def validate_theme(theme, data, tokens, aliases):
+    assert re.fullmatch(r'[a-z][a-z0-9-]*', theme), f'Identificador inválido: {theme}'
+    name = data.get('$description')
+    assert isinstance(name, str) and name.strip() and not re.search(r'[<>&\x00-\x1f]', name), f'Nome inválido: {theme}'
+    meta = data['$extensions'][THEME_EXTENSION]
+    assert set(meta) <= {'colorScheme', 'translucent', 'backdropBlur', 'canvasGlow', 'radioAccent'}, theme
+    assert meta.get('colorScheme') in ('light', 'dark'), theme
+    overrides = dict(tokens_in(data))
+    for path, token in overrides.items():
+        assert path.startswith('semantic.color.') and path in tokens and tokens[path]['$type'] == token['$type'] == 'color', path
+        validate_color(token['$value'], f'{theme}/{path}')
+    translucent = meta.get('translucent', {})
+    assert isinstance(translucent, dict) and set(translucent) <= set(TRANSLUCENT_ROLES), f'Papéis translúcidos inválidos: {theme}'
+    for role in TRANSLUCENT_ROLES:
+        fallback = theme_token(f'semantic.color.{role}', tokens, aliases, overrides)['$value']
+        assert fallback.get('alpha', 1) == 1, f'{theme}/{role}: o fallback precisa ser opaco'
+    for role, value in translucent.items():
+        path = theme_alias(value, tokens, 'color')
+        assert path not in {f'semantic.color.{key}' for key in translucent}, f'Alias circular de material: {theme}/{role}'
+        target = theme_token(path, tokens, aliases, overrides)['$value']
+        assert 0 < target.get('alpha', 1) < 1, f'{theme}/{role}: o material precisa ter alfa entre 0 e 1'
+    if 'backdropBlur' in meta:
+        path = theme_alias(meta['backdropBlur'], tokens, 'dimension')
+        assert 'surface' in translucent and theme_token(path, tokens, aliases, overrides)['$value']['value'] > 0, (
+            f'{theme}: blur requer superfície translúcida e dimensão positiva'
+        )
+    if 'canvasGlow' in meta:
+        glow = meta['canvasGlow']
+        assert translucent and isinstance(glow, list) and len(glow) == 2, f'Halo inválido: {theme}'
+        for value in glow:
+            theme_alias(value, tokens, 'color')
+    if 'radioAccent' in meta:
+        path = theme_alias(meta['radioAccent'], tokens, 'color')
+        assert theme_token(path, tokens, aliases, overrides)['$value'].get('alpha', 1) == 1, (
+            f'{theme}: o acento do rádio precisa ser opaco'
+        )
+    check_contrast(tokens, aliases, overrides, theme, meta)
+    return meta, overrides
+
+
 def check_contrast(tokens, aliases, overrides, theme, metadata):
-    def color(role):
-        path = f'semantic.color.{role}'
-        token = overrides.get(path) or resolved_token(path, tokens, aliases)
-        return token['$value']
+    def color(path):
+        token = theme_token(path, tokens, aliases, overrides)
+        value = token['$value']
+        return tuple(round(c * 255) / 255 for c in value['components']), value.get('alpha', 1)
 
     def luminance(components):
         linear = [c / 12.92 if c <= .04045 else ((c + .055) / 1.055) ** 2.4 for c in components]
         return sum(component * weight for component, weight in zip(linear, (.2126, .7152, .0722)))
 
-    def ratio(foreground, background):
-        high, low = sorted([luminance(foreground), luminance(background)], reverse=True)
+    def ratio(a, b):
+        high, low = sorted((a, b), reverse=True)
         return (high + .05) / (low + .05)
 
-    pairs = [('ink', 'canvas'), ('muted', 'surface'), ('on-primary', 'primary'),
-             ('success-text', 'success-fill'), ('error-text', 'error-fill'), ('ink','field-fill'),
-             ('disabled-text','disabled-fill'), ('navigation-text','rail'), ('badge-text','badge-fill'),
-             ('on-accent','accent'), ('accent','selection'), ('button-secondary-text','surface'),
-             ('media-text','mark-fill'), ('media-text','avatar-fill')]
-    checks = [(fg,bg,4.5) for fg,bg in pairs]
-    if theme != 'claro':
-        checks += [('field-border','field-fill',3), ('control-border','surface',3), ('accent','canvas',3)]
-    for foreground, background, minimum in checks:
-        measured = ratio(color(foreground)['components'], color(background)['components'])
+    def check(foreground, background, minimum):
+        fg, fg_alpha = color(f'semantic.color.{foreground}')
+        bg, bg_alpha = color(f'semantic.color.{background}')
+        assert fg_alpha == bg_alpha == 1, f'{theme}: o par base precisa ser opaco: {foreground}/{background}'
+        measured = ratio(luminance(fg), luminance(bg))
+        if material := metadata.get('translucent', {}).get(background):
+            material_rgb, alpha = color(theme_alias(material, tokens, 'color'))
+            low, high = (luminance(tuple(c * alpha + base * (1-alpha) for c in material_rgb)) for base in (0, 1))
+            fg_lum = luminance(fg)
+            closest = min(high, max(low, fg_lum))
+            measured = min(measured, ratio(fg_lum, closest))
         assert measured >= minimum, f'{theme}: contraste insuficiente em {foreground}/{background}: {measured:.2f}:1'
-    if translucent := metadata.get('translucent'):
-        # Estimate the darker compositing case over the modal backdrop, including the rail roles.
-        backdrop = color('scrim')['components']
-        pairs = [('ink','surface'), ('muted','surface'), ('button-secondary-text','surface'), ('navigation-text','rail')]
-        for foreground, background in pairs:
-            surface = color(ALIAS.fullmatch(translucent[background])[1].split('.')[-1])
-            alpha = surface.get('alpha', 1)
-            composite = [a * alpha + b * (1 - alpha) for a,b in zip(surface['components'], backdrop)]
-            assert ratio(color(foreground)['components'], composite) >= 4.5, f'Contraste Glass sobre backdrop em {foreground}'
+
+    text = [('ink','canvas'), ('ink','surface'), ('muted','surface'), ('on-primary','primary'),
+            ('success-text','success-fill'), ('error-text','error-fill'), ('ink','field-fill'), ('muted','field-fill'),
+            ('disabled-text','disabled-fill'), ('navigation-text','rail'), ('badge-text','badge-fill'),
+            ('on-accent','accent'), ('accent','selection'), ('button-secondary-text','surface'),
+            ('media-text','mark-fill'), ('media-text','avatar-fill')]
+    controls = [('field-border','field-fill'), ('field-border','surface'), ('field-border','rail'),
+                ('control-border','surface'), ('control-border','rail'), ('accent','field-fill'),
+                ('accent','surface'), ('accent','canvas'), ('error-text','field-fill'), ('error-text','surface'),
+                ('primary','progress-track')]
+    for foreground, background in text:
+        check(foreground, background, 4.5)
+    for foreground, background in controls:
+        check(foreground, background, 3)
 
 
 def theme_css(tokens, aliases, variants):
@@ -201,6 +285,8 @@ def theme_css(tokens, aliases, variants):
         selector = f':root[data-mc-theme="{theme}"]'
         lines.extend([(':root, ' if theme == 'claro' else '') + selector + ' {',
                       f'  color-scheme: {metadata["colorScheme"]};'])
+        if 'radioAccent' in metadata:
+            lines.append(f'  --mc-theme-radio-accent: {css_value("color", metadata["radioAccent"])};')
         for path, token in overrides.items():
             lines.append(f'  {custom_property(path)}: {css_value(token["$type"], token["$value"])};')
         lines.extend(['}', ''])
@@ -209,6 +295,13 @@ def theme_css(tokens, aliases, variants):
                           '  @media not (prefers-reduced-transparency: reduce) {', f'    {selector} {{'])
             for color_role, value in translucent.items():
                 lines.append(f'      --mc-semantic-color-{color_role}: {css_value("color", value)};')
+            if 'backdropBlur' in metadata:
+                blur = css_value('dimension', metadata['backdropBlur'])
+                lines.append(f'      --mc-theme-backdrop: blur({blur});')
+            if 'canvasGlow' in metadata:
+                first, second = (css_value('color', value) for value in metadata['canvasGlow'])
+                lines.append(f'      --mc-theme-glow: radial-gradient(ellipse at 12% 5%, {first}, transparent 58%), '
+                             f'radial-gradient(ellipse at 88% 28%, {second}, transparent 54%);')
             lines.extend(['    }', '  }', '}', ''])
     return '\n'.join(lines)
 
@@ -238,21 +331,8 @@ def main():
     declarations = json.loads((SYSTEM / 'references/arquivo/inventario-mc-design-13.css.json').read_text())
     tokens = dict(tokens_in(json.loads((SYSTEM / 'tokens/multicurso.tokens.json').read_text())))
     aliases = validate_token_types(tokens, declarations)
-    variants = {}
-    for theme in THEMES:
-        file = SYSTEM / f'themes/{theme}.tokens.json'
-        data = json.loads(file.read_text())
-        overrides = dict(tokens_in(data))
-        metadata = data['$extensions'][THEME_EXTENSION]
-        assert metadata['colorScheme'] in ('light', 'dark'), theme
-        for path, token in overrides.items():
-            assert path.startswith('semantic.color.') and tokens[path]['$type'] == token['$type'] == 'color', path
-            css_value('color', token['$value'])
-        for role, value in metadata.get('translucent', {}).items():
-            assert tokens[f'semantic.color.{role}']['$type'] == 'color'
-            assert tokens[ALIAS.fullmatch(value)[1]]['$type'] == 'color'
-        check_contrast(tokens, aliases, overrides, theme, metadata)
-        variants[theme] = metadata, overrides
+    themes = read_themes()
+    variants = {theme: validate_theme(theme, data, tokens, aliases) for theme, data in themes.items()}
     colors = [css_value('color', t['$value']) for p, t in tokens.items() if p.startswith('primitive.color.')]
     assert len(colors) == len(set(colors)), 'Cor literal duplicada no nível primitivo'
     expected_colors = {css_value('color', color_value(literal)) for literal in all_literals(declarations)}
@@ -260,18 +340,24 @@ def main():
     for path in (PROTOTYPE / 'style.css', SYSTEM / 'catalogo/catalogo.css'):
         css = path.read_text()
         refs = set(re.findall(r'var\((--mc-[\w-]+)', css))
-        assert refs <= {custom_property(path) for path in tokens}, (path, refs - {custom_property(path) for path in tokens})
+        assert refs <= {custom_property(path) for path in tokens} | MATERIAL_PROPERTIES, (path, refs)
         literals = set(all_literals(css_inventory(css))) - {'transparent'}
         assert not literals, f'Cores diretas em {path}: {literals}'
     markup = (PROTOTYPE / 'index.html').read_text()
     assert markup.index('src="theme.js"') < markup.index('rel="stylesheet" href="themes.css"')
-    output = PROTOTYPE / 'themes.css'
-    generated = theme_css(tokens, aliases, variants)
-    if args.write:
-        output.write_text(generated)
-    else:
-        assert output.read_text() == generated, 'themes.css divergiu. Revise os tokens e regenere com --write.'
-    print(f'{len(tokens)} tokens, 3 temas e {len(declarations)} declarações históricas verificados.')
+    runtime = PROTOTYPE / 'theme.js'
+    original = runtime.read_text()
+    names = json.dumps({theme: data['$description'] for theme, data in themes.items()}, ensure_ascii=False)
+    registry, count = re.subn(r'(?m)^  const themes = .*; // Gerado por check.py$',
+                              lambda _match: f'  const themes = {names}; // Gerado por check.py', original)
+    assert count == 1, 'Registro gerado de temas ausente no bootstrap'
+    outputs = {PROTOTYPE / 'themes.css': theme_css(tokens, aliases, variants), runtime: registry}
+    for path, generated in outputs.items():
+        if args.write:
+            path.write_text(generated)
+        else:
+            assert path.read_text() == generated, f'{path.name} divergiu. Regenere com --write.'
+    print(f'{len(tokens)} tokens, {len(variants)} temas e {len(declarations)} declarações históricas verificados.')
 
 
 if __name__ == '__main__':

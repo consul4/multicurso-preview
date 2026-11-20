@@ -1,6 +1,14 @@
 # Histórico
 
-## 0.2.0 candidata · MC-DESIGN-SYSTEM-02
+## 0.3.0 candidata à oficialização · MC-DESIGN-SYSTEM-03
+
+- Contornos e estados de campos com contraste mais alto no Claro e controles nativos coerentes no catálogo. O Glass mantém desfoque e halos com contornos reforçados para fundos extremos.
+- Manifestos alimentam CSS, seletor e matriz. Validação de translucidez parcial e empacotamento offline exercitados em cópias temporárias.
+- Comparações antes/depois e roteiro de Safari e iPhone. [Relatório vigente](RELATORIO.md)
+
+## 0.2.0 · histórico substituído pela candidata 0.3
+
+[Relatório da entrega DS02 no commit auditado](https://github.com/consul4/multicurso-preview/blob/ccb61b4ed8af7d12432404881dc3bf74fe8f8e7d/design-system/RELATORIO.md)
 
 - Claro, Black Full e Glass aplicados à mesma árvore de interface, com seleção persistente e inicialização antes do CSS.
 - Tokens em uso no CSS do protótipo e no catálogo. Fallback opaco no Glass.

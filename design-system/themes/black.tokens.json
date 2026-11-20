@@ -2,7 +2,8 @@
   "$description": "Black Full",
   "$extensions": {
     "com.multicurso.theme": {
-      "colorScheme": "dark"
+      "colorScheme": "dark",
+      "radioAccent": "{semantic.color.primary}"
     }
   },
   "semantic": {

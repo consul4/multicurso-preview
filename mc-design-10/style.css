@@ -10,7 +10,7 @@
   --head: var(--mc-component-shell-header);
 }
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; display: grid; grid-template: auto 1fr / var(--rail) minmax(0,1fr); }
+body { background-image: var(--mc-theme-glow,none); margin: 0; min-height: 100vh; display: grid; grid-template: auto 1fr / var(--rail) minmax(0,1fr); }
 [hidden] { display: none !important; }
 a { color: inherit; }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -104,6 +104,16 @@ progress::-moz-progress-bar { background: var(--mc-component-progress-fill); }
 .actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin: 12px 0 0; }
 label:not(.choice) { display: grid; gap: 6px; margin: 11px 0; font-size: 13px; font-weight: 750; }
 input:not([type=radio]),textarea,select { width: 100%; min-height: var(--mc-component-field-height); padding: 8px 9px; border: 1px solid var(--mc-component-field-border); border-radius: var(--mc-component-field-radius); background: var(--mc-component-field-fill); font-size: var(--mc-component-field-type-size); }
+:is(input,textarea)::placeholder { color: var(--mc-component-field-placeholder); opacity: 1; }
+@media (hover:hover) {
+  :is(input:not([type=radio]),textarea,select):where(:enabled):hover { border-color: var(--mc-component-field-active-border); }
+}
+:is(input:not([type=radio]),textarea,select):focus-visible { border-color: var(--mc-component-field-active-border); }
+:is(input:not([type=radio]),textarea,select):where(:enabled):is([aria-invalid="true"],:user-invalid) { border-color: var(--mc-component-field-error-border); }
+:is(input:not([type=radio]),textarea,select):disabled {
+  background: var(--mc-component-field-disabled-fill);
+  color: var(--mc-component-field-disabled-text);
+}
 textarea { min-height: 110px; resize: vertical; }
 .filter { max-width: 400px; }
 .form-grid,.admin-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; align-items: start; }
@@ -304,24 +314,8 @@ html[data-standalone] main:has(~ dialog[open]) { overflow-y: hidden; }
 .theme-picker { margin-block: 12px; }
 .theme-picker .choice { align-items: center; }
 :root[data-theme-switching] :is(.btn,.quick) { transition: none; }
-:root:is([data-mc-theme="black"],[data-mc-theme="glass"]) input[type="radio"] {
-  accent-color: var(--mc-semantic-color-primary);
-}
-
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  @media not (prefers-reduced-transparency: reduce) {
-    :root[data-mc-theme="glass"] body {
-      background:
-        radial-gradient(ellipse at 12% 5%, var(--mc-semantic-color-glass-glow), transparent 58%),
-        radial-gradient(ellipse at 88% 28%, var(--mc-semantic-color-glass-glow-secondary), transparent 54%);
-    }
-    :root[data-mc-theme="glass"] :is(.top,.card,dialog,#dock) {
-      -webkit-backdrop-filter: blur(var(--mc-primitive-dimension-px-14));
-      backdrop-filter: blur(var(--mc-primitive-dimension-px-14));
-    }
-  }
-}
-:root:is([data-mc-theme="black"],[data-mc-theme="glass"]) :is(input,textarea)::placeholder {
-  color: var(--mc-semantic-color-muted);
-  opacity: 1;
+input[type="radio"] { accent-color: var(--mc-theme-radio-accent,auto); }
+:is(.top,.card,dialog,#dock) {
+  -webkit-backdrop-filter: var(--mc-theme-backdrop,none);
+  backdrop-filter: var(--mc-theme-backdrop,none);
 }

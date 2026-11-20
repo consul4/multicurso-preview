@@ -1,7 +1,7 @@
 /* Carregado antes das folhas de estilo para aplicar a preferência antes da primeira pintura. */
 (() => {
   const key = 'multicurso-design-theme';
-  const themes = {'claro':'Claro', 'black':'Black Full', 'glass':'Glass'};
+  const themes = {"claro": "Claro", "black": "Black Full", "glass": "Glass"}; // Gerado por check.py
   const root = document.documentElement;
   const meta = document.querySelector('meta[name="theme-color"]');
   const defaultChrome = meta?.content;

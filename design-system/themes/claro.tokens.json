@@ -6,6 +6,31 @@
     }
   },
   "semantic": {
-    "color": {}
+    "color": {
+      "field-border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.45098039215686275,
+            0.5176470588235295,
+            0.6274509803921569
+          ],
+          "alpha": 1
+        }
+      },
+      "control-border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.45098039215686275,
+            0.5176470588235295,
+            0.6274509803921569
+          ],
+          "alpha": 1
+        }
+      }
+    }
   }
 }

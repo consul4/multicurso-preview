@@ -1591,6 +1591,26 @@
       "border": {
         "$type": "color",
         "$value": "{semantic.color.field-border}"
+      },
+      "placeholder": {
+        "$type": "color",
+        "$value": "{semantic.color.muted}"
+      },
+      "active-border": {
+        "$type": "color",
+        "$value": "{semantic.color.accent}"
+      },
+      "error-border": {
+        "$type": "color",
+        "$value": "{semantic.color.error-text}"
+      },
+      "disabled-fill": {
+        "$type": "color",
+        "$value": "{semantic.color.disabled-fill}"
+      },
+      "disabled-text": {
+        "$type": "color",
+        "$value": "{semantic.color.disabled-text}"
       }
     },
     "card": {

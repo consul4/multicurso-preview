@@ -11,6 +11,7 @@
 | Laboratório e administração | Pendente | Definir fluxo do laboratório e da gestão, hierarquia de currículo, autoria, recursos e papéis de prévia. |
 | Tipografia, tons próximos e medidas repetidas | Observação técnica | Inter é declarado sem arquivo de fonte e o fallback varia. Consolidar nomes, contrastes e valores legados só com evidência visual e revisão. |
 | Black Full e Glass | Implementados no protótipo, em revisão | Paletas, esquema nativo, fallback Glass e seletor local testados. Homologação visual, adoção na aplicação e editor administrativo continuam pendentes. |
+| Contornos e validação de campos | Implementados no DS03 | Aprovar a atualização localizada no Claro e validar esquemas nativos e Glass em dispositivo real. |
 | Storybook na aplicação React | Avaliado, adoção futura em aberto | Pode documentar estados, providers e variantes quando houver componentes React e contratos estáveis. Para o demonstrador estático, o catálogo atual reutiliza CSS e rotas sem adicionar runtime ou dependências pesadas. |
 
 [Fontes e evidências](references/README.md) · [Manual](MANUAL-VISUAL.md)

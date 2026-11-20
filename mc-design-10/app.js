@@ -50,6 +50,15 @@ function notice(text,failed=false) {
   if(box){box.hidden=false;box.classList.toggle('error',failed);box.textContent=text;}
   else announce(text);
 }
+function fieldError(form, names, message) {
+  notice(message, true);
+  for (const name of names) {
+    const field = form.elements.namedItem(name);
+    field.setAttribute('aria-invalid','true');
+    field.setAttribute('aria-describedby','form-feedback');
+  }
+  form.elements.namedItem(names[0]).focus();
+}
 function render() {
   const isAdmin=management.some(([key])=>key===id), isLesson=lessons.some(([key])=>key===id);
   const dockLesson=studyDestination();
@@ -65,13 +74,13 @@ function render() {
     <div class="focus-study"><div class="focus-context"><strong role="heading" aria-level="1">${esc(name)}</strong><small>Dados simulados</small></div><button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('layers')}</button><button class="icon-btn" aria-label="Ferramentas" aria-haspopup="dialog" data-action="options">${icon('sliders')}</button>${action('focus','Sair do foco','aria-pressed="true"')}</div>
     <button class="icon-btn menu-toggle" data-action="menu" aria-label="Abrir navegação">${icon('menu')}</button><a class="brand" href="#cursos"><span class="logo">${icon('layers')}</span><span>Multicurso <b>2.0</b></span></a>
     <button class="search-open" aria-label="Buscar na prévia" data-action="search">${icon('search')}<span>Buscar na prévia</span></button>
-    <div class="top-actions">${isLesson?`<div class="tablet-controls">${lessonPanelButton('modules','layers','Módulos')}${lessonPanelButton('options','sliders','Ferramentas')}</div>`:''}<button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-label="Perfil demonstrativo">C</span></div>`;
+    <div class="top-actions">${isLesson?`<div class="tablet-controls">${lessonPanelButton('modules','layers','Módulos')}${lessonPanelButton('options','sliders','Ferramentas')}</div>`:''}<button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-hidden="true">C</span></div>`;
   get('rail').innerHTML=`<div class="rail-inner">${navigation()}</div>`;
   get('dock').innerHTML=`<a href="#cursos" ${id==='cursos'?'aria-current="page"':''}>${icon('home')}Início</a><button data-action="modules" aria-haspopup="dialog">${icon('layers')}Módulos</button><a href="#${dockLesson}" ${id===dockLesson?'aria-current="page"':''}>${icon('lesson')}Aula</a><a href="#atividade" ${id==='atividade'?'aria-current="page"':''}>${icon('tasks')}Atividades</a><button data-action="assistant" aria-haspopup="dialog">${icon('spark')}Assistente</button>`;
   const crumbs=isLesson?`<a href="#curso">${esc(activeCourse().name)}</a>${icon('right')}<a href="#trilha">Fundamentos</a>${icon('right')}`:
     id==='cursos'||id==='gestao'?'':`<a href="#${isAdmin?'gestao':'cursos'}">${area}</a>${icon('right')}`;
   main.innerHTML=`<div class="frame"><div class="page-context"><nav class="breadcrumb" aria-label="Caminho">${crumbs}<span aria-current="page">${esc(name)}</span></nav><span class="demo">Dados simulados</span></div>
-    <p class="feedback" role="status" hidden></p>${isAdmin?adminPage(id):isLesson?lessonPage(id):studentPage(id)}</div>`;
+    <p id="form-feedback" class="feedback" role="status" hidden></p>${isAdmin?adminPage(id):isLesson?lessonPage(id):studentPage(id)}</div>`;
   const slot=main.querySelector('[data-fullscreen-slot]');
   if(slot)slot.innerHTML=fullscreenButton();
   updateModes();
@@ -226,6 +235,11 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('input',event=>{
   const target=event.target;
+  if(target.matches('[aria-invalid="true"][aria-describedby="form-feedback"]')){
+    target.removeAttribute('aria-invalid');
+    target.removeAttribute('aria-describedby');
+    if(!main.querySelector('[aria-describedby="form-feedback"]'))get('form-feedback').hidden=true;
+  }
   if(target.hasAttribute('data-filter')){
     const root=target.closest('dialog')||main, query=target.value.trim().toLowerCase();
     let count=0;
@@ -246,8 +260,9 @@ document.addEventListener('submit',event=>{
   if(!kind)return;
   event.preventDefault();
   const data=Object.fromEntries([...new FormData(form)].map(([k,v])=>[k,v.trim()]));
-  if(['lab','activity','editor','new-course','structure'].includes(kind)&&(!Object.keys(data).length||Object.values(data).some(v=>!v))){
-    notice('Preencha os campos com texto antes de salvar.',true);return;
+  if(['lab','activity','editor','new-course','structure'].includes(kind)){
+    const emptyFields=Object.keys(data).filter(name=>!data[name]);
+    if(emptyFields.length){fieldError(form,emptyFields,'Preencha os campos com texto antes de salvar.');return;}
   }
   const key=configKey();
   if(kind==='notes'){state.note=data.note;commit('Anotações salvas.');}
@@ -255,7 +270,7 @@ document.addEventListener('submit',event=>{
   if(kind==='activity'){state.answers[id]=data;complete();}
   if(kind==='quiz'){state.answers[id]=data;state.grade=data.choice==='claro'?100:0;complete();location.hash='resultado';}
   if(kind==='new-course'){
-    if(state.courses.some(c=>c.name.toLowerCase()===data.title.toLowerCase())){notice('Já existe um curso com esse nome.',true);return;}
+    if(state.courses.some(c=>c.name.toLowerCase()===data.title.toLowerCase())){fieldError(form,['title'],'Já existe um curso com esse nome.');return;}
     state.courses.push({id:'curso-'+Date.now(),name:data.title,status:'Rascunho'});commit('Rascunho criado.',true);
   }
   if(kind==='structure'){state.module[course().id]=data.module;commit('Estrutura salva.');}

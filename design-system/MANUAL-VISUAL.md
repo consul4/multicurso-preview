@@ -33,4 +33,4 @@ Os caminhos abaixo são fragmentos da entrada `mc-design-10/`. A interface do ca
 
 ## Aparência nas 18 rotas
 
-O seletor fica em Ajuda ou no menu. Campos, indicadores, modais e ações exercitam o mesmo conjunto de papéis em cada tema. Consulte as [evidências da matriz](references/README.md#evidências-dos-temas) e os limites de homologação no [manual de temas](themes/README.md).
+O seletor fica em Ajuda ou no menu. No Claro, campos e botões secundários têm contornos mais definidos. O texto de exemplo dos campos usa a cor de apoio. Em Gestão, a mensagem de erro por nome repetido identifica o campo e recebe associação acessível. Dimensões, hierarquia e ações seguem as composições acima. Campos, indicadores, modais e ações exercitam o mesmo conjunto de papéis em cada tema. Consulte as [evidências da matriz](references/README.md#evidências-dos-temas) e os limites de homologação no [manual de temas](themes/README.md).

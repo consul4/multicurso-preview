@@ -1,6 +1,6 @@
 # Identidade visual Multicurso 2.0
 
-**Estado:** base candidata à homologação. Claro, Black Full e Glass estão ativos no protótipo. O MC-DESIGN-13 é a referência visual do Claro.
+**Estado:** MC-DESIGN-SYSTEM-03, candidata à oficialização. Claro, Black Full e Glass estão ativos no protótipo. O MC-DESIGN-13 é a referência visual histórica do Claro. As mudanças intencionais de acessibilidade estão no [relatório do DS03](RELATORIO.md).
 
 ## Princípios
 
@@ -12,7 +12,7 @@
 
 ## Marca e recursos gráficos
 
-A marca do protótipo é o símbolo em camadas no hexágono (no Claro, `#101a37`), seguido de **Multicurso 2.0**. O sufixo 2.0 usa o papel semântico primário. O avatar violeta `#6724b4` é demonstrativo. Nenhum desses elementos define sozinho um manual de marca corporativo.
+A marca do protótipo é o símbolo em camadas no hexágono (no Claro, `#101a37`), seguido de **Multicurso 2.0**. O sufixo 2.0 usa o papel semântico primário. O avatar violeta `#6724b4` é demonstrativo e decorativo. Nenhum desses elementos define sozinho um manual de marca corporativo.
 
 Os símbolos do sprite têm `viewBox="0 0 24 24"`, traço de 1,85 e tamanho base de 21 px. Use os ícones em `mc-design-10/index.html` e preserve seus nomes e rótulos acessíveis. A arte azul da capa, o pôster e o vídeo pertencem ao conteúdo demonstrativo. [Inventário de recursos](references/README.md)
 

@@ -38,9 +38,17 @@ O [manifesto](baseline.json) fixa a lista de arquivos, hashes e dimensões. As c
 
 Veja [Identidade](../DESIGN.md) para marca e linguagem de ícones.
 
-## Evidências dos temas
+## Evidências do DS03
 
-Cada captura usa a mesma rota, estado demonstrativo e largura em Black Full e Glass. Os arquivos abaixo retratam a candidata operacional, com homologação em aberto.
+- [Gestão no Claro, antes e depois](capturas-ds03/gestao-claro.png)
+- [Estados do campo Claro](capturas-ds03/campos-claro.png)
+- [Gaveta Glass e moldura Black Full](capturas-ds03/temas-catalogo.png)
+
+Os pares comparam a base auditada `ccb61b4` e o candidato DS03, com Chromium, dados simulados e viewports fixos. [Relatório vigente](../RELATORIO.md)
+
+## Capturas históricas dos temas da candidata 0.2
+
+Cada captura usa a mesma rota, estado demonstrativo e largura em Black Full e Glass. Os arquivos abaixo retratam o DS02 no commit auditado, antes dos ajustes do DS03.
 
 | Estado | Black Full | Glass |
 | --- | --- | --- |
@@ -51,4 +59,4 @@ Cada captura usa a mesma rota, estado demonstrativo e largura em Black Full e Gl
 | Gestão de cursos · 1440 px | [PNG](capturas-temas/black-gestao-1440.png) | [PNG](capturas-temas/glass-gestao-1440.png) |
 | Editor · 1440 px | [PNG](capturas-temas/black-editor-1440.png) | [PNG](capturas-temas/glass-editor-1440.png) |
 
-[Catálogo vigente em Black Full](capturas-temas/catalogo-black-1440.png) · [Videoaula Glass após troca de tema](capturas-temas/glass-video-controles-1024.png) · [Arquivo documental](arquivo/README.md) · [Relatório](../RELATORIO.md)
+[Catálogo DS02 em Black Full](capturas-temas/catalogo-black-1440.png) · [Videoaula Glass após troca de tema](capturas-temas/glass-video-controles-1024.png) · [Arquivo documental](arquivo/README.md) · [Relatório](../RELATORIO.md)

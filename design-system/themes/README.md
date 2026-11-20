@@ -1,11 +1,11 @@
 # Manual dos temas vigente
 
-O MC-DESIGN-SYSTEM-02 implementa três temas para o mesmo protótipo. Todos são candidatos à homologação visual. As 18 rotas usam os mesmos componentes, geometria e dados demonstrativos.
+O MC-DESIGN-SYSTEM-03 é a versão vigente, candidata à oficialização, com três temas para o mesmo protótipo. As 18 rotas usam os mesmos componentes, geometria e dados demonstrativos.
 
 | Tema | Identidade | Arquivo |
 | --- | --- | --- |
-| Claro | Branco, cinza-azulado e azul do MC-DESIGN-13. Mantém as sombras, contornos e a tipografia daquela referência. | [claro.tokens.json](claro.tokens.json) |
-| Black Full | Fundo grafite azulado, superfícies escuras com níveis distintos, destaque pervinca e tipografia clara. Controles nativos usam `color-scheme: dark`. | [black.tokens.json](black.tokens.json) |
+| Claro | Branco, cinza-azulado e azul do MC-DESIGN-13. Mantém a tipografia e a composição da referência, com contornos ajustados para acessibilidade. | [claro.tokens.json](claro.tokens.json) |
+| Black Full | Fundo grafite azulado, superfícies escuras com níveis distintos, destaque pervinca e tipografia clara. Controles nativos, moldura e composição no catálogo usam `color-scheme: dark`. | [black.tokens.json](black.tokens.json) |
 | Glass | Fundo com luz azul e lilás, superfícies translúcidas e desfoque em pontos de elevação. O texto e os campos preservam contraste com as superfícies claras. | [glass.tokens.json](glass.tokens.json) |
 
 ## Usar ou demonstrar
@@ -25,8 +25,8 @@ Temas herdam as microinterações existentes. A troca suspende as transições d
 
 1. Registre a finalidade e paleta no [registro de decisões](../DECISOES.md). Preserve a grade, os componentes, a navegação e as regras acadêmicas da referência.
 2. Copie a estrutura de um manifesto atual, escolha um identificador e defina `colorScheme`. Substitua os papéis em `semantic.color`. Use aliases de componente já existentes. Caso precise de um papel novo, declare-o primeiro com seu valor Claro em [multicurso.tokens.json](../tokens/multicurso.tokens.json).
-3. Registre o identificador e o nome em `mc-design-10/theme.js`, a ordem no gerador `tools/check.py` e o esquema em `tools/qa_themes.py`. Execute `python design-system/tools/check.py --write` para atualizar o CSS compartilhado. O catálogo usa o mesmo controle e os mesmos estilos.
-4. Teste texto, campo, controles nativos, bordas de interação, foco, estados semânticos e composição real. Para material translúcido, teste o pior fundo e as duas rotas de fallback.
+3. Salve o manifesto como `themes/<identificador>.tokens.json` e defina o nome visível em `$description`. Execute `python design-system/tools/check.py --write` para gerar o CSS e sincronizar o registro do seletor. A matriz lê os mesmos manifestos.
+4. Em `translucent`, declare `surface`, `rail` ou ambos, com aliases de cor sRGB cujo alfa fique entre 0 e 1. Mantenha o papel base opaco para fallback. `backdropBlur` é opcional e requer `surface` e um alias de dimensão positiva. `canvasGlow` é opcional e recebe dois aliases de cor se houver material translúcido. `radioAccent` é opcional e aponta para uma cor opaca. Teste contraste, controles nativos, bordas, foco e ambos os fallbacks.
 5. Compare o Claro com a referência e capture as variantes nas mesmas larguras e estados. Registre decisões, evidências e limites de adoção em [QA.md](../QA.md) e [CHANGELOG.md](../CHANGELOG.md).
 
-Não crie uma cópia de rotas ou de componentes para um tema. A adoção em outro repositório exige decisão própria.
+O ensaio automatizado cria um quarto tema parcial em cópia temporária, gera as saídas e verifica seleção, persistência, trilho opaco e fallback. Rotas e componentes permanecem compartilhados. A adoção em outro repositório exige decisão própria. [QA](../QA.md)
