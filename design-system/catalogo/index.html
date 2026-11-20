@@ -6,6 +6,7 @@
   <link rel="icon" href="data:,">
   <script src="../../mc-design-10/theme.js"></script>
   <link rel="stylesheet" href="../../mc-design-10/themes.css">
+  <link rel="stylesheet" href="../../mc-design-10/fonts.css">
   <link rel="stylesheet" href="../../mc-design-10/style.css">
   <link rel="stylesheet" href="catalogo.css">
   <script type="module" src="catalogo.js"></script>
@@ -22,35 +23,51 @@
   <main id="catalogo" tabindex="-1">
     <header class="heading introduction">
       <h1>Catálogo do Design System</h1>
-      <p>Claro, Black Full e Glass. Referência candidata para os ambientes do aluno, sala de aula e administração.</p>
+      <p>MC-DESIGN-EVOLUTION-01. Os componentes abaixo usam o mesmo CSS e os mesmos tokens das 18 telas do protótipo, nos temas Claro, Black Full e Glass.</p>
     </header>
     <div id="theme-catalog"></div>
+
     <section id="fundamentos" class="catalog-section">
       <h2>Fundamentos</h2>
+      <h3 class="catalog-subtitle">Papéis de cor do tema ativo</h3>
       <div class="palette" id="palette"></div>
       <p id="catalog-error" role="status" hidden></p>
-      <article class="card type-example">
-        <div class="heading"><span class="kicker">Videoaula · Aula 1 de 5</span><h3 class="type-heading">Anatomia do prompt</h3><p>Engenharia de Prompts</p></div>
-        <h4>O que observar</h4>
-        <p>Identifique objetivo, contexto, critérios e formato.</p>
-        <small>Inter, Arial, sans-serif. A fonte disponível varia conforme o dispositivo.</small>
-      </article>
+
+      <h3 class="catalog-subtitle">Tipografia em três vozes</h3>
+      <div class="type-voices">
+        <article class="sheet type-voice">
+          <small>Sora · títulos e numerais</small>
+          <p class="voice-display">Anatomia do prompt</p>
+          <p class="voice-scale"><span class="s40">40</span><span class="s30">30</span><span class="s24">24</span><span class="s20">20</span><span class="s17">17</span></p>
+        </article>
+        <article class="sheet type-voice">
+          <small>Inter · interface e rótulos</small>
+          <p class="voice-ui">Continuar aula<br><span>2 de 5 aulas concluídas</span></p>
+          <p class="voice-scale ui"><span>15 corpo</span><span>14 interface</span><span>13 rótulo</span><span>12 legenda</span></p>
+        </article>
+        <article class="sheet type-voice reading">
+          <small>Literata · prosa das aulas</small>
+          <p>Um prompt é uma instrução que orienta a resposta de uma IA. Compare <q>Ajude com a reunião</q> com uma instrução que define objetivo, contexto, critérios e formato.</p>
+        </article>
+      </div>
     </section>
+
     <section id="componentes" class="catalog-section">
       <h2>Componentes</h2>
       <div class="specimens">
-        <article class="card">
+        <article class="sheet">
           <h3>Botões e estados</h3>
           <div class="actions">
             <button type="button" class="btn primary" data-advance>Avançar progresso</button>
             <button type="button" class="btn secondary" data-panel="tools" aria-haspopup="dialog">Ferramentas</button>
             <button type="button" class="btn quiet" data-panel="modules" aria-haspopup="dialog">Módulos</button>
-            <button type="button" class="btn" disabled>Próxima · bloqueada</button>
+            <button type="button" class="btn secondary" aria-pressed="true">Modo foco ativo</button>
+            <button type="button" class="btn" disabled>Próxima, bloqueada</button>
           </div>
           <label for="spec-progress">Progresso demonstrativo <output id="progress-text">60%</output></label>
           <progress id="spec-progress" max="100" value="60">60%</progress>
         </article>
-        <article class="card">
+        <article class="sheet">
           <h3>Campos e retorno</h3>
           <form id="spec-form">
             <label>Seu prompt <textarea name="sample" required placeholder="Exemplo de resposta curta"></textarea></label>
@@ -58,13 +75,27 @@
             <p id="spec-feedback" class="feedback" role="status" hidden></p>
           </form>
         </article>
-        <article class="card">
-          <h3>Navegação e disponibilidade</h3>
-          <div class="modal-nav"><a href="#composicoes" aria-current="location"><svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg>Aula atual</a></div>
-          <div class="row"><span class="tile green"><svg class="icon" aria-hidden="true"><use href="#check-icon"/></svg></span><div class="row-text"><strong>Introdução</strong><small>Concluída</small></div></div>
-          <div class="row"><span class="tile"><svg class="icon" aria-hidden="true"><use href="#lock-icon"/></svg></span><div class="row-text"><strong>Avaliação final</strong><small>Bloqueada por pré-requisito</small></div></div>
+        <article class="sheet">
+          <h3>Linha de estudo</h3>
+          <p class="catalog-note">Assinatura visual. Sequência de aulas com estados concluída, atual, disponível e bloqueada.</p>
+          <ol class="study-line compact">
+            <li class="is-done"><a href="#composicoes"><span class="node" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#check-icon"/></svg></span><span class="step-text"><strong>Anatomia do prompt</strong><small><span>Videoaula</span><span>Concluída</span></small></span></a></li>
+            <li class="is-current"><a href="#composicoes" aria-current="location"><span class="node" aria-hidden="true">2</span><span class="step-text"><strong>Como estruturar uma instrução</strong><small><span>Leitura</span><span>Aula atual</span></small></span></a></li>
+            <li><a href="#composicoes"><span class="node" aria-hidden="true">3</span><span class="step-text"><strong>Laboratório de prompts</strong><small><span>Laboratório</span><span>Disponível</span></small></span></a></li>
+            <li class="is-locked"><div aria-disabled="true"><span class="node" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#lock-icon"/></svg></span><span class="step-text"><strong>Avaliação final</strong><small><span>Avaliação</span><span>Bloqueada</span></small></span></div></li>
+          </ol>
         </article>
-        <article class="card">
+        <article class="sheet">
+          <h3>Bloco de aula</h3>
+          <p class="catalog-note">Cabeçalho equivalente ao bloco do leitor React: tipo, obrigatoriedade e status, seguido do conteúdo.</p>
+          <section class="block-specimen" aria-labelledby="block-title">
+            <div class="block-head"><span class="chip"><svg class="icon" aria-hidden="true"><use href="#play-icon"/></svg>Vídeo</span><span class="chip neutral">Obrigatório</span><span class="chip done"><svg class="icon" aria-hidden="true"><use href="#check-icon"/></svg>Concluído</span></div>
+            <small class="block-step">Etapa 1 de 3</small><h4 id="block-title">Os quatro elementos</h4>
+            <p>O conteúdo do bloco usa os componentes da aula: vídeo, leitura, exercício ou arquivo.</p>
+          </section>
+          <div class="complete-row"><p>Assistiu ao vídeo? Registre a etapa.</p><button type="button" class="btn primary">Concluir etapa</button></div>
+        </article>
+        <article class="sheet">
           <h3>Exercício e estado vazio</h3>
           <fieldset>
             <legend>Escolha a instrução mais específica</legend>
@@ -73,18 +104,26 @@
           </fieldset>
           <div class="empty"><strong>Nenhum material encontrado</strong><p>Tente outro título.</p></div>
         </article>
+        <article class="sheet">
+          <h3>Navegação e marcas de estado</h3>
+          <div class="modal-nav"><a href="#composicoes" aria-current="location"><svg class="icon" aria-hidden="true"><use href="#lesson-icon"/></svg>Aula atual</a><a href="#composicoes"><svg class="icon" aria-hidden="true"><use href="#folder-icon"/></svg>Materiais</a></div>
+          <div class="actions"><span class="chip">Em andamento</span><span class="chip done">Concluído</span><span class="chip neutral">Rascunho</span><span class="demo">Dados simulados</span></div>
+          <p class="feedback">Rascunho salvo.</p>
+          <p class="feedback error">Já existe um curso com esse nome.</p>
+        </article>
       </div>
     </section>
+
     <section id="composicoes" class="catalog-section">
       <h2>Composições responsivas</h2>
-      <p>Explore as telas originais do protótipo. As interações usam dados demonstrativos neste navegador.</p>
+      <p>Explore as telas do protótipo em qualquer largura. As interações usam dados demonstrativos neste navegador. A versão anterior (DS03) continua em <a href="../../mc-design-system-03/">mc-design-system-03</a>.</p>
       <form id="frame-form" class="frame-settings">
         <label>Tela <select id="route"></select></label>
         <label>Largura <select id="width"><option value="320">320 px</option><option selected value="390">390 px</option><option value="768">768 px</option><option value="1024">1024 px</option><option value="1100">1100 px</option><option value="1101">1101 px</option><option value="1440">1440 px</option></select></label>
         <div class="actions"><button class="btn primary" type="submit">Carregar composição</button><a class="btn secondary" id="open-prototype" href="../../mc-design-10/#video">Abrir tela em tamanho real</a></div>
       </form>
       <div class="composition-window" aria-label="Quadro do protótipo" role="region" tabindex="0" hidden>
-        <iframe title="Composição original do protótipo" id="spec-frame"></iframe>
+        <iframe title="Composição do protótipo" id="spec-frame"></iframe>
       </div>
       <noscript>Ative o JavaScript para explorar o catálogo. <a href="../../mc-design-10/">Abrir o protótipo</a>.</noscript>
     </section>

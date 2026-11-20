@@ -42,7 +42,7 @@ function courseFeature(home) {
   const item = nextLesson();
   const finished = percent()===100;
   const status = finished ? badge(icon('check')+'Concluído','done') : percent()>0 ? badge('Em andamento') : badge('Disponível','neutral');
-  const cta = link(item[0], finished?'Ver resultado':state.lastLesson?'Continuar aula':'Começar curso','btn primary','play');
+  const cta = link(item[0], finished?'Ver resultado':state.lastLesson||state.done.length?'Continuar aula':'Começar curso','btn primary','play');
   return `<section class="course-feature" aria-labelledby="course-title">
     <div class="course-media"><img src="${asset('prompt.webp')}" alt="Ilustração dos quatro elementos de um prompt"></div>
     <div class="course-body">

@@ -131,7 +131,7 @@ function setupVideo() {
   video.addEventListener('loadedmetadata',()=>{if(state.videoTime>0)video.currentTime=Math.min(state.videoTime,video.duration);});
   video.addEventListener('timeupdate',()=>{state.videoTime=video.currentTime;save();});
   const message=text=>{const box=get('video-message')||main.querySelector('.media-bar small');if(box)box.textContent=text;};
-  video.addEventListener('ended',()=>{state.videoEnded=true;save();const button=get('complete-video');if(button)button.disabled=false;message('Vídeo finalizado. Você pode concluir a aula.');});
+  video.addEventListener('ended',()=>{state.videoEnded=true;save();const button=get('complete-video');if(button)button.disabled=false;message(state.done.includes('video')?'Vídeo assistido até o fim':'Vídeo finalizado. Você pode concluir a aula.');});
   video.querySelector('source').addEventListener('error',()=>{message('Falha no vídeo. Use a transcrição para continuar e tente recarregar a mídia.');});
 }
 function panel(heading,markup,position='center',trigger=document.activeElement) {

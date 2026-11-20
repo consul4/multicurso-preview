@@ -133,7 +133,7 @@ main { grid-area: 2 / 2; min-width: 0; }
 .frame { width: min(100%, calc(var(--mc-semantic-measure-content) + 80px)); margin: 0 auto; padding: 28px var(--gutter-end) calc(56px + var(--sb)) var(--gutter); }
 .page-context { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; margin-bottom: 18px; }
 .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; font-size: var(--mc-semantic-type-size-label); color: var(--muted); }
-.breadcrumb a { text-decoration: none; }
+.breadcrumb a { display: inline-flex; align-items: center; min-height: 24px; text-decoration: none; }
 .breadcrumb a:hover, .breadcrumb a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 .breadcrumb .icon { width: 13px; height: 13px; }
 .breadcrumb > [aria-current] { color: var(--ink); font-weight: var(--medium); }
@@ -355,7 +355,7 @@ video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 64vh; bac
 .score strong { font-family: var(--display); font-size: clamp(48px, 5vw, 72px); font-weight: var(--strong); letter-spacing: var(--mc-semantic-type-tracking-display); line-height: 1; font-variant-numeric: tabular-nums; }
 .result-meter { max-width: 320px; margin-bottom: 18px; }
 .locked-card { display: grid; justify-items: start; gap: 10px; padding: clamp(24px, 4vw, 40px); }
-.locked-card .icon { width: 26px; height: 26px; color: var(--muted); }
+.locked-card > .icon { width: 26px; height: 26px; color: var(--muted); }
 .return-lesson { margin-bottom: 14px; }
 .lesson-next { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
 .nav-card { display: grid; align-content: center; gap: 2px; min-height: 76px; padding: 14px 18px; border: 1px solid var(--line); border-radius: var(--r-l); background: var(--surface); text-decoration: none; text-align: start; }
@@ -613,3 +613,5 @@ body[data-class] .page-context .demo { display: none; }
 .nav-card.is-locked strong { color: var(--muted); }
 .lesson-meta .chip { background: var(--tint); }
 .reading .empty p { font-family: var(--mc-semantic-type-family); font-size: var(--mc-semantic-type-size-ui); color: var(--muted); }
+.page-context .demo { margin-inline-start: auto; }
+.page-context.no-crumbs .breadcrumb { display: none; }

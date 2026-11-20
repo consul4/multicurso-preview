@@ -1,0 +1,8 @@
+{
+  "name": "multicurso-design-system-qa",
+  "private": true,
+  "description": "Dependências de QA do Design System. Não fazem parte do protótipo publicado.",
+  "devDependencies": {
+    "axe-core": "4.10.3"
+  }
+}

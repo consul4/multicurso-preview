@@ -28,7 +28,7 @@ byId('frame-form').addEventListener('submit', event => {
 const dialog = byId('catalog-panel');
 let trigger;
 const panels = {
-  modules: ['Aulas e módulos', '<div class="row"><div class="row-text"><strong>Anatomia do prompt</strong><small>Videoaula · Concluída</small></div></div><div class="row"><div class="row-text"><strong>Avaliação final</strong><small>Bloqueada por pré-requisito</small></div></div>'],
+  modules: ['Aulas e módulos', '<ol class="study-line compact"><li class="is-done"><a href="#composicoes"><span class="node" aria-hidden="true">1</span><span class="step-text"><strong>Anatomia do prompt</strong><small><span>Videoaula</span><span>Concluída</span></small></span></a></li><li class="is-locked"><div aria-disabled="true"><span class="node" aria-hidden="true">5</span><span class="step-text"><strong>Avaliação final</strong><small><span>Avaliação</span><span>Bloqueada</span></small></span></div></li></ol>'],
   tools: ['Ferramentas da aula','<div class="tool-list"><a class="btn secondary" href="../../mc-design-10/#materiais">Materiais</a><a class="btn secondary" href="../../mc-design-10/#notas">Anotações</a></div>'],
 };
 for (const button of document.querySelectorAll('[data-panel]')) {
@@ -72,8 +72,8 @@ byId('spec-form').addEventListener('submit', event => {
 });
 
 const swatches = {
-  ink:'Texto principal', muted:'Texto de apoio', primary:'Ação principal', accent:'Acento e foco',
-  outline:'Borda', surface:'Superfície', canvas:'Fundo', rail:'Trilho', tint:'Realce',
+  ink:'Tinta', muted:'Texto de apoio', primary:'Ação principal', accent:'Acento, foco e progresso',
+  'line-strong':'Contorno de controle', surface:'Superfície de conteúdo', canvas:'Fundo', chrome:'Cromo', tint:'Realce',
 };
 async function loadFoundation() {
   const response = await fetch(prototype);
