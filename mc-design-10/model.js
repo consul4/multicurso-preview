@@ -38,6 +38,11 @@ export const title = (row) => state.published[configKey(row[0],'prompts')]?.titl
 export const percent = () => Math.round(state.done.length / 5 * 100);
 export const locked = (id) => {const index=lessons.findIndex(row=>row[0]===id);return index>0&&!state.done.includes(lessons[index-1][0]);};
 export const nextLesson = () => lessons.find(row=>!state.done.includes(row[0])) || lessons.at(-1);
+export const isStudyLesson = id => id!=='atividade' && lessons.some(([key])=>key===id) && !locked(id);
+export function studyDestination() {
+  return [state.lastStudyLesson,state.lastLesson,state.activityFrom,nextLesson()[0]].find(isStudyLesson)
+    ?? lessons.findLast(([key])=>isStudyLesson(key))[0];
+}
 export const esc = (value='') => String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 export const icon = (name,size='') => `<svg class="icon ${size}" aria-hidden="true"><use href="#${name}-icon"/></svg>`;
 export const link = (id,text,kind='btn secondary',glyph='') => `<a class="${kind}" href="#${id}">${glyph?icon(glyph):''}${text}</a>`;

@@ -1,5 +1,6 @@
 """Gera o HTML da prévia offline a partir do protótipo isolado."""
 import base64
+import argparse
 import json
 import os
 from pathlib import Path
@@ -25,4 +26,7 @@ html = (app / 'index.html').read_text().replace(
 ).replace('<script type="module" src="app.js"></script>', '').replace(
     '</body>', '<script>' + script.replace('</script', '<\\/script') + '</script></body>',
 )
-(directory / 'multicurso-design-11.html').write_text(html)
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--saida', type=Path, default=directory / 'multicurso-design-11.html')
+args = parser.parse_args()
+args.saida.write_text(html)

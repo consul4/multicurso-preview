@@ -1,4 +1,4 @@
-import {state,lessons,learner,management,course,activeCourse,configKey,title,percent,bar,locked,nextLesson,save,esc,icon,link,action,empty,asset} from './model.js';
+import {state,lessons,learner,management,course,activeCourse,configKey,title,percent,bar,locked,isStudyLesson,studyDestination,save,esc,icon,link,action,empty,asset} from './model.js';
 import {studentPage,lessonPage,pathRows} from './student.js';
 import {adminPage} from './admin.js';
 
@@ -10,6 +10,8 @@ const dialog = get('dialog');
 const modalBody = get('dialog-body');
 const routes = [...learner,...lessons,...management];
 const modes = matchMedia('(display-mode: standalone)');
+const mobileClassroom = matchMedia('(max-width: 790px)');
+const compactClassroom = matchMedia('(max-width: 1100px)');
 let id = 'cursos', isStandalone = false, opener, focusMode = false, ready = false, timer;
 
 const routeList = (items,courseContext=false) => items.map(([key,name,glyph])=>{
@@ -51,6 +53,7 @@ function notice(text,failed=false) {
 }
 function render() {
   const isAdmin=management.some(([key])=>key===id), isLesson=lessons.some(([key])=>key===id);
+  const dockLesson=studyDestination();
   const name=isLesson?title(lessons.find(([key])=>key===id)):routes.find(([key])=>key===id)[1];
   const area=isAdmin?'Administração':isLesson?'Sala de aula':'Ambiente do aluno';
   document.title=name+' · Multicurso 2.0';
@@ -60,15 +63,15 @@ function render() {
   get('top').innerHTML=`<div class="mobile-study"><a href="#curso" class="icon-btn" aria-label="Voltar ao curso">${icon('back')}</a>
     <div><strong>${esc(activeCourse().name)}</strong><span>${bar(percent())}<b>${percent()}%</b><small>${step===6?'Resultado':'Aula '+step+'/5'}</small></span></div>
     <button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('list')}</button><button class="icon-btn" aria-label="Mais opções" aria-haspopup="dialog" data-action="options">${icon('dots')}</button></div>
-    <div class="focus-study"><strong role="heading" aria-level="1">${esc(name)}</strong><button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('layers')}</button><button class="icon-btn" aria-label="Ferramentas" aria-haspopup="dialog" data-action="options">${icon('sliders')}</button>${action('focus','Sair do foco','aria-pressed="true"')}</div>
+    <div class="focus-study"><div class="focus-context"><strong role="heading" aria-level="1">${esc(name)}</strong><small>Dados simulados</small></div><button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('layers')}</button><button class="icon-btn" aria-label="Ferramentas" aria-haspopup="dialog" data-action="options">${icon('sliders')}</button>${action('focus','Sair do foco','aria-pressed="true"')}</div>
     <button class="icon-btn menu-toggle" data-action="menu" aria-label="Abrir navegação">${icon('menu')}</button><a class="brand" href="#cursos"><span class="logo">${icon('layers')}</span><span>Multicurso <b>2.0</b></span></a>
     <button class="search-open" aria-label="Buscar na prévia" data-action="search">${icon('search')}<span>Buscar na prévia</span></button>
     <div class="top-actions"><button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-label="Perfil demonstrativo">C</span></div>`;
   get('rail').innerHTML=`<div class="rail-inner">${navigation()}</div>`;
-  get('dock').innerHTML=`<a href="#cursos" ${id==='cursos'?'aria-current="page"':''}>${icon('home')}Início</a><button data-action="modules" aria-haspopup="dialog">${icon('layers')}Módulos</button><a href="#${state.lastLesson||nextLesson()[0]}" ${isLesson&&id!=='atividade'?'aria-current="location"':''}>${icon('lesson')}Aula</a><a href="#atividade" ${id==='atividade'?'aria-current="page"':''}>${icon('tasks')}Atividades</a><button data-action="assistant" aria-haspopup="dialog">${icon('spark')}Assistente</button>`;
+  get('dock').innerHTML=`<a href="#cursos" ${id==='cursos'?'aria-current="page"':''}>${icon('home')}Início</a><button data-action="modules" aria-haspopup="dialog">${icon('layers')}Módulos</button><a href="#${dockLesson}" ${id===dockLesson?'aria-current="page"':''}>${icon('lesson')}Aula</a><a href="#atividade" ${id==='atividade'?'aria-current="page"':''}>${icon('tasks')}Atividades</a><button data-action="assistant" aria-haspopup="dialog">${icon('spark')}Assistente</button>`;
   const crumbs=isLesson?`<a href="#curso">${esc(activeCourse().name)}</a>${icon('right')}<a href="#trilha">Fundamentos</a>${icon('right')}`:
     id==='cursos'||id==='gestao'?'':`<a href="#${isAdmin?'gestao':'cursos'}">${area}</a>${icon('right')}`;
-  main.innerHTML=`<div class="frame"><nav class="breadcrumb" aria-label="Caminho">${crumbs}<span aria-current="page">${esc(name)}</span><span class="demo">Dados simulados</span></nav>
+  main.innerHTML=`<div class="frame"><div class="page-context"><nav class="breadcrumb" aria-label="Caminho">${crumbs}<span aria-current="page">${esc(name)}</span></nav><span class="demo">Dados simulados</span></div>
     <p class="feedback" role="status" hidden></p>${isAdmin?adminPage(id):isLesson?lessonPage(id):studentPage(id)}</div>`;
   const slot=main.querySelector('[data-fullscreen-slot]');
   if(slot)slot.innerHTML=fullscreenButton();
@@ -76,10 +79,15 @@ function render() {
   setupVideo();
 }
 function switchRoute() {
-  if(dialog.open)dialog.close('route');
   const requested=location.hash.slice(1);
-  id=routes.some(([name])=>name===requested)?requested:'cursos';
-  if(lessons.some(([key])=>key===id)&&!locked(id)){state.lastLesson=id;save();}
+  const destination=routes.some(([name])=>name===requested)?requested:'cursos';
+  if(ready&&id!==destination)state.positions[id]=readingTop();
+  if(destination==='atividade'&&id!=='atividade')state.activityFrom=isStudyLesson(id)?id:studyDestination();
+  if(dialog.open)dialog.close('route');
+  id=destination;
+  if(lessons.some(([key])=>key===id)&&!locked(id))state.lastLesson=id;
+  if(isStudyLesson(id))state.lastStudyLesson=id;
+  save();
   render();
   if(ready)main.focus({preventScroll:true});
   restore();
@@ -147,11 +155,12 @@ function toggleFocus() {
   if(nearTop)restore(0);
   else if(anchor)restore(readingTop()+anchor.getBoundingClientRect().top-offset);
   const control=focusMode?get('top').querySelector('.focus-study [data-action="focus"]'):
-    matchMedia('(max-width: 790px)').matches?get('top').querySelector('.mobile-study [data-action="options"]'):main.querySelector('[data-action="focus"]');
+    mobileClassroom.matches?get('top').querySelector('.mobile-study [data-action="options"]'):
+    compactClassroom.matches?main.querySelector('.tablet-controls [data-action="options"]'):main.querySelector('[data-action="focus"]');
   control?.focus({preventScroll:true});
   announce(focusMode?'Modo foco ativado.':'Modo foco desativado.');
 }
-const panelOptions = () => `<div class="tool-list">${link('materiais','Materiais','btn secondary','folder')}${link('notas','Anotações','btn secondary','edit')}${link('atividade','Atividades','btn secondary','tasks')}${action('assistant',icon('spark')+'Assistente de Estudos')}${action('menu',icon('menu')+'Navegação')}</div><div class="panel-display actions">${focusButton()}${fullscreenButton()}</div>`;
+const panelOptions = () => `<div class="tool-list">${link('materiais','Materiais','btn secondary','folder')}${link('notas','Anotações','btn secondary','edit')}${id==='atividade'?'':link('atividade','Atividade prática','btn secondary','tasks')}${action('assistant',icon('spark')+'Assistente de Estudos')}${action('menu',icon('menu')+'Navegação')}${action('help',icon('help')+'Ajuda')}</div><div class="panel-display actions">${focusButton()}${fullscreenButton()}</div>`;
 const modulesPanel = () => `<div class="module-summary"><span class="tile">${icon('layers')}</span><div><strong>${esc(activeCourse().name)}</strong><p>Módulo 1 · Fundamentos</p>${bar(percent())}</div><strong>${percent()}%</strong></div>${pathRows(id)}<div class="actions">${link('trilha','Abrir trilha completa','btn secondary','right')}</div>`;
 async function transcript() {
   panel('Transcrição','<p role="status">Carregando transcrição…</p>');
@@ -174,10 +183,6 @@ document.addEventListener('click',event=>{
   if(destination==='#'+id&&route.closest('dialog')){
     event.preventDefault();
     dialog.close();
-  }
-  if(destination==='#atividade' && route.closest('.classroom-controls, .tool-list, #dock') && id!=='atividade' && lessons.some(([key])=>key===id) && !locked(id)){
-    state.activityFrom=id;
-    save();
   }
   const button=event.target.closest('button');
   if(!button)return;

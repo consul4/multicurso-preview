@@ -51,7 +51,8 @@ h2 { font-size: 20px; letter-spacing: -.035em; }
 .rail a[aria-current],.modal-nav a[aria-current] { background: #dce8ff; color: var(--deep); font-weight: 800; }
 main { grid-area: 2 / 2; min-width: 0; outline-offset: -3px; }
 .frame { width: min(100%,1320px); margin: auto; padding: 20px max(clamp(16px,3.2vw,46px),var(--sr)) calc(30px + var(--sb)) max(clamp(16px,3.2vw,46px),var(--sl)); }
-.breadcrumb { display: flex; align-items: center; gap: 7px; min-height: 30px; font-size: 12px; color: var(--muted); margin-bottom: 19px; }
+.page-context { display: flex; align-items: center; justify-content: space-between; gap: 7px; min-height: 30px; margin-bottom: 19px; }
+.breadcrumb { display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 12px; color: var(--muted); }
 .breadcrumb a { text-decoration: none; }
 .breadcrumb .icon { width: 13px; height: 13px; }
 .demo { margin-left: auto; flex: none; padding: 5px 8px; background: #e8eef9; border-radius: 20px; color: #344c6c; font-size: 11px; font-weight: 700; }
@@ -178,7 +179,7 @@ html[data-standalone]:not([data-keyboard]) #dock { display: grid; grid-area: 3 /
   .logo .icon { width: 18px; height: 18px; }
   .search-open { margin-left: auto; min-width: 44px; min-height: 44px; justify-content: center; padding: 0; background: transparent; border-color: transparent; }
   .search-open span,.avatar,.notifications { display: none; }
-  .breadcrumb { margin-bottom: 11px; }
+  .page-context { margin-bottom: 11px; }
   .heading { margin-bottom: 16px; }
 }
 @media (max-width:560px) {
@@ -217,7 +218,8 @@ html[data-standalone]:not([data-keyboard]) #dock { display: grid; grid-area: 3 /
 .momentum { align-self: end; }
 .hero-copy p,.result p { max-width: 64ch; }
 .btn { min-height: 44px; }
-:is(.btn, #dock a)[aria-pressed="true"],#dock a[aria-current] { background: var(--wash); color: var(--deep); border-color: #a8c3f9; }
+.btn[aria-pressed="true"] { background: var(--wash); color: var(--deep); border-color: #a8c3f9; }
+#dock a[aria-current="page"] { background: var(--deep); color: white; font-weight: 700; }
 
 .class-header {
   display: grid; grid-template-columns: auto minmax(0,1fr) minmax(135px,17%) auto;
@@ -232,6 +234,7 @@ html[data-standalone]:not([data-keyboard]) #dock { display: grid; grid-area: 3 /
 .lesson-meter { border-inline-start: 1px solid var(--line); padding-inline-start: 14px; }
 .lesson-meter p { display: flex; gap: 5px; justify-content: space-between; align-items: baseline; margin: 0 0 5px; font-size: 11px; }
 .lesson-meter strong { font-size: 15px; color: var(--ink); }
+.tablet-controls { display: none; }
 .class-layout { display: grid; grid-template-columns: 92px minmax(0,1fr) 92px; align-items: start; gap: 14px; }
 .class-content,.lesson-next { width: 100%; }
 .edge-start,.edge-end { position: sticky; top: calc(var(--head) + var(--st) + 12px); }
@@ -256,10 +259,13 @@ html[data-standalone]:not([data-keyboard]) #dock { display: grid; grid-area: 3 /
 .panel-display { border-top: 1px solid var(--line); padding-top: 10px; }
 
 body[data-focus] { --rail: 0px; --head: 53px; }
-body[data-focus] :is(.rail,.breadcrumb,.class-header,.edge-start,.edge-end) { display: none; }
+body[data-focus] :is(.rail,.page-context,.class-header,.edge-start,.edge-end) { display: none; }
 body[data-focus] .top > :not(.focus-study) { display: none; }
 body[data-focus] .focus-study { display: flex; width: 100%; align-items: center; gap: 4px; }
-.focus-study strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.focus-context { flex: 1; min-width: 0; padding-block: 5px; }
+.focus-context strong { display: block; font-size: 14px; line-height: 1.2; overflow-wrap: anywhere; }
+.focus-context small { color: var(--muted); display: block; font-size: 11px; }
+html[data-standalone]:not([data-keyboard]) .focus-study [data-action="modules"] { display: none; }
 body[data-focus] .class-layout { display: block; }
 body[data-focus] .frame { width: min(100%,1280px); padding-top: 12px; }
 body[data-focus] video { max-height: 76vh; }
@@ -268,18 +274,32 @@ html[data-standalone] main:has(~ dialog[open]) { overflow-y: hidden; }
 @media (min-width:791px) {
   .search-open { position: absolute; inset-inline-start: 50%; transform: translateX(-50%); width: min(43%,595px); }
   .top-actions { margin-left: auto; }
+  .workflow { display: none; }
   dialog[data-position="start"],dialog[data-position="end"] { position: fixed; inset-block: calc(var(--st) + var(--head) + 8px) calc(var(--sb) + 12px); margin: 0; max-height: none; }
   dialog[data-position="start"] { inset-inline: max(12px,var(--sl)) auto; }
   dialog[data-position="end"] { inset-inline: auto max(12px,var(--sr)); }
 }
-@media (max-width:1220px) and (min-width:791px) {
+@media (max-width:1220px) and (min-width:1101px) {
   .class-header { grid-template-columns: auto minmax(0,1fr) minmax(135px,25%); }
   .classroom-controls { grid-column: 2 / -1; }
   .class-layout { grid-template-columns: 77px minmax(0,1fr) 77px; gap: 9px; }
 }
+@media (max-width:1100px) and (min-width:791px) {
+  body[data-class]:not([data-focus]) .frame { padding-top: 14px; }
+  body[data-class] .page-context { margin-bottom: 10px; }
+  .class-header { grid-template-columns: auto minmax(0,1fr) minmax(100px,19%) auto; gap: 11px; margin-bottom: 12px; padding: 12px; }
+  .classroom-controls,.edge-start,.edge-end { display: none; }
+  .tablet-controls { display: flex; gap: 6px; }
+  .tablet-controls .btn { padding-inline: 9px; min-width: 44px; }
+  .class-layout { display: block; }
+  dialog[data-position="start"],dialog[data-position="end"] { width: min(58vw,460px); }
+}
+@media (max-width:920px) and (min-width:791px) {
+  .tablet-controls .btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
 @media (max-width:790px) {
-  body[data-class] .breadcrumb > :not(.demo) { display: none; }
-  body[data-class] .breadcrumb { min-height: 22px; margin-bottom: 6px; }
+  body[data-class] .breadcrumb { display: none; }
+  body[data-class] .page-context { min-height: 22px; margin-bottom: 6px; }
   .mobile-study span { gap: 5px; font-size: 11px; white-space: nowrap; }
   .mobile-study span small { font-size: inherit; }
   .mobile-study progress { height: 5px; max-width: 128px; }
