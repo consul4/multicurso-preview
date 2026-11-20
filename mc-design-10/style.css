@@ -287,10 +287,13 @@ html[data-standalone] main:has(~ dialog[open]) { overflow-y: hidden; }
 @media (max-width:1100px) and (min-width:791px) {
   body[data-class]:not([data-focus]) .frame { padding-top: 14px; }
   body[data-class] .page-context { margin-bottom: 10px; }
-  .class-header { grid-template-columns: auto minmax(0,1fr) minmax(100px,19%) auto; gap: 11px; margin-bottom: 12px; padding: 12px; }
+  body[data-class] .search-open { position: static; transform: none; flex: 1; min-width: 0; width: auto; }
+  body[data-class] .top-actions { margin-left: 0; }
+  .class-header { grid-template-columns: auto minmax(0,1fr) minmax(100px,19%); gap: 11px; margin-bottom: 12px; padding: 12px; }
   .classroom-controls,.edge-start,.edge-end { display: none; }
   .tablet-controls { display: flex; gap: 6px; }
   .tablet-controls .btn { padding-inline: 9px; min-width: 44px; }
+  html[data-standalone]:not([data-keyboard]) .tablet-controls [data-action="modules"] { display: none; }
   .class-layout { display: block; }
   dialog[data-position="start"],dialog[data-position="end"] { width: min(58vw,460px); }
 }

@@ -67,7 +67,7 @@ function content(id) {
   return `<section class="card result exercise"><span class="tile">${icon('award')}</span><h2>${state.grade}% de aproveitamento</h2><div class="result-meter">${bar(state.grade,'Aproveitamento na avaliação demonstrativa')}</div><p>${state.grade===100?'Você identificou um critério com uma condição objetiva.':'Um critério verificável define uma condição clara, como o limite de três frases.'}</p><p>O aproveitamento mede sua resposta à avaliação. A conclusão do curso acompanha as etapas realizadas.</p><div class="actions">${link('avaliacao','Revisar avaliação')}${link('progresso','Ver conquistas','btn primary')}</div></section>`;
 }
 
-const lessonPanelButton = (name,glyph,label) => action(name,icon(glyph)+`<span>${label}</span>`,'aria-haspopup="dialog"');
+export const lessonPanelButton = (name,glyph,label) => action(name,icon(glyph)+`<span>${label}</span>`,'aria-haspopup="dialog"');
 export function lessonPage(id) {
   const index=lessons.findIndex(r=>r[0]===id);
   const row=lessons[index];
@@ -80,7 +80,6 @@ export function lessonPage(id) {
     <div class="lesson-heading"><div class="kicker">${row[2]} · ${index<5?'Aula '+(index+1)+' de 5':'Encerramento'}</div>${section(esc(title(row)),override?esc(override.body):'Módulo 1 · Fundamentos')}</div>
     <div class="lesson-meter"><p>Progresso do curso <strong>${percent()}%</strong></p>${bar(percent())}</div>
     <div class="actions classroom-controls">${link('materiais','Materiais','btn secondary','folder')}${id==='atividade'?'':link('atividade','Atividades','btn secondary','tasks')}${action('focus',icon('focus')+'<span>Modo foco</span>','aria-pressed="false"')}<span data-fullscreen-slot></span></div>
-    <div class="tablet-controls">${modulesButton}${toolsButton}</div>
   </div>`;
   const body=locked(id)?`<section class="card locked-card">${icon('lock')}<h2>Etapa bloqueada</h2><p>Conclua “${esc(title(prev))}” na trilha para liberar esta etapa.</p>${link('trilha','Voltar à trilha','btn primary')}</section>`:
     content(id)+(override?.blocks?.length?`<section class="card"><h2>Sequência de blocos</h2><ol>${override.blocks.map(block=>'<li>'+esc(block)+'</li>').join('')}</ol></section>`:'')+

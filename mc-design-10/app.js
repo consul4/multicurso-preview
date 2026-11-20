@@ -1,5 +1,5 @@
 import {state,lessons,learner,management,course,activeCourse,configKey,title,percent,bar,locked,isStudyLesson,studyDestination,save,esc,icon,link,action,empty,asset} from './model.js';
-import {studentPage,lessonPage,pathRows} from './student.js';
+import {studentPage,lessonPage,pathRows,lessonPanelButton} from './student.js';
 import {adminPage} from './admin.js';
 
 const get = (id) => document.getElementById(id);
@@ -10,7 +10,6 @@ const dialog = get('dialog');
 const modalBody = get('dialog-body');
 const routes = [...learner,...lessons,...management];
 const modes = matchMedia('(display-mode: standalone)');
-const mobileClassroom = matchMedia('(max-width: 790px)');
 const compactClassroom = matchMedia('(max-width: 1100px)');
 let id = 'cursos', isStandalone = false, opener, focusMode = false, ready = false, timer;
 
@@ -66,7 +65,7 @@ function render() {
     <div class="focus-study"><div class="focus-context"><strong role="heading" aria-level="1">${esc(name)}</strong><small>Dados simulados</small></div><button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('layers')}</button><button class="icon-btn" aria-label="Ferramentas" aria-haspopup="dialog" data-action="options">${icon('sliders')}</button>${action('focus','Sair do foco','aria-pressed="true"')}</div>
     <button class="icon-btn menu-toggle" data-action="menu" aria-label="Abrir navegação">${icon('menu')}</button><a class="brand" href="#cursos"><span class="logo">${icon('layers')}</span><span>Multicurso <b>2.0</b></span></a>
     <button class="search-open" aria-label="Buscar na prévia" data-action="search">${icon('search')}<span>Buscar na prévia</span></button>
-    <div class="top-actions"><button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-label="Perfil demonstrativo">C</span></div>`;
+    <div class="top-actions">${isLesson?`<div class="tablet-controls">${lessonPanelButton('modules','layers','Módulos')}${lessonPanelButton('options','sliders','Ferramentas')}</div>`:''}<button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-label="Perfil demonstrativo">C</span></div>`;
   get('rail').innerHTML=`<div class="rail-inner">${navigation()}</div>`;
   get('dock').innerHTML=`<a href="#cursos" ${id==='cursos'?'aria-current="page"':''}>${icon('home')}Início</a><button data-action="modules" aria-haspopup="dialog">${icon('layers')}Módulos</button><a href="#${dockLesson}" ${id===dockLesson?'aria-current="page"':''}>${icon('lesson')}Aula</a><a href="#atividade" ${id==='atividade'?'aria-current="page"':''}>${icon('tasks')}Atividades</a><button data-action="assistant" aria-haspopup="dialog">${icon('spark')}Assistente</button>`;
   const crumbs=isLesson?`<a href="#curso">${esc(activeCourse().name)}</a>${icon('right')}<a href="#trilha">Fundamentos</a>${icon('right')}`:
@@ -114,8 +113,8 @@ function setupVideo() {
   video.addEventListener('ended',()=>{state.videoEnded=true;save();get('complete-video').disabled=false;get('video-message').textContent='Vídeo finalizado. Você pode concluir a aula.';});
   video.querySelector('source').addEventListener('error',()=>{get('video-message').textContent='Falha no vídeo. Use a transcrição para continuar a leitura e tente recarregar a mídia.';});
 }
-function panel(heading,markup,position='center') {
-  if(!dialog.open){opener=document.activeElement;get('lesson-video')?.pause();}
+function panel(heading,markup,position='center',trigger=document.activeElement) {
+  if(!dialog.open){opener=trigger;get('lesson-video')?.pause();}
   dialog.dataset.position=position;
   get('dialog-title').textContent=heading;
   modalBody.innerHTML=markup;
@@ -123,7 +122,15 @@ function panel(heading,markup,position='center') {
   dialog.scrollTop=0;
   get('dialog-title').focus({preventScroll:true});
 }
-dialog.addEventListener('close',()=>{if(!['route','mode'].includes(dialog.returnValue))opener?.focus({preventScroll:true});});
+const rendered = element => Boolean(element?.getClientRects().length);
+const panelControl = name => [...document.querySelectorAll(`button[data-action="${name}"][aria-haspopup="dialog"]`)].find(rendered);
+dialog.addEventListener('close',()=>{
+  if(dialog.open||['route','mode'].includes(dialog.returnValue))return;
+  const action=opener?.dataset.action;
+  const samePanel=action==='modules'||action==='options';
+  const target=rendered(opener)?opener:samePanel?panelControl(action):null;
+  (target||main).focus({preventScroll:true});
+});
 const fullscreenButton = () => fullscreenAvailable?action('fullscreen',icon('expand')+'<span>Tela cheia</span>','aria-pressed="false"'):'';
 const focusButton = () => action('focus',icon('focus')+'<span>Modo foco</span>','aria-pressed="false"');
 function updateModes() {
@@ -155,8 +162,7 @@ function toggleFocus() {
   if(nearTop)restore(0);
   else if(anchor)restore(readingTop()+anchor.getBoundingClientRect().top-offset);
   const control=focusMode?get('top').querySelector('.focus-study [data-action="focus"]'):
-    mobileClassroom.matches?get('top').querySelector('.mobile-study [data-action="options"]'):
-    compactClassroom.matches?main.querySelector('.tablet-controls [data-action="options"]'):main.querySelector('[data-action="focus"]');
+    compactClassroom.matches?panelControl('options'):main.querySelector('[data-action="focus"]');
   control?.focus({preventScroll:true});
   announce(focusMode?'Modo foco ativado.':'Modo foco desativado.');
 }
@@ -192,8 +198,8 @@ document.addEventListener('click',event=>{
   if(a==='search')panel('Buscar na prévia',`<label>Nome da tela<input type="search" data-filter placeholder="Buscar…"></label><nav class="modal-nav">${routes.map(row=>`<div data-filter-item="${esc(row[1].toLowerCase())}">${routeList([row])}</div>`).join('')}</nav><div id="filter-empty" hidden>${empty('Nenhum resultado','Tente outro nome.')}</div>`);
   if(a==='help')panel('Sobre esta prévia','<p>Ambiente de estudo e administração com dados simulados. Mudanças ficam neste navegador.</p>');
   if(a==='notifications')panel('Notificações',empty('Nenhuma notificação','Os avisos apareceriam aqui em uma experiência integrada.'));
-  if(a==='modules')panel('Aulas e módulos',modulesPanel(),'start');
-  if(a==='options'){panel('Ferramentas da aula',panelOptions(),'end');updateModes();}
+  if(a==='modules')panel('Aulas e módulos',modulesPanel(),'start',button);
+  if(a==='options'){panel('Ferramentas da aula',panelOptions(),'end',button);updateModes();}
   if(a==='assistant'||a==='hint')panel(a==='hint'?'Dica':'Assistente de Estudos','<p>Orientação demonstrativa. Comece pela tarefa. Acrescente público e contexto, defina uma condição verificável e escolha o formato de entrega.</p>');
   if(a==='transcript')void transcript();
   if(a==='seek'){const video=get('lesson-video');if(video?.readyState){video.currentTime=Number(v);dialog.close();}else announce('A mídia ainda está carregando.');}
