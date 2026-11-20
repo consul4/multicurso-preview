@@ -21,6 +21,7 @@ export const resources = [
   ['Mapa dos quatro elementos','Imagem · WebP','prompt.webp'],
   ['Anatomia do prompt','Vídeo · MP4','anatomia.mp4'],
 ];
+export const asset = name => globalThis.multicursoPreviewAssets?.[name] ?? name;
 const key = 'multicurso-design10-v1';
 const defaults = {
   done:[], answers:{}, positions:{}, note:'', videoTime:0, videoEnded:false, grade:null,
@@ -42,7 +43,7 @@ export const icon = (name,size='') => `<svg class="icon ${size}" aria-hidden="tr
 export const link = (id,text,kind='btn secondary',glyph='') => `<a class="${kind}" href="#${id}">${glyph?icon(glyph):''}${text}</a>`;
 export const action = (name,text,options='') => `<button type="button" class="btn secondary" data-action="${name}" ${options}>${text}</button>`;
 export const section = (heading,copy='') => `<header class="heading"><h1>${heading}</h1>${copy?`<p>${copy}</p>`:''}</header>`;
-export const bar = (value) => `<progress max="100" value="${value}" aria-label="Progresso do curso">${value}%</progress>`;
+export const bar = (value,label='Progresso do curso') => `<progress max="100" value="${value}" aria-label="${label}">${value}%</progress>`;
 export const badge = (text) => `<span class="badge">${text}</span>`;
 export const area = (name,value='',placeholder='') => `<textarea name="${name}" maxlength="3000" placeholder="${placeholder}">${esc(value)}</textarea>`;
 export const list = (items) => `<div class="list">${items.join('')}</div>`;
