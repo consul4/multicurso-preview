@@ -1,5 +1,5 @@
-import {state,lessons,learner,management,course,activeCourse,configKey,title,percent,bar,locked,isStudyLesson,studyDestination,save,esc,icon,link,action,empty,asset} from './model.js';
-import {studentPage,lessonPage,pathRows,lessonPanelButton} from './student.js';
+import {state,flash,lessons,learner,management,course,activeCourse,configKey,title,percent,bar,locked,isStudyLesson,studyDestination,save,esc,icon,link,action,empty,asset,compose} from './model.js';
+import {studentPage,lessonPage,pathRows,lessonPanelButton,lessonOutline} from './student.js';
 import {adminPage} from './admin.js';
 
 const get = (id) => document.getElementById(id);
@@ -9,18 +9,22 @@ const fullscreenAvailable = Boolean(root.requestFullscreen && document.fullscree
 const dialog = get('dialog');
 const modalBody = get('dialog-body');
 const routes = [...learner,...lessons,...management];
+// Aulas guardam o ícone na quarta posição; a busca usa o formato [rota, título, ícone].
+const searchable = [...learner,...lessons.map(([key,name,,glyph])=>[key,name,glyph]),...management];
 const modes = matchMedia('(display-mode: standalone)');
 const compactClassroom = matchMedia('(max-width: 1100px)');
-let id = 'cursos', isStandalone = false, opener, focusMode = false, ready = false, timer;
+let id = 'cursos', isStandalone = false, opener, focusMode = false, ready = false, timer, draftTimer;
+const motionAllowed = matchMedia('(prefers-reduced-motion: no-preference)');
+const shortcut = /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent) ? '⌘K' : 'Ctrl K';
 
-const routeList = (items,courseContext=false) => items.map(([key,name,glyph])=>{
+const routeList = (items,courseContext=false,short=false) => items.map(([key,name,glyph,label])=>{
   const current=key===id?'page':courseContext&&key==='cursos'?'location':'';
-  return `<a href="#${key}" ${current?`aria-current="${current}"`:''}>${icon(glyph)}<span>${name}</span></a>`;
+  return `<a href="#${key}" ${current?`aria-current="${current}"`:''}>${icon(glyph)}<span>${short&&label?label:name}</span></a>`;
 }).join('');
-const navigation = () => {
+const navigation = (short=false) => {
   const admin=management.some(([key])=>key===id);
   const destination=admin?['cursos','Ambiente do aluno','home']:['gestao','Administração','grid'];
-  return routeList(admin?management:learner,lessons.some(([key])=>key===id))+`<div class="area-switch">${routeList([destination])}</div>`;
+  return routeList(admin?management:learner,lessons.some(([key])=>key===id),short)+`<div class="area-switch">${routeList([destination])}</div>`;
 };
 const readingTop = () => isStandalone ? main.scrollTop : window.scrollY;
 function restore(y=state.positions[id]||0) { if(isStandalone) main.scrollTop=y; else window.scrollTo(0,y); }
@@ -69,18 +73,21 @@ function render() {
   document.body.toggleAttribute('data-focus',focusMode&&isLesson);
   const step=lessons.findIndex(([key])=>key===id)+1;
   get('top').innerHTML=`<div class="mobile-study"><a href="#curso" class="icon-btn" aria-label="Voltar ao curso">${icon('back')}</a>
-    <div><strong>${esc(activeCourse().name)}</strong><span>${bar(percent())}<b>${percent()}%</b><small>${step===6?'Resultado':'Aula '+step+'/5'}</small></span></div>
+    <div><strong>${esc(activeCourse().name)}</strong><span>${bar(percent())}<b>${percent()}%</b><small>${step===6?'Resultado':'Aula '+step+' de 5'}</small></span></div>
     <button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('list')}</button><button class="icon-btn" aria-label="Mais opções" aria-haspopup="dialog" data-action="options">${icon('dots')}</button></div>
     <div class="focus-study"><div class="focus-context"><strong role="heading" aria-level="1">${esc(name)}</strong><small>Dados simulados</small></div><button class="icon-btn" aria-label="Aulas e módulos" aria-haspopup="dialog" data-action="modules">${icon('layers')}</button><button class="icon-btn" aria-label="Ferramentas" aria-haspopup="dialog" data-action="options">${icon('sliders')}</button>${action('focus','Sair do foco','aria-pressed="true"')}</div>
     <button class="icon-btn menu-toggle" data-action="menu" aria-label="Abrir navegação">${icon('menu')}</button><a class="brand" href="#cursos"><span class="logo">${icon('layers')}</span><span>Multicurso <b>2.0</b></span></a>
-    <button class="search-open" aria-label="Buscar na prévia" data-action="search">${icon('search')}<span>Buscar na prévia</span></button>
-    <div class="top-actions">${isLesson?`<div class="tablet-controls">${lessonPanelButton('modules','layers','Módulos')}${lessonPanelButton('options','sliders','Ferramentas')}</div>`:''}<button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-hidden="true">C</span></div>`;
-  get('rail').innerHTML=`<div class="rail-inner">${navigation()}</div>`;
+    <button class="search-open" aria-label="Buscar na prévia" aria-keyshortcuts="Control+K Meta+K" data-action="search">${icon('search')}<span>Buscar na prévia</span><kbd aria-hidden="true">${shortcut}</kbd></button>
+    <div class="top-actions">${isLesson?`<div class="tablet-controls">${lessonPanelButton('modules','layers','Módulos')}${lessonPanelButton('options','sliders','Ferramentas')}</div>`:''}<span class="demo">Dados simulados</span><button class="icon-btn notifications" aria-label="Notificações" data-action="notifications">${icon('bell')}</button><button class="icon-btn" aria-label="Ajuda" data-action="help">${icon('help')}</button><span class="avatar" aria-hidden="true">C</span></div>`;
+  const rail=get('rail');
+  rail.setAttribute('aria-label',isLesson?'Aulas do módulo':'Ambientes e destinos');
+  rail.innerHTML=isLesson?lessonOutline(id):`<div class="rail-inner">${navigation(true)}</div>`;
   get('dock').innerHTML=`<a href="#cursos" ${id==='cursos'?'aria-current="page"':''}>${icon('home')}Início</a><button data-action="modules" aria-haspopup="dialog">${icon('layers')}Módulos</button><a href="#${dockLesson}" ${id===dockLesson?'aria-current="page"':''}>${icon('lesson')}Aula</a><a href="#atividade" ${id==='atividade'?'aria-current="page"':''}>${icon('tasks')}Atividades</a><button data-action="assistant" aria-haspopup="dialog">${icon('spark')}Assistente</button>`;
   const crumbs=isLesson?`<a href="#curso">${esc(activeCourse().name)}</a>${icon('right')}<a href="#trilha">Fundamentos</a>${icon('right')}`:
     id==='cursos'||id==='gestao'?'':`<a href="#${isAdmin?'gestao':'cursos'}">${area}</a>${icon('right')}`;
-  main.innerHTML=`<div class="frame"><div class="page-context"><nav class="breadcrumb" aria-label="Caminho">${crumbs}<span aria-current="page">${esc(name)}</span></nav><span class="demo">Dados simulados</span></div>
+  main.innerHTML=`<div class="frame"><div class="page-context ${crumbs?'':'no-crumbs'}"><nav class="breadcrumb" aria-label="Caminho">${crumbs}<span aria-current="page">${esc(name)}</span></nav><span class="demo">Dados simulados</span></div>
     <p id="form-feedback" class="feedback" role="status" hidden></p>${isAdmin?adminPage(id):isLesson?lessonPage(id):studentPage(id)}</div>`;
+  flash.justDone=null;
   const slot=main.querySelector('[data-fullscreen-slot]');
   if(slot)slot.innerHTML=fullscreenButton();
   updateModes();
@@ -96,9 +103,13 @@ function switchRoute() {
   if(lessons.some(([key])=>key===id)&&!locked(id))state.lastLesson=id;
   if(isStudyLesson(id))state.lastStudyLesson=id;
   save();
-  render();
-  if(ready)main.focus({preventScroll:true});
-  restore();
+  const update=()=>{
+    render();
+    if(ready)main.focus({preventScroll:true});
+    restore();
+  };
+  if(ready&&document.startViewTransition&&motionAllowed.matches&&document.visibilityState==='visible')document.startViewTransition(update);
+  else update();
   ready=true;
 }
 addEventListener('hashchange',switchRoute);
@@ -111,7 +122,7 @@ function commit(message,rerender=false) {
 }
 function complete() {
   if(locked(id)||!lessons.slice(0,5).some(row=>row[0]===id)||id==='video'&&!state.videoEnded)return;
-  if(!state.done.includes(id))state.done.push(id);
+  if(!state.done.includes(id)){state.done.push(id);flash.justDone=id;}
   commit('Etapa concluída. O progresso foi atualizado.',true);
 }
 function setupVideo() {
@@ -119,8 +130,9 @@ function setupVideo() {
   if(!video)return;
   video.addEventListener('loadedmetadata',()=>{if(state.videoTime>0)video.currentTime=Math.min(state.videoTime,video.duration);});
   video.addEventListener('timeupdate',()=>{state.videoTime=video.currentTime;save();});
-  video.addEventListener('ended',()=>{state.videoEnded=true;save();get('complete-video').disabled=false;get('video-message').textContent='Vídeo finalizado. Você pode concluir a aula.';});
-  video.querySelector('source').addEventListener('error',()=>{get('video-message').textContent='Falha no vídeo. Use a transcrição para continuar a leitura e tente recarregar a mídia.';});
+  const message=text=>{const box=get('video-message')||main.querySelector('.media-bar small');if(box)box.textContent=text;};
+  video.addEventListener('ended',()=>{state.videoEnded=true;save();const button=get('complete-video');if(button)button.disabled=false;message('Vídeo finalizado. Você pode concluir a aula.');});
+  video.querySelector('source').addEventListener('error',()=>{message('Falha no vídeo. Use a transcrição para continuar e tente recarregar a mídia.');});
 }
 function panel(heading,markup,position='center',trigger=document.activeElement) {
   if(!dialog.open){opener=trigger;get('lesson-video')?.pause();}
@@ -176,7 +188,7 @@ function toggleFocus() {
   announce(focusMode?'Modo foco ativado.':'Modo foco desativado.');
 }
 const panelOptions = () => `<div class="tool-list">${link('materiais','Materiais','btn secondary','folder')}${link('notas','Anotações','btn secondary','edit')}${id==='atividade'?'':link('atividade','Atividade prática','btn secondary','tasks')}${action('assistant',icon('spark')+'Assistente de Estudos')}${action('menu',icon('menu')+'Navegação')}${action('help',icon('help')+'Ajuda')}</div><div class="panel-display actions">${focusButton()}${fullscreenButton()}</div>`;
-const modulesPanel = () => `<div class="module-summary"><span class="tile">${icon('layers')}</span><div><strong>${esc(activeCourse().name)}</strong><p>Módulo 1 · Fundamentos</p>${bar(percent())}</div><strong>${percent()}%</strong></div>${pathRows(id)}<div class="actions">${link('trilha','Abrir trilha completa','btn secondary','right')}</div>`;
+const modulesPanel = () => `<div class="module-summary"><small>${esc(activeCourse().name)}</small><strong>Módulo 1, Fundamentos</strong><div class="meter">${bar(percent())}<b>${percent()}%</b></div></div>${pathRows(lessons.some(([key])=>key===id)?id:null,true)}<div class="actions">${link('trilha','Abrir trilha completa','btn secondary','layers')}</div>`;
 async function transcript() {
   panel('Transcrição','<p role="status">Carregando transcrição…</p>');
   const current=modalBody.firstElementChild;
@@ -188,7 +200,7 @@ async function transcript() {
     current.outerHTML=`<div class="list">${text.trim().split(/\r?\n\r?\n/).slice(1).map(block=>{
       const [times,...line]=block.split(/\r?\n/);
       const time=times.split(' ')[0], parts=time.split(':').map(Number), seconds=parts[0]*3600+parts[1]*60+parts[2];
-      return action('seek',esc(time.slice(3,8)+' · '+line.join(' ')),`data-value="${seconds}"`);
+      return action('seek',`<span class="num">${esc(time.slice(3,8))}</span><span>${esc(line.join(' '))}</span>`,`data-value="${seconds}" aria-label="${esc(time.slice(3,8)+', '+line.join(' '))}"`,'btn quiet transcript-line');
     }).join('')}</div>`;
   }catch{if(current.isConnected)current.outerHTML='<p role="alert">Falha ao carregar a transcrição.</p>'+action('transcript','Tentar novamente');}
 }
@@ -204,8 +216,8 @@ document.addEventListener('click',event=>{
   if(button.hasAttribute('data-close')){dialog.close();return;}
   const a=button.dataset.action,v=button.dataset.value,key=configKey();
   if(a==='menu')panel('Navegação',`<nav class="modal-nav">${navigation()}</nav>${window.multicursoTheme.choices()}`,'center',button);
-  if(a==='search')panel('Buscar na prévia',`<label>Nome da tela<input type="search" data-filter placeholder="Buscar…"></label><nav class="modal-nav">${routes.map(row=>`<div data-filter-item="${esc(row[1].toLowerCase())}">${routeList([row])}</div>`).join('')}</nav><div id="filter-empty" hidden>${empty('Nenhum resultado','Tente outro nome.')}</div>`);
-  if(a==='help')panel('Sobre esta prévia',`<p>Ambiente de estudo e administração com dados simulados. Mudanças ficam neste navegador.</p>${window.multicursoTheme.choices()}`,'center',button);
+  if(a==='search'){panel('Buscar na prévia',`<label>Nome da tela<input type="search" data-filter placeholder="Buscar…"></label><nav class="modal-nav">${searchable.map(row=>`<div data-filter-item="${esc(row[1].toLowerCase())}">${routeList([row])}</div>`).join('')}</nav><div id="filter-empty" hidden>${empty('Nenhum resultado','Tente outro nome.')}</div>`);modalBody.querySelector('input')?.focus();}
+  if(a==='help')panel('Sobre esta prévia',`<p>Ambiente de estudo e administração com dados simulados. Mudanças ficam neste navegador.</p><p>Atalho: ${shortcut} abre a busca.</p>${window.multicursoTheme.choices()}`,'center',button);
   if(a==='notifications')panel('Notificações',empty('Nenhuma notificação','Os avisos apareceriam aqui em uma experiência integrada.'));
   if(a==='modules')panel('Aulas e módulos',modulesPanel(),'start',button);
   if(a==='options'){panel('Ferramentas da aula',panelOptions(),'end',button);updateModes();}
@@ -246,7 +258,14 @@ document.addEventListener('input',event=>{
     root.querySelectorAll('[data-filter-item]').forEach(item=>{item.hidden=!item.dataset.filterItem.includes(query);if(!item.hidden)count++;});
     const result=root.querySelector('#filter-empty');if(result)result.hidden=count>0;
   }
-  if(target.closest('[data-form="lab"],[data-form="activity"],[data-form="quiz"]')){(state.answers[id]||={})[target.name]=target.value;save();}
+  if(target.closest('[data-form="lab"],[data-form="activity"],[data-form="quiz"]')){
+    const answers=(state.answers[id]||={});
+    answers[target.name]=target.value;
+    if(target.closest('[data-form="lab"]')){delete answers.generated;get('generated').textContent=compose([0,1,2,3].map(i=>answers['part'+i]));}
+    const persisted=save();
+    const status=get('draft-status');
+    if(status&&target.name==='response'){clearTimeout(draftTimer);draftTimer=setTimeout(()=>{status.textContent=persisted?`Rascunho salvo neste navegador às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`:'O armazenamento local está indisponível. O rascunho vale nesta sessão.';},500);}
+  }
 });
 document.addEventListener('change',event=>{
   const {dataset,value}=event.target;
@@ -266,7 +285,7 @@ document.addEventListener('submit',event=>{
   }
   const key=configKey();
   if(kind==='notes'){state.note=data.note;commit('Anotações salvas.');}
-  if(kind==='lab'){data.generated=Object.values(data).join(' · ');state.answers[id]=data;complete();}
+  if(kind==='lab'){data.generated=compose(Object.values(data));state.answers[id]=data;complete();}
   if(kind==='activity'){state.answers[id]=data;complete();}
   if(kind==='quiz'){state.answers[id]=data;state.grade=data.choice==='claro'?100:0;complete();location.hash='resultado';}
   if(kind==='new-course'){
@@ -276,6 +295,16 @@ document.addEventListener('submit',event=>{
   if(kind==='structure'){state.module[course().id]=data.module;commit('Estrutura salva.');}
   if(kind==='block'){(state.blocks[key]||=[]).push(data.block);commit('Bloco incluído.',true);}
   if(kind==='editor'){state.drafts[key]=data;commit('Rascunho salvo.',true);}
+});
+document.addEventListener('keydown',event=>{
+  const editing=event.target.closest?.('input,textarea,select,[contenteditable]');
+  if((event.key==='k'||event.key==='K')&&(event.metaKey||event.ctrlKey)&&!event.altKey&&!dialog.open){
+    event.preventDefault();
+    get('top').querySelector('[data-action="search"]')?.click();
+  } else if(event.key==='/'&&!editing&&!dialog.open&&!event.metaKey&&!event.ctrlKey){
+    event.preventDefault();
+    get('top').querySelector('[data-action="search"]')?.click();
+  }
 });
 let baseline=0;
 function viewport(){

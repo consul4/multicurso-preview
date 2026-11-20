@@ -30,14 +30,14 @@ export function adminPage(id) {
     ${lessonSelect()}<label>Título<input name="title" maxlength="100" required value="${esc(draft?.title ?? lesson[1])}"></label>
     <label>Conteúdo${area('body',draft?.body ?? '','Escreva o texto de apoio da aula…')}</label>
     <div class="actions"><button class="btn primary">Salvar rascunho</button>${link('previa','Abrir prévia do aluno')}</div></form>
-    <aside class="card"><h2>Contexto da edição</h2><p>${esc(course().name)} · ${lesson[2]}</p>${badge(draft?'Rascunho salvo':'Rascunho inicial')}<div class="actions">${link('construtor','Ver blocos')}${link('recursos','Vincular recursos')}</div></aside></div>`;
+    <aside class="card"><h2>Contexto da edição</h2><p>${esc(course().name)}</p><p>${lesson[2]}: ${esc(lesson[1])}</p><div class="actions">${badge(draft?'Rascunho salvo':'Rascunho inicial',draft?'done':'neutral')}</div><div class="actions">${link('construtor','Ver blocos')}${link('recursos','Vincular recursos')}</div></aside></div>`;
   if(id==='recursos') return `${section('Biblioteca de recursos','Vincule materiais demonstrativos à aula em edição.')}${steps}<section class="card">${lessonSelect()}
     ${list(resources.map(([name,detail,file])=>{
       const attached=(state.attached[key]||[]).includes(file);
-      return `<div class="row"><span class="tile">${icon('folder')}</span><div class="row-text" id="resource-${file}"><strong>${name}</strong><small>${detail}${attached?' · Vinculado a esta aula':''}</small></div><button class="btn secondary" data-action="attach" data-value="${file}" aria-describedby="resource-${file}">${attached?'Desvincular':'Vincular'}</button></div>`;
+      return `<div class="row"><span class="tile">${icon('folder')}</span><div class="row-text" id="resource-${file}"><strong>${name}</strong><small>${detail}${attached?'. Vinculado a esta aula':''}</small></div><button class="btn secondary" data-action="attach" data-value="${file}" aria-describedby="resource-${file}">${attached?'Desvincular':'Vincular'}</button></div>`;
     }))}<div class="actions">${link('previa','Conferir prévia','btn primary')}</div></section>`;
   return `${section('Prévia do aluno','Confira o conteúdo e os recursos do rascunho antes de aplicar a simulação.')}${steps}
-    <div class="admin-grid"><article class="card reading">${badge('PRÉVIA DE RASCUNHO')}<h2>${esc(draft?.title||lesson[1])}</h2>
+    <div class="admin-grid"><article class="card reading">${badge('Prévia de rascunho')}<h2>${esc(draft?.title||lesson[1])}</h2>
     ${draft?.body?`<p class="preserve">${esc(draft.body)}</p>`:empty('Sem texto de apoio','Adicione o texto no editor de conteúdo.')}
     ${list((state.blocks[key]||[]).map(block=>`<div class="row"><span class="tile">${icon('layers')}</span><strong>${esc(block)}</strong></div>`))}
     ${list(materialsRows().filter((_,i)=>(state.attached[key]||[]).includes(resources[i][2])))}</article>

@@ -19,27 +19,36 @@
     meta.content = root.dataset.mcTheme === 'claro' ? defaultChrome : canvas;
   }
 
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+
   function apply(value, persist = true) {
     const next = valid(value);
-    if (next !== root.dataset.mcTheme) {
+    const finish = () => {
+      updateChrome();
+      for (const input of document.querySelectorAll('[data-theme-option]')) input.checked = input.value === next;
+      document.dispatchEvent(new Event('mc-theme-change'));
+    };
+    if (persist) {
+      try { localStorage.setItem(key, next); } catch {}
+    }
+    if (next === root.dataset.mcTheme) return finish();
+    const swap = () => {
       root.setAttribute('data-theme-switching', '');
       root.dataset.mcTheme = next;
       cancelAnimationFrame(switchFrame);
       switchFrame = requestAnimationFrame(() => {
         switchFrame = requestAnimationFrame(() => root.removeAttribute('data-theme-switching'));
       });
-    }
-    if (persist) {
-      try { localStorage.setItem(key, next); } catch {}
-    }
-    updateChrome();
-    for (const input of document.querySelectorAll('[data-theme-option]')) input.checked = input.value === next;
-    document.dispatchEvent(new Event('mc-theme-change'));
+      finish();
+    };
+    // Transição cruzada curta onde houver suporte; troca imediata com movimento reduzido ou aba oculta.
+    if (document.startViewTransition && !calm.matches && document.visibilityState === 'visible') document.startViewTransition(swap);
+    else swap();
   }
 
   function choices() {
     const options = Object.entries(themes).map(([id,label]) =>
-      `<label class="choice"><input type="radio" name="mc-appearance" value="${id}" data-theme-option ${id===root.dataset.mcTheme?'checked':''}> ${label}</label>`
+      `<label class="choice"><input type="radio" name="mc-appearance" value="${id}" data-theme-option ${id===root.dataset.mcTheme?'checked':''}> ${label}<span class="theme-preview ${id}" aria-hidden="true"><i></i><i></i><i></i></span></label>`
     );
     return `<fieldset class="theme-picker"><legend>Tema visual</legend>${options.join('')}</fieldset>`;
   }

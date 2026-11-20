@@ -1,6 +1,10 @@
-"""Valida a fonte de tokens, o CSS gerado e as referências visuais."""
+"""Valida a fonte de tokens, os manifestos de tema, o CSS gerado e as referências arquivadas.
+
+EVO-01: os valores vigentes deixaram de ser uma extração do MC-DESIGN-13. O inventário histórico
+continua arquivado e imutável (verificado por hash). A linhagem de um papel alterado fica registrada
+em `$extensions["com.multicurso.lineage"]`.
+"""
 import argparse
-from collections import defaultdict
 import hashlib
 import json
 from pathlib import Path
@@ -10,10 +14,17 @@ SYSTEM = Path(__file__).resolve().parents[1]
 REPO = SYSTEM.parent
 PROTOTYPE = REPO / 'mc-design-10'
 ALIAS = re.compile(r'^\{([\w.-]+)\}$')
-EXTENSION = 'com.multicurso.source'
+LINEAGE = 'com.multicurso.lineage'
 THEME_EXTENSION = 'com.multicurso.theme'
-TRANSLUCENT_ROLES = ('surface', 'rail')
+TRANSLUCENT_ROLES = ('chrome', 'surface')
 MATERIAL_PROPERTIES = {'--mc-theme-glow', '--mc-theme-backdrop', '--mc-theme-radio-accent'}
+ARCHIVE = {
+    'references/arquivo/inventario-mc-design-13.css.json': '7451270dbe35333b9bf8761415f71ae5dc427239afa672de7e4cea49ac62455e',
+    'references/arquivo/INVENTARIO-CSS-MC-DESIGN-13.md': 'b0b71314dac13a6d83a05dfa0adefdde2785276a63dfe012ebe802c6d8fdd5e0',
+}
+# At-rules que contêm regras (empilham contexto) e at-rules que contêm declarações diretamente.
+NESTING_AT_RULES = ('@media ', '@supports ', '@keyframes ', '@starting-style', '@container ', '@layer ')
+DECLARATION_AT_RULES = ('@font-face', '@view-transition', '@page')
 
 if not __debug__:
     raise RuntimeError('Execute o validador sem -O para manter as verificações ativas.')
@@ -39,22 +50,21 @@ def validate_color(value, path):
 
 
 def css_inventory(css):
-    """Lê as declarações do CSS da referência, incluindo o contexto das media queries."""
+    """Lê as declarações de uma folha de estilos, com o contexto das at-rules que as envolvem."""
     css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
-    media = []
+    context = []
     rules = []
-    chunks = re.finditer(r'([^{}]*)([{}])', css)
     selector = None
-    for match in chunks:
+    for match in re.finditer(r'([^{}]*)([{}])', css):
         raw, delimiter = match.groups()
         raw = raw.strip()
         if delimiter == '{':
             if selector is not None or not raw:
                 raise ValueError(f'Bloco CSS sem suporte: {raw!r}')
-            if raw.startswith('@media '):
-                media.append(raw[7:])
-            elif raw.startswith('@supports '):
-                media.append(raw)
+            if raw.startswith(NESTING_AT_RULES):
+                context.append(raw)
+            elif raw.startswith(DECLARATION_AT_RULES):
+                selector = raw
             elif raw.startswith('@'):
                 raise ValueError(f'At-rule sem suporte: {raw}')
             else:
@@ -64,30 +74,24 @@ def css_inventory(css):
                 property_name, value = declaration.split(':', 1)
                 property_name = property_name.strip()
                 assert re.fullmatch(r'-?[a-z][a-z0-9-]*|--[\w-]+', property_name), (selector, property_name)
-                rules.append({'selector': selector, 'media': list(media),
+                rules.append({'selector': selector, 'media': list(context),
                               'property': property_name, 'value': ' '.join(value.split())})
             selector = None
-        elif raw or not media:
+        elif raw or not context:
             raise ValueError(f'Bloco CSS não reconhecido: {raw!r}')
         else:
-            media.pop()
-    if selector or media:
+            context.pop()
+    if selector or context:
         raise ValueError('Bloco CSS não encerrado')
     return rules
 
 
-def all_literals(rules):
-    result = defaultdict(set)
+def literals_in(rules):
+    found = set()
     for rule in rules:
-        for literal in re.findall(r'#[\da-fA-F]{3,8}\b|\bwhite\b|\btransparent\b', rule['value']):
-            case = literal.lower()
-            if case == 'white':
-                case = '#ffffff'
-            if case.startswith('#') and len(case) in (4, 5):
-                case = '#' + ''.join(char * 2 for char in case[1:])
-            location = (tuple(rule['media']), rule['selector'], rule['property'])
-            result[case].add(location)
-    return dict(sorted(result.items()))
+        for literal in re.findall(r'#[\da-fA-F]{3,8}\b|\bwhite\b|\bblack\b|\brgba?\(|\bhsla?\(', rule['value']):
+            found.add((literal.lower(), rule['selector']))
+    return found
 
 
 def tokens_in(group, prefix=''):
@@ -107,8 +111,10 @@ def css_value(kind, value):
     if kind == 'color':
         channels = ' '.join(f'{round(component * 255)}' for component in value['components'])
         return f'rgb({channels} / {value.get("alpha", 1):.6f})'
-    if kind == 'dimension':
+    if kind in ('dimension', 'duration'):
         return f'{value["value"]}{value["unit"]}'
+    if kind == 'cubicBezier':
+        return 'cubic-bezier(' + ', '.join(str(number) for number in value) + ')'
     if kind == 'fontFamily':
         return ', '.join(value)
     if kind in ('number', 'fontWeight'):
@@ -139,8 +145,8 @@ def resolved_token(path, tokens, aliases):
     return tokens[path]
 
 
-def validate_token_types(tokens, rules):
-    indexed = {(d['selector'], tuple(d['media']), d['property'], d['value']) for d in rules}
+def validate_token_types(tokens, _declarations=None):
+    """Confere tipos, camadas e aliases. `_declarations` é aceito por compatibilidade com o DS03."""
     aliases = {}
     for path, token in tokens.items():
         value = token['$value']
@@ -164,17 +170,9 @@ def validate_token_types(tokens, rules):
                         reference = ALIAS.fullmatch(value[term])
                         assert reference and tokens[reference[1]]['$type'] == expected_type, (path, term)
             css_value(kind, value)
-    for path, token in tokens.items():
-        if source := token.get('$extensions', {}).get(EXTENSION):
-            key = (source['selector'], tuple(source.get('media', [])), source['property'], source['value'])
-            assert key in indexed, f'Declaração de referência ausente para {path}: {key}'
-            kind = token['$type']
-            literal = source['value']
-            resolved = css_value(kind, resolved_token(path, tokens, aliases)['$value'])
-            if kind in ('dimension', 'number', 'fontWeight'):
-                assert resolved == literal, f'Valor divergente em {path}'
-            if kind == 'color' and literal.startswith('#'):
-                assert resolved == css_value(kind, color_value(literal)), f'Cor divergente em {path}'
+        if lineage := token.get('$extensions', {}).get(LINEAGE):
+            assert set(lineage) == {'ds03', 'decision', 'reason'} and all(
+                isinstance(lineage[key], str) and lineage[key].strip() for key in lineage), f'Linhagem inválida em {path}'
     names = [custom_property(path) for path in tokens]
     assert len(names) == len(set(names)), 'Colisão na exportação CSS'
     return aliases
@@ -216,12 +214,12 @@ def validate_theme(theme, data, tokens, aliases):
         assert 0 < target.get('alpha', 1) < 1, f'{theme}/{role}: o material precisa ter alfa entre 0 e 1'
     if 'backdropBlur' in meta:
         path = theme_alias(meta['backdropBlur'], tokens, 'dimension')
-        assert 'surface' in translucent and theme_token(path, tokens, aliases, overrides)['$value']['value'] > 0, (
-            f'{theme}: blur requer superfície translúcida e dimensão positiva'
+        assert translucent and theme_token(path, tokens, aliases, overrides)['$value']['value'] > 0, (
+            f'{theme}: blur requer material translúcido e dimensão positiva'
         )
     if 'canvasGlow' in meta:
         glow = meta['canvasGlow']
-        assert translucent and isinstance(glow, list) and len(glow) == 2, f'Halo inválido: {theme}'
+        assert translucent and isinstance(glow, list) and len(glow) in (2, 3), f'Halo inválido: {theme}'
         for value in glow:
             theme_alias(value, tokens, 'color')
     if 'radioAccent' in meta:
@@ -231,6 +229,24 @@ def validate_theme(theme, data, tokens, aliases):
         )
     check_contrast(tokens, aliases, overrides, theme, meta)
     return meta, overrides
+
+
+TEXT_PAIRS = [
+    ('ink','canvas'), ('ink','surface'), ('ink','subtle'), ('ink','chrome'), ('ink','tint'), ('ink','selection'),
+    ('muted','surface'), ('muted','canvas'), ('muted','subtle'), ('muted','chrome'),
+    ('on-primary','primary'), ('on-accent','accent'),
+    ('accent','surface'), ('accent','canvas'), ('accent','chrome'), ('accent','selection'), ('accent','tint'), ('accent','subtle'),
+    ('success-text','success-fill'), ('success-text','surface'), ('error-text','error-fill'), ('error-text','surface'),
+    ('ink','field-fill'), ('muted','field-fill'), ('disabled-text','disabled-fill'),
+    ('media-text','mark-fill'), ('media-text','avatar-fill'), ('media-text','media-stage'),
+]
+CONTROL_PAIRS = [
+    ('field-border','field-fill'), ('field-border','surface'), ('field-border','canvas'),
+    ('control-border','surface'), ('control-border','chrome'), ('control-border','canvas'),
+    ('line-strong','surface'), ('line-strong','subtle'),
+    ('accent','field-fill'), ('primary','surface'), ('primary','canvas'), ('accent','progress-track'),
+    ('error-text','field-fill'),
+]
 
 
 def check_contrast(tokens, aliases, overrides, theme, metadata):
@@ -253,34 +269,30 @@ def check_contrast(tokens, aliases, overrides, theme, metadata):
         assert fg_alpha == bg_alpha == 1, f'{theme}: o par base precisa ser opaco: {foreground}/{background}'
         measured = ratio(luminance(fg), luminance(bg))
         if material := metadata.get('translucent', {}).get(background):
+            # O material pode compor sobre qualquer conteúdo: mede o pior caso entre preto e branco.
             material_rgb, alpha = color(theme_alias(material, tokens, 'color'))
             low, high = (luminance(tuple(c * alpha + base * (1-alpha) for c in material_rgb)) for base in (0, 1))
             fg_lum = luminance(fg)
             closest = min(high, max(low, fg_lum))
             measured = min(measured, ratio(fg_lum, closest))
         assert measured >= minimum, f'{theme}: contraste insuficiente em {foreground}/{background}: {measured:.2f}:1'
+        return measured
 
-    text = [('ink','canvas'), ('ink','surface'), ('muted','surface'), ('on-primary','primary'),
-            ('success-text','success-fill'), ('error-text','error-fill'), ('ink','field-fill'), ('muted','field-fill'),
-            ('disabled-text','disabled-fill'), ('navigation-text','rail'), ('badge-text','badge-fill'),
-            ('on-accent','accent'), ('accent','selection'), ('button-secondary-text','surface'),
-            ('media-text','mark-fill'), ('media-text','avatar-fill')]
-    controls = [('field-border','field-fill'), ('field-border','surface'), ('field-border','rail'),
-                ('control-border','surface'), ('control-border','rail'), ('accent','field-fill'),
-                ('accent','surface'), ('accent','canvas'), ('error-text','field-fill'), ('error-text','surface'),
-                ('primary','progress-track')]
-    for foreground, background in text:
-        check(foreground, background, 4.5)
-    for foreground, background in controls:
-        check(foreground, background, 3)
+    results = {}
+    for foreground, background in TEXT_PAIRS:
+        results[(foreground, background)] = check(foreground, background, 4.5)
+    for foreground, background in CONTROL_PAIRS:
+        results[(foreground, background)] = check(foreground, background, 3)
+    return results
 
 
 def theme_css(tokens, aliases, variants):
-    lines = ['/* Gerado por design-system/tools/check.py --write. */', ':root {']
+    lines = ['/* Gerado por design-system/tools/check.py --write. Não edite à mão. */', ':root {']
     for path, token in tokens.items():
         value = f'var({custom_property(aliases[path])})' if path in aliases else css_value(token['$type'], token['$value'])
         lines.append(f'  {custom_property(path)}: {value};')
     lines.extend(['}', ''])
+    positions = ('ellipse 70% 55% at 8% 0%', 'ellipse 60% 50% at 96% 18%', 'ellipse 70% 60% at 60% 100%')
     for theme, (metadata, overrides) in variants.items():
         selector = f':root[data-mc-theme="{theme}"]'
         lines.extend([(':root, ' if theme == 'claro' else '') + selector + ' {',
@@ -297,11 +309,11 @@ def theme_css(tokens, aliases, variants):
                 lines.append(f'      --mc-semantic-color-{color_role}: {css_value("color", value)};')
             if 'backdropBlur' in metadata:
                 blur = css_value('dimension', metadata['backdropBlur'])
-                lines.append(f'      --mc-theme-backdrop: blur({blur});')
+                lines.append(f'      --mc-theme-backdrop: blur({blur}) saturate(160%);')
             if 'canvasGlow' in metadata:
-                first, second = (css_value('color', value) for value in metadata['canvasGlow'])
-                lines.append(f'      --mc-theme-glow: radial-gradient(ellipse at 12% 5%, {first}, transparent 58%), '
-                             f'radial-gradient(ellipse at 88% 28%, {second}, transparent 54%);')
+                layers = [f'radial-gradient({position}, {css_value("color", value)}, transparent 70%)'
+                          for position, value in zip(positions, metadata['canvasGlow'])]
+                lines.append(f'      --mc-theme-glow: {", ".join(layers)};')
             lines.extend(['    }', '  }', '}', ''])
     return '\n'.join(lines)
 
@@ -321,6 +333,8 @@ def check_references():
         assert hashlib.sha256(binary).hexdigest() == metadata['sha256'], f'Captura alterada: {path}'
     for path in manifest['links']:
         assert (SYSTEM / path).is_file(), f'Referência documental ausente: {path}'
+    for path, expected in ARCHIVE.items():
+        assert hashlib.sha256((SYSTEM / path).read_bytes()).hexdigest() == expected, f'Arquivo histórico alterado: {path}'
 
 
 def main():
@@ -330,19 +344,18 @@ def main():
     check_references()
     declarations = json.loads((SYSTEM / 'references/arquivo/inventario-mc-design-13.css.json').read_text())
     tokens = dict(tokens_in(json.loads((SYSTEM / 'tokens/multicurso.tokens.json').read_text())))
-    aliases = validate_token_types(tokens, declarations)
+    aliases = validate_token_types(tokens)
     themes = read_themes()
     variants = {theme: validate_theme(theme, data, tokens, aliases) for theme, data in themes.items()}
     colors = [css_value('color', t['$value']) for p, t in tokens.items() if p.startswith('primitive.color.')]
     assert len(colors) == len(set(colors)), 'Cor literal duplicada no nível primitivo'
-    expected_colors = {css_value('color', color_value(literal)) for literal in all_literals(declarations)}
-    assert set(colors) >= expected_colors, 'Cores da referência ausentes'
     for path in (PROTOTYPE / 'style.css', SYSTEM / 'catalogo/catalogo.css'):
         css = path.read_text()
         refs = set(re.findall(r'var\((--mc-[\w-]+)', css))
-        assert refs <= {custom_property(path) for path in tokens} | MATERIAL_PROPERTIES, (path, refs)
-        literals = set(all_literals(css_inventory(css))) - {'transparent'}
-        assert not literals, f'Cores diretas em {path}: {literals}'
+        known = {custom_property(token) for token in tokens} | MATERIAL_PROPERTIES
+        assert refs <= known, (path.name, sorted(refs - known))
+        literals = literals_in(css_inventory(css))
+        assert not literals, f'Cores diretas em {path.name}: {sorted(literals)}'
     markup = (PROTOTYPE / 'index.html').read_text()
     assert markup.index('src="theme.js"') < markup.index('rel="stylesheet" href="themes.css"')
     runtime = PROTOTYPE / 'theme.js'
@@ -357,7 +370,7 @@ def main():
             path.write_text(generated)
         else:
             assert path.read_text() == generated, f'{path.name} divergiu. Regenere com --write.'
-    print(f'{len(tokens)} tokens, {len(variants)} temas e {len(declarations)} declarações históricas verificados.')
+    print(f'{len(tokens)} tokens, {len(variants)} temas, {len(declarations)} declarações históricas arquivadas verificados.')
 
 
 if __name__ == '__main__':

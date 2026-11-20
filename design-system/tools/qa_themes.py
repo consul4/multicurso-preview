@@ -229,7 +229,8 @@ def interactions(browser):
     expect(page.locator('.swatch')).to_have_count(9)
     page.get_by_role('radio',name='Black Full',exact=True).check()
     expect(page.locator('html')).to_have_attribute('data-mc-theme','black')
-    expect(page.locator('.swatch code').first).to_have_text('#EEF3FC')
+    ink = read_themes()['black']['semantic']['color']['ink']['$value']['components']
+    expect(page.locator('.swatch code').first).to_have_text('#' + ''.join(f'{round(c*255):02X}' for c in ink))
     page.locator('#route').select_option('leitura')
     page.get_by_role('button',name='Carregar composição').click()
     expect(page.frame_locator('#spec-frame').locator('html')).to_have_attribute('data-mc-theme','black')

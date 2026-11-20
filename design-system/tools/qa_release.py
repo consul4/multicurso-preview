@@ -32,7 +32,7 @@ def test_materials():
     aliases = validate_token_types(tokens, declarations)
     glass = read_themes()['glass']
     original = glass['$extensions'][THEME_EXTENSION]
-    for role in ('surface', 'rail'):
+    for role in ('surface', 'chrome'):
         case = deepcopy(glass)
         case['$extensions'][THEME_EXTENSION] = {
             'colorScheme': 'light', 'translucent': {role: original['translucent'][role]},
@@ -40,12 +40,13 @@ def test_materials():
         validate_theme('qa-partial', case, tokens, aliases)
 
     for role, alias, message in [
-        ('unknown', '{primitive.color.glass-surface}', 'Papéis translúcidos'),
+        ('unknown', '{primitive.color.glass.surface}', 'Papéis translúcidos'),
+        ('rail', '{primitive.color.glass.chrome}', 'Papéis translúcidos'),
         ('surface', '{primitive.color.invalid}', 'Alias color inválido'),
-        ('surface', '{primitive.dimension.px-14}', 'Alias color inválido'),
+        ('surface', '{primitive.dimension.blur-glass}', 'Alias color inválido'),
         ('surface', '{semantic.color.surface}', 'Alias circular'),
-        ('surface', '{primitive.color.white}', 'alfa entre 0 e 1'),
-        ('surface', '{primitive.color.transparent}', 'alfa entre 0 e 1'),
+        ('surface', '{primitive.color.neutral.0}', 'alfa entre 0 e 1'),
+        ('surface', '{primitive.color.alpha.transparent}', 'alfa entre 0 e 1'),
         ('surface', '{semantic.color.glass-surface}', 'contraste insuficiente'),
     ]:
         case = deepcopy(glass)
@@ -67,7 +68,7 @@ def test_materials():
         assert 'Alfa inválido' in str(error)
     else:
         raise AssertionError('Um alfa fora do intervalo foi aceito')
-    print('Validador: translúcido só na superfície ou só no trilho, aliases e rejeições passaram.')
+    print('Validador: translúcido só no conteúdo ou só no cromo, aliases e rejeições passaram.')
 
 
 def launch(browser, theme, width=1024, height=768):
@@ -217,7 +218,7 @@ def test_fourth_theme(browser, root):
     shutil.copytree(SYSTEM,fixture / 'design-system',ignore=shutil.ignore_patterns('__pycache__'))
     manifest = deepcopy(read_themes()['glass'])
     manifest['$description'] = 'Tema temporário de QA'
-    del manifest['$extensions'][THEME_EXTENSION]['translucent']['rail']
+    del manifest['$extensions'][THEME_EXTENSION]['translucent']['surface']
     variant = fixture / 'design-system/themes/qa-partial.tokens.json'
     variant.write_text(json.dumps(manifest, ensure_ascii=False))
     check = fixture / 'design-system/tools/check.py'
@@ -231,9 +232,15 @@ def test_fourth_theme(browser, root):
         p.get_by_role('radio',name=manifest['$description'],exact=True).check()
         expect(p.locator('html')).to_have_attribute('data-mc-theme','qa-partial')
         assert p.evaluate("document.querySelector('main')===window.qaMain")
-        assert style(p.locator('dialog'),'backdropFilter') == 'blur(14px)'
+        blur = read_themes()['glass']['$extensions'][THEME_EXTENSION]['backdropBlur']
+        expected = tokens_in(json.loads((SYSTEM / 'tokens/multicurso.tokens.json').read_text()))
+        size = dict(expected)[blur.strip('{}')]['$value']['value']
+        assert style(p.locator('dialog'),'backdropFilter') == f'blur({size}px) saturate(1.6)'
         assert style(p.locator('dialog'),'backgroundColor').startswith('rgba(')
-        assert style(p.locator('.rail'),'backgroundColor').startswith('rgb(')
+        assert style(p.locator('.rail'),'backgroundColor').startswith('rgba(')
+        # Somente o cromo é translúcido no manifesto parcial: o conteúdo permanece opaco.
+        assert style(p.locator('.sheet, .course-feature').first,'backgroundColor').startswith('rgb(')
+        assert style(p.locator('.course-feature'),'backdropFilter') == 'none'
         p.keyboard.press('Escape')
         p.reload()
         expect(p.locator('html')).to_have_attribute('data-mc-theme','qa-partial')

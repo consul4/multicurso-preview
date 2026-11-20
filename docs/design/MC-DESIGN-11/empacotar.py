@@ -1,9 +1,10 @@
-"""Exporta o protótipo atual como HTML único com estilos, temas e mídia."""
+"""Exporta o protótipo atual como HTML único com estilos, temas, fontes e mídia."""
 import argparse
 import base64
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 
 APP = Path(__file__).resolve().parents[3] / 'mc-design-10'
@@ -29,6 +30,18 @@ def export_html(app):
     html = (app / 'index.html').read_text(encoding='utf-8')
     html = replace_required(html, '<script src="theme.js"></script>',
                             inline_script((app / 'theme.js').read_text(encoding='utf-8')))
+    # EVO-01: as fontes auto-hospedadas viram data URIs; os preloads deixam de ser necessários.
+    html, preloads = re.subn(r'<link rel="preload" href="fonts/[^"]+" as="font" type="font/woff2" crossorigin>', '', html)
+    if preloads != 2:
+        raise ValueError(f'Esperados dois preloads de fonte, encontrados {preloads}')
+    fonts = (app / 'fonts.css').read_text(encoding='utf-8')
+    def embed(match):
+        data = base64.b64encode((app / 'fonts' / match[1]).read_bytes()).decode('ascii')
+        return f'url(data:font/woff2;base64,{data})'
+    fonts, count = re.subn(r'url\(fonts/([\w.-]+\.woff2)\)', embed, fonts)
+    if count != 4:
+        raise ValueError(f'Esperadas quatro fontes em fonts.css, encontradas {count}')
+    html = replace_required(html, '<link rel="stylesheet" href="fonts.css">', f'<style>{fonts}</style>')
     for name in ('themes.css', 'style.css'):
         css = (app / name).read_text(encoding='utf-8')
         html = replace_required(html, f'<link rel="stylesheet" href="{name}">', f'<style>{css}</style>')
