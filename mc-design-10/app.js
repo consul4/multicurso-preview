@@ -42,7 +42,7 @@ function persistReading() {
   if(!ready||dialog.open)return;
   state.positions[id]=readingTop();
   clearTimeout(timer);
-  timer=setTimeout(save,160);
+  timer=setTimeout(()=>{timer=null;save();},160);
 }
 addEventListener('scroll',persistReading,{passive:true});
 main.addEventListener('scroll',persistReading,{passive:true});
@@ -134,8 +134,11 @@ function setupVideo() {
   video.addEventListener('ended',()=>{state.videoEnded=true;save();const button=get('complete-video');if(button)button.disabled=false;message(state.done.includes('video')?'Vídeo assistido até o fim':'Vídeo finalizado. Você pode concluir a aula.');});
   video.querySelector('source').addEventListener('error',()=>{message('Falha no vídeo. Use a transcrição para continuar e tente recarregar a mídia.');});
 }
+// Conclui o salvamento adiado da posição de leitura antes de um painel ou de a aba sair de vista.
+function flushReading(){if(timer){clearTimeout(timer);timer=null;save();}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushReading();});
 function panel(heading,markup,position='center',trigger=document.activeElement) {
-  if(!dialog.open){opener=trigger;get('lesson-video')?.pause();}
+  if(!dialog.open){opener=trigger;get('lesson-video')?.pause();flushReading();}
   dialog.dataset.position=position;
   get('dialog-title').textContent=heading;
   modalBody.innerHTML=markup;
