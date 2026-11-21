@@ -1,0 +1,34 @@
+{
+  "keyboard_stops": 14,
+  "glass_backdrop_elements": {
+    "ds03": {
+      "cursos": 3,
+      "video": 2,
+      "gestao": 3
+    },
+    "evo01": {
+      "cursos": 1,
+      "video": 1,
+      "gestao": 1
+    }
+  },
+  "weight_cursos_390": {
+    "ds03": {
+      "kilobytes": 122,
+      "domContentLoaded": 53,
+      "load": 70,
+      "fcp": 84
+    },
+    "evo01": {
+      "kilobytes": 234,
+      "domContentLoaded": 53,
+      "load": 63,
+      "fcp": 52
+    }
+  },
+  "contrast_text_nodes": 2988,
+  "axe": {
+    "checks": 216,
+    "violations": []
+  }
+}

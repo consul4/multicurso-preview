@@ -6,3 +6,11 @@ Nesta branch, o protótipo `mc-design-10/` implementa o **MC-DESIGN-EVOLUTION-01
 - Use os [manifestos de tema](design-system/themes/README.md) e o token semântico ou de componente que expressa o papel do valor. Registre a origem e a justificativa de um valor novo. Preserve os limites de breakpoint e a composição dos temas até decisão explícita.
 - Separe Shell, conteúdo e regras acadêmicas. MC-DESIGN-13 é a referência histórica do Claro e seu inventário fica arquivado e imutável. Não edite `mc-design-system-03/`. Mudanças à produção, à `main`, à autenticação ou aos deploys exigem autorização própria.
 - Gere CSS e registro do seletor com `python design-system/tools/check.py --write` ao alterar manifestos. Execute a checagem sem `--write` para verificar a saída versionada. Para alterações de interface, execute também `python design-system/tools/qa_themes.py` e a comparação com o Claro de referência e guarde a evidência conforme [QA.md](design-system/QA.md). Para mudanças em tokens, campos, catálogo, temas ou exportação, execute também `python design-system/tools/qa_release.py`. Para qualquer mudança visual, execute `python design-system/tools/qa_evo.py` (fontes, axe-core, contraste renderizado, alvos, teclado e movimento) e gere pranchas com `comparar.py` em pasta nova. Preserve as capturas históricas e identifique testes simulados e em dispositivo real. Atualize decisões e histórico quando a mudança os afetar.
+
+## Continuidade (MC-CONSOLIDAÇÃO-FINAL-01)
+
+- O dossiê mestre do projeto inteiro está no repositório oficial `consul4/plataforma-educacional-multicurso`, branch
+  `claude/mc-design-evolution-01-xqwqnf`, em `docs/MC-CONSOLIDACAO-FINAL-01/` (comece pelo `README.md`).
+- Este repositório é a **fonte visual aprovada** (EVO-01). O produto porta o CSS da prévia com
+  `apps/qualifica-core/scripts/portar-estilo-previa.py` e os tokens com `scripts/sincronizar-tokens.mjs`.
+- Capturas de trabalho preservadas na consolidação: `design-system/references/preservacao-consolidacao-01/`.
